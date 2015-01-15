@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vi: set et smarttab sw=4 tabstop=4: --><!-- Copyright (c) 2013 Robert Varga. All rights reserved. This program and
+    the accompanying materials are made available under the terms of the Eclipse
+    Public License v1.0 which accompanies this distribution, and is available
+    at http://www.eclipse.org/legal/epl-v10.html -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <parent>
+        <groupId>org.opendaylight.toaster</groupId>
+        <artifactId>toaster-parent</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>parent</relativePath>
+    </parent>
+
+    <!-- This is the root/top-level POM and from here we aggregate more modules -->
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>toaster-aggregator</artifactId>
+    <description>Toaster Tutorial Archetype Top Level POM</description>
+    <packaging>pom</packaging>
+    <name>${project.artifactId}</name>
+
+    <prerequisites>
+        <maven>3.1.1</maven>
+    </prerequisites>
+
+    <!-- INTERNAL TODO: http://central.sonatype.org/pages/requirements.html
+        ... Either we do this completely or not at all. Needed for Maven Central.
+        If you want this information pushed there, OPTIONAL TODO to fill out. (See
+        caps between <>)
+        <scm>
+            <connection>scm:git:ssh://git.opendaylight.org:29418/<YOUR-REPO-HERE>.git</connection>
+            <developerConnection>scm:git:ssh://git.opendaylight.org:29418/<YOUR-REPO-HERE>.git</developerConnection>
+            <url><YOUR-PROJECT-WIKI-PAGE-HERE></url> <tag>HEAD</tag>
+        </scm>
+    -->
+
+    <!-- Ordering here doesn't matter except for the last entries which are feature and karaf specific.
+        This part of the pom.xml points maven to the subdirectories within the project. This is where other pom.xml files
+        in those directories are pulled in and included in the reactor build (http://maven.apache.org/guides/mini/guide-multiple-modules.html).
+        If a project has decided to depart from the archetype directory structure,
+        the below must match the project's chosen structure -->
+    <modules>
+        <!-- the ODL convention is to have parent and artifacts subdirectories -->
+        <module>parent</module>
+        <module>artifacts</module>
+
+        <!-- TODO: add new features here -->
+        <module>toaster-impl</module>
+        <module>toaster-api</module>
+        <module>toaster-consumer</module>
+
+        <module>features</module>  <!-- see the features/pom.xml and features/src/main/resources/features.xml -->
+        <module>distribution-karaf</module> <!-- a local karaf distribution with your features is built here -->
+  </modules>
+</project>
