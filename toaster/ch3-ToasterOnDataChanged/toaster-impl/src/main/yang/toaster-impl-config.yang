@@ -1,0 +1,36 @@
+module toaster-impl-config {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:toaster:impl:config";
+    prefix "toaster-impl-config";
+
+    import config { prefix config; revision-date 2013-04-05; }
+    import opendaylight-md-sal-binding { prefix md-sal-binding; revision-date 2013-10-28;}
+
+    description
+        "Service definition for toaster project";
+
+    revision "2014-12-10" {
+        description
+            "Initial revision";
+    }
+
+    identity toaster-impl-config {
+        base config:module-type;
+        config:java-name-prefix ToasterImpl;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case toaster-impl-config {
+            when "/config:modules/config:module/config:type = 'toaster-impl-config'";
+            container binding-aware-broker {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity md-sal-binding:binding-broker-osgi-registry;
+                    }
+                }
+            }
+        }
+    }
+}
+
