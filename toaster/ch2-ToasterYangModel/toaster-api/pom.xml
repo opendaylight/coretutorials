@@ -48,14 +48,6 @@ manage all this for us, by virtue of being dependent on yangtools -->
                 <groupId>org.opendaylight.yangtools</groupId>
                 <artifactId>yang-maven-plugin</artifactId>
                 <version>${yangtools.version}</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.opendaylight.yangtools</groupId>
-                        <artifactId>maven-sal-api-gen-plugin</artifactId>
-                        <version>${yangtools.version}</version>
-                        <type>jar</type>
-                    </dependency>
-                </dependencies>
                 <executions>
                     <execution>
                         <goals>
@@ -63,12 +55,6 @@ manage all this for us, by virtue of being dependent on yangtools -->
                         </goals>
                         <configuration>
                             <yangFilesRootDir>src/main/yang</yangFilesRootDir>
-                            <codeGenerators>
-                                <generator>
-                                    <codeGeneratorClass>org.opendaylight.yangtools.maven.sal.api.gen.plugin.CodeGeneratorImpl</codeGeneratorClass>
-                                    <outputBaseDir>${salGeneratorPath}</outputBaseDir>
-                                </generator>
-                            </codeGenerators>
                             <inspectDependencies>true</inspectDependencies>
                         </configuration>
                     </execution>
