@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- vi: set et smarttab sw=4 tabstop=4: -->
 <!--
-Copyright (c) Yoyodyne, Inc.
+Copyright (c) 2015 Cisco Systems
 
 This program and the accompanying materials are made available under the
 terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -15,13 +15,13 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <repository>mvn:org.opendaylight.controller/features-restconf/${mdsal.version}/xml/features</repository>
   <feature name='odl-hello-api' version='${project.version}' description='OpenDaylight :: hello :: api '>
     <feature version='${yangtools.version}'>odl-yangtools-models</feature>
-    <bundle>mvn:org.opendaylight.hello/hello-api/${project.version}</bundle>
+    <bundle>mvn:org.opendaylight.coretutorials/hello-api/${project.version}</bundle>
   </feature>
   <feature name='odl-hello-impl' version='${project.version}' description='OpenDaylight :: hello :: impl '>
     <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
     <feature version='${project.version}'>odl-hello-api</feature>
-    <bundle>mvn:org.opendaylight.hello/hello-impl/${project.version}</bundle>
-    <configfile finalname="hello-impl-default-config.xml">mvn:org.opendaylight.hello/hello-impl/${project.version}/xml/config</configfile>
+    <bundle>mvn:org.opendaylight.coretutorials/hello-impl/${project.version}</bundle>
+    <configfile finalname="hello-impl-default-config.xml">mvn:org.opendaylight.coretutorials/hello-impl/${project.version}/xml/config</configfile>
   </feature>
   <feature name='odl-hello-impl-rest' version='${project.version}' description='OpenDaylight :: hello :: impl :: REST '>
     <feature version="${project.version}">odl-hello-impl</feature>
