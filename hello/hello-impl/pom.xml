@@ -16,7 +16,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opendaylight.hello</groupId>
+  <groupId>org.opendaylight.coretutorials</groupId>
   <artifactId>hello-impl</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
