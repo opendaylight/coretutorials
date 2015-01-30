@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>org.opendaylight.dsbenchmark</groupId>
+  <artifactId>dsbenchmark-impl</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <localCopy>true</localCopy>
+    </snapshot>
+    <lastUpdated>20150129193212</lastUpdated>
+    <snapshotVersions>
+      <snapshotVersion>
+        <classifier>config</classifier>
+        <extension>xml</extension>
+        <value>1.0.0-SNAPSHOT</value>
+        <updated>20150129193212</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+</metadata>
