@@ -11,7 +11,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
     <artifactId>features-parent</artifactId>
     <version>1.5.0-SNAPSHOT</version>
   </parent>
-  <groupId>org.opendaylight.dsbenchmark</groupId>
+  <groupId>org.opendaylight.coretutorials</groupId>
   <artifactId>dsbenchmark-features</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <name>${project.artifactId}</name>
