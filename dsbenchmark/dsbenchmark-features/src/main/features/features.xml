@@ -15,13 +15,13 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <repository>mvn:org.opendaylight.controller/features-restconf/${mdsal.version}/xml/features</repository>
   <feature name='odl-dsbenchmark-api' version='${project.version}' description='OpenDaylight :: dsbenchmark :: api '>
     <feature version='${yangtools.version}'>odl-yangtools-models</feature>
-    <bundle>mvn:org.opendaylight.dsbenchmark/dsbenchmark-api/${project.version}</bundle>
+    <bundle>mvn:org.opendaylight.coretutorials/dsbenchmark-api/${project.version}</bundle>
   </feature>
   <feature name='odl-dsbenchmark-impl' version='${project.version}' description='OpenDaylight :: dsbenchmark :: impl '>
     <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
     <feature version='${project.version}'>odl-dsbenchmark-api</feature>
-    <bundle>mvn:org.opendaylight.dsbenchmark/dsbenchmark-impl/${project.version}</bundle>
-    <configfile finalname="dsbenchmark-impl-default-config.xml">mvn:org.opendaylight.dsbenchmark/dsbenchmark-impl/${project.version}/xml/config</configfile>
+    <bundle>mvn:org.opendaylight.coretutorials/dsbenchmark-impl/${project.version}</bundle>
+    <configfile finalname="dsbenchmark-impl-default-config.xml">mvn:org.opendaylight.coretutorials/dsbenchmark-impl/${project.version}/xml/config</configfile>
   </feature>
   <feature name='odl-dsbenchmark-impl-rest' version='${project.version}' description='OpenDaylight :: dsbenchmark :: impl :: REST '>
     <feature version="${project.version}">odl-dsbenchmark-impl</feature>
