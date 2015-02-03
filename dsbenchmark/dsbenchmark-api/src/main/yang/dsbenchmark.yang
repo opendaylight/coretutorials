@@ -53,36 +53,20 @@ module dsbenchmark {
             }
             config false;
             mandatory true;
+            description
+                "Indicates whether a test run is in progress; only one test can run at a time";
         }
         leaf testsCompleted {
             type uint32;
             default 1;
             description
-              "The time it took to execute the last test";
-          }
-        leaf lastExecTime {
-            type uint32;
-            default 1;
-            description
-              "The time it took to execute the last test";
-          }
-        leaf lastExecTxRate {
-            type uint32;
-            default 1;
-            description
-              "The time it took to execute the last test";
-          }
-        leaf lastExecDataRate {
-            type uint32;
-            default 1;
-            description
-              "The rate (elements/sec)";
+                "Number of completed test runs";
           }
     }
 
     rpc start-test {
         description
-          "Start a new test, if a test is not already underway.";
+          "Start a new data store write test run";
 
         input {
             leaf operation {
@@ -96,12 +80,12 @@ module dsbenchmark {
                     enum "MERGE" {
                         value 2;
                         description
-                          "The merge operation.";
+                          "The merge operation";
                     }
                     enum "DUMP" {
                         value 3;
                         description
-                            "Dump the whole list into the data store in a single put";
+                            "Dump the whole list into the data store in a single put and a single commit";
                     }
                     enum "DELETE" {
                         value 4;
@@ -110,7 +94,7 @@ module dsbenchmark {
                     }
                 }
                 description
-                    "Type of operation to benchmark";
+                    "Type of the transaction operation to benchmark";
             }
 
             leaf data-format {
@@ -124,7 +108,7 @@ module dsbenchmark {
                     }
                 }
                 description
-                    "Data format - can be either binding-aware or binding-independent";
+                    "Data format:-binding-aware or binding-independent";
                }
 
             leaf outerElements {
@@ -143,7 +127,7 @@ module dsbenchmark {
                 type uint32;
                 default 1;
                 description
-                  "Number of tx.put (write) operations per transaction (i.e. per commit)";
+                  "Number of write operations (PUT, MERGE, or DELETE) per transaction submit";
               }
         }
         output {
@@ -161,31 +145,31 @@ module dsbenchmark {
                     }
                 }
                 description
-                    "Test result";
+                    "Indicates whether the test finished successfuly";
                }
             leaf listBuildTime {
                 type uint32;
                 default 1;
                 description
-                  "The time it took to execute the last test";
+                  "The time it took to build the list of lists";
               }
             leaf execTime {
                 type uint32;
                 default 1;
                 description
-                  "The time it took to execute the last test";
+                  "The time it took to execute all transactions";
               }
             leaf txOk {
                 type uint32;
                 default 1;
                 description
-                  "The time it took to execute the last test";
+                  "The number of successful transactions";
               }
             leaf txError {
                 type uint32;
                 default 1;
                 description
-                  "The rate (elements/sec)";
+                  "The number of failed transactions";
               }
 
         }
@@ -193,6 +177,6 @@ module dsbenchmark {
 
     rpc cleanup-store {
         description
-          "Clean up any data left behind by a previous test";
+          "Delete data in the test-exec container that may have been left behind from a previous test run";
     }
 }
