@@ -10,6 +10,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
     <groupId>org.opendaylight.odlparent</groupId>
     <artifactId>features-parent</artifactId>
     <version>1.5.0-SNAPSHOT</version>
+    <relativePath/>
   </parent>
   <groupId>org.opendaylight.coretutorials</groupId>
   <artifactId>hello-features</artifactId>
@@ -61,12 +62,12 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>${groupId}</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>hello-impl</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>${groupId}</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>hello-api</artifactId>
       <version>${project.version}</version>
     </dependency>
