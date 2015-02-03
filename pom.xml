@@ -22,9 +22,10 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   <prerequisites>
     <maven>3.1.1</maven>
   </prerequisites>
-  <!-- add modules here
+
   <modules>
     <module>hello</module>
+    <module>dsbenchmark</module>
   </modules>
-  -->
+
 </project>
