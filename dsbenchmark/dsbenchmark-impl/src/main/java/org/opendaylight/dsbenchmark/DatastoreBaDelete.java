@@ -72,6 +72,7 @@ public class DatastoreBaDelete implements DatastoreWrite {
     public void createList(StartTestInput input) {
         LOG.info("DatastoreDelete: creating data in the data store");
         DatastoreBaDump dd = new DatastoreBaDump(input, dataBroker);
+        dd.createList(input);
         dd.writeList();
     }
 
