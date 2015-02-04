@@ -26,7 +26,6 @@ public abstract class DatastoreBaAbstractWrite implements DatastoreWrite {
     private long putsPerTx;
     protected int txOk = 0;
     protected int txError = 0;
-    private long listBuildTime;
 
     abstract protected void txOperation(WriteTransaction tx,
                                         LogicalDatastoreType dst, 
@@ -36,8 +35,12 @@ public abstract class DatastoreBaAbstractWrite implements DatastoreWrite {
  public DatastoreBaAbstractWrite(StartTestInput input, DataBroker dataBroker) {
         this.putsPerTx = input.getPutsPerTx();
         this.dataBroker = dataBroker;
-        this.list = buildOuterList(input);
     }
+
+     @Override
+     public void createList(StartTestInput input) {
+         list = buildOuterList(input.getOuterElements().intValue(), input.getInnerElements().intValue());
+     }
 
     @Override
     public void writeList() {
@@ -81,19 +84,15 @@ public abstract class DatastoreBaAbstractWrite implements DatastoreWrite {
         return txOk;
     }
 
-    private List<OuterList> buildOuterList( StartTestInput input ) {
-        long startTime = System.nanoTime();
-
-        List<OuterList> outerList = new ArrayList<OuterList>(input.getOuterElements().intValue());
-        for( int j = 0; j < input.getOuterElements().intValue(); j++ ) {
+    private List<OuterList> buildOuterList(int outerElements, int innerElements) {
+        List<OuterList> outerList = new ArrayList<OuterList>(outerElements);
+        for (int j = 0; j < outerElements; j++) {
             outerList.add(new OuterListBuilder()
                                 .setId( j )
-                                .setInnerList( buildInnerList( j, input.getInnerElements().intValue()) )
+                                .setInnerList(buildInnerList(j, innerElements))
                                 .setKey(new OuterListKey( j ))
-                                .build() );
+                                .build());
         }
-        long endTime = System.nanoTime();
-        listBuildTime =  (endTime - startTime )/1000000;
 
         return outerList;
     }
@@ -113,13 +112,6 @@ public abstract class DatastoreBaAbstractWrite implements DatastoreWrite {
         }
 
         return innerList;
-    }
-
-    /**
-     * @return the listBuildTime
-     */
-    public long getListBuildTime() {
-        return listBuildTime;
     }
 
 }
