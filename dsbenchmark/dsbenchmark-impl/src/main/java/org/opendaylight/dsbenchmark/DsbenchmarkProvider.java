@@ -96,12 +96,19 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
         // Get the appropriate writer based on operation type and data format
         DatastoreWrite dsWriter = getDatastoreWrite(input);
 
+        long startTime, endTime, listCreateTime, execTime;
+        
+        startTime = System.nanoTime();
+        dsWriter.createList(input);;
+        endTime = System.nanoTime();
+        listCreateTime = (endTime - startTime) / 1000000;
+
         // Run the tests
-        long startTime, endTime;
         try {
             startTime = System.nanoTime();
             dsWriter.writeList();
             endTime = System.nanoTime();
+            execTime = (endTime - startTime) / 1000000;
 
             this.testsCompleted++;
 
@@ -119,8 +126,8 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
 
         StartTestOutput output = new StartTestOutputBuilder()
                                         .setStatus(StartTestOutput.Status.OK)
-                                        .setListBuildTime(dsWriter.getListBuildTime())
-                                        .setExecTime((endTime - startTime) / 1000000)
+                                        .setListBuildTime(listCreateTime)
+                                        .setExecTime(execTime)
                                         .setTxOk((long)dsWriter.getTxOk())
                                         .setTxError((long)dsWriter.getTxError())
                                         .build();
