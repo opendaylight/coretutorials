@@ -19,17 +19,12 @@ public class DatastoreBaDelete implements DatastoreWrite {
     private long outerElements;
     private int txOk = 0;
     private int txError = 0;
-    private long listBuildTime;
 
     public DatastoreBaDelete(StartTestInput input, DataBroker dataBroker) {
         LOG.info("Creating DatastoreDelete, input: {}", input );
         this.putsPerTx = input.getPutsPerTx();
         this.outerElements = input.getOuterElements();
         this.dataBroker = dataBroker;
-        
-        DatastoreBaDump dd = new DatastoreBaDump(input, dataBroker);
-        dd.writeList();
-        this.listBuildTime = dd.getListBuildTime();
     }
 
     @Override
@@ -54,7 +49,6 @@ public class DatastoreBaDelete implements DatastoreWrite {
                     putCnt = 0;
                 }
             }
-
             if (putCnt != 0) {
                 try {
                     tx.submit().checkedGet();
@@ -75,8 +69,10 @@ public class DatastoreBaDelete implements DatastoreWrite {
     }
 
     @Override
-    public long getListBuildTime() {
-        return listBuildTime;
+    public void createList(StartTestInput input) {
+        LOG.info("DatastoreDelete: creating data in the data store");
+        DatastoreBaDump dd = new DatastoreBaDump(input, dataBroker);
+        dd.writeList();
     }
 
 }

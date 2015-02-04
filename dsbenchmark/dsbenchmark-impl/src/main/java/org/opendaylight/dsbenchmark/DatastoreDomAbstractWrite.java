@@ -29,13 +29,12 @@ public abstract class DatastoreDomAbstractWrite implements DatastoreWrite {
     private static final org.opendaylight.yangtools.yang.common.QName IL_VALUE = QName.create(InnerList.QNAME, "value");
 
     // Outer List Qname identifier for yang model's 'id'
-    private static final org.opendaylight.yangtools.yang.common.QName OL_ID = QName.create(InnerList.QNAME, "id");
+    private static final org.opendaylight.yangtools.yang.common.QName OL_ID = QName.create(OuterList.QNAME, "id");
 
     // Statistics
     private long putsPerTx;
     protected int txOk = 0;
     protected int txError = 0;
-    private long listBuildTime;
 
     private final DOMDataBroker domDataBroker;
     List<MapEntryNode> list;
@@ -48,7 +47,11 @@ public abstract class DatastoreDomAbstractWrite implements DatastoreWrite {
     public DatastoreDomAbstractWrite(StartTestInput input, DOMDataBroker domDataBroker) {
         this.domDataBroker = domDataBroker;
         this.putsPerTx = input.getPutsPerTx();
-        this.list = buildOuterList(input);
+    }
+
+    @Override
+    public void createList(StartTestInput input) {
+        list = buildOuterList(input.getOuterElements().intValue(), input.getInnerElements().intValue());
     }
 
     @Override
@@ -96,19 +99,15 @@ public abstract class DatastoreDomAbstractWrite implements DatastoreWrite {
         return txOk;
     }
 
-    private List<MapEntryNode> buildOuterList( StartTestInput input ) {
-        long startTime = System.nanoTime();
-
-        List<MapEntryNode> outerList = new ArrayList<MapEntryNode>(input.getOuterElements().intValue());
-        for( int j = 0; j < input.getOuterElements().intValue(); j++ ) {
+    private List<MapEntryNode> buildOuterList(int outerElements, int innerElements) {
+        List<MapEntryNode> outerList = new ArrayList<MapEntryNode>(outerElements);
+        for (int j = 0; j < outerElements; j++) {
             outerList.add(ImmutableNodes.mapEntryBuilder()
                                 .withNodeIdentifier(new NodeIdentifierWithPredicates(OuterList.QNAME, OL_ID, j))
                                 .withChild(ImmutableNodes.leafNode(OL_ID, j))
-                                .withChild(buildInnerList(j, input.getInnerElements().intValue())) 
+                                .withChild(buildInnerList(j, innerElements)) 
                                 .build());
         }
-        long endTime = System.nanoTime();
-        listBuildTime = (endTime - startTime )/1000000;
 
         return outerList;
     }
@@ -127,13 +126,6 @@ public abstract class DatastoreDomAbstractWrite implements DatastoreWrite {
                                 .build());
         }
         return innerList.build();
-    }
-
-    /**
-     * @return the listBuildTime
-     */
-    public long getListBuildTime() {
-        return listBuildTime;
     }
 
 }
