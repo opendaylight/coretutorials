@@ -27,6 +27,10 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
             <type xmlns:dom="urn:opendaylight:params:xml:ns:yang:controller:md:sal:dom">dom:dom-async-data-broker</type>
             <name>inmemory-data-broker</name>
           </dom-data-broker>
+          <binding-data-broker>
+            <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-async-data-broker</type>
+            <name>pingpong-binding-data-broker</name>
+          </binding-data-broker>
         </module>
       </modules>
     </data>
