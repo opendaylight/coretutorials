@@ -39,6 +39,14 @@ module dsbenchmark-impl {
                     }
                 }
             }
+            container binding-data-broker {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity md-sal-binding:binding-async-data-broker;
+                    }
+                }
+            }
         }
     }
 }

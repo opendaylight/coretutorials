@@ -3,9 +3,13 @@ package org.opendaylight.dsbenchmark;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.StartTestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.TestExec;
@@ -19,20 +23,30 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class DatastoreBaAbstractWrite implements DatastoreWrite {
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+
+/**
+ * @author jmedved
+ *
+ */
+public abstract class DatastoreBaAbstractWrite implements DatastoreWrite, TransactionChainListener {
     private static final Logger LOG = LoggerFactory.getLogger(DatastoreBaAbstractWrite.class);
-    protected DataBroker dataBroker;
+    private final long putsPerTx;
+    protected final DataBroker dataBroker;
+    private BindingTransactionChain chain;
     protected List<OuterList> list;
-    private long putsPerTx;
     protected int txOk = 0;
     protected int txError = 0;
+    private int txSubmitted = 0;
+
 
     abstract protected void txOperation(WriteTransaction tx,
                                         LogicalDatastoreType dst, 
                                         InstanceIdentifier<OuterList> iid, 
                                         OuterList elem);
 
- public DatastoreBaAbstractWrite(StartTestInput input, DataBroker dataBroker) {
+    public DatastoreBaAbstractWrite(StartTestInput input, DataBroker dataBroker) {
         this.putsPerTx = input.getPutsPerTx();
         this.dataBroker = dataBroker;
     }
@@ -42,9 +56,13 @@ public abstract class DatastoreBaAbstractWrite implements DatastoreWrite {
          list = buildOuterList(input.getOuterElements().intValue(), input.getInnerElements().intValue());
      }
 
+    /* (non-Javadoc)
+     * @see org.opendaylight.dsbenchmark.DatastoreWrite#writeList()
+     */
     @Override
     public void writeList() {
-        WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
+       chain = dataBroker.createTransactionChain(this);
+       WriteTransaction tx = chain.newWriteOnlyTransaction();
         long putCnt = 0;
 
         for (OuterList element : this.list) {
@@ -53,25 +71,60 @@ public abstract class DatastoreBaAbstractWrite implements DatastoreWrite {
             txOperation(tx, LogicalDatastoreType.CONFIGURATION, iid, element);
             putCnt++;
             if (putCnt == putsPerTx) {
-                try {
-                    tx.submit().checkedGet();
-                    txOk++;
-                } catch (TransactionCommitFailedException e) {
-                    LOG.error("Transaction failed: {}", e.toString());
-                    txError++;
-                }
-                tx = dataBroker.newWriteOnlyTransaction();
+                txSubmitted++;
+                Futures.addCallback(tx.submit(), new FutureCallback<Void>() {
+                    @Override
+                    public void onSuccess(final Void result) {
+                        txOk++;
+                        if (txOk + txError >= txSubmitted) {
+                            synchronized(this) {
+                                this.notify();
+                            }
+                        }
+                    }
+                    @Override
+                    public void onFailure(final Throwable t) {
+                        LOG.error("1-Transaction error: {}", t);
+                        txError++;
+                        if (txOk + txError >= txSubmitted) {
+                            synchronized(this) {
+                                this.notify();
+                            }
+                        }
+                    }
+                });
+                tx = chain.newWriteOnlyTransaction();
                 putCnt = 0;
             }
         }
 
-        if (putCnt != 0) {
-            try {
-                tx.submit().checkedGet();
-            } catch (TransactionCommitFailedException e) {
-                LOG.error("Transaction failed: {}", e.toString());
+        // Submit the outstanding transaction even if it's empty and wait for it to finish
+        // We need to empty the chain before closing it
+        try {
+            if (putCnt > 0) {
+                txSubmitted++;
+            }
+            tx.submit().checkedGet();
+        } catch (TransactionCommitFailedException e) {
+            LOG.error("Transaction failed: {}", e.toString());
+        }
+        try {
+            chain.close();
+        }
+        catch (IllegalStateException e){
+            LOG.error("Transaction close failed,", e);
+        }
+        if (txOk + txError < txSubmitted) {
+            LOG.info("Chain closed, waiting for {} transaction to complete", (txSubmitted - (txOk + txError)));
+            synchronized(this) {
+                try {
+                    this.wait(3000);
+                } catch (InterruptedException e) {
+                    LOG.error("Wait for transactions to complete interrupted,", e);
+                }
             }
         }
+        LOG.info("Transactions: submitted {}, completed {}", txSubmitted, (txOk + txError));
     }
 
     @Override
@@ -82,6 +135,24 @@ public abstract class DatastoreBaAbstractWrite implements DatastoreWrite {
     @Override
     public int getTxOk() {
         return txOk;
+    }
+
+    /* (non-Javadoc)
+     * @see org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener#onTransactionChainFailed(org.opendaylight.controller.md.sal.common.api.data.TransactionChain, org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction, java.lang.Throwable)
+     */
+    @Override
+    public void onTransactionChainFailed(TransactionChain<?, ?> chain,
+            AsyncTransaction<?, ?> transaction, Throwable cause) {
+        LOG.error("Broken chain in DatastoreBaAbstractWrite, transaction {}, cause {}",
+                transaction.getIdentifier(), cause);
+    }
+
+    /* (non-Javadoc)
+     * @see org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener#onTransactionChainSuccessful(org.opendaylight.controller.md.sal.common.api.data.TransactionChain)
+     */
+    @Override
+    public void onTransactionChainSuccessful(TransactionChain<?, ?> arg0) {
+        LOG.info("DatastoreBaAbstractWrite closed successfully");
     }
 
     private List<OuterList> buildOuterList(int outerElements, int innerElements) {
