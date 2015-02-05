@@ -44,24 +44,23 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
     private static final InstanceIdentifier<TestExec> TEST_EXEC_IID = InstanceIdentifier.builder(TestExec.class).build();
     private static final InstanceIdentifier<TestStatus> TEST_STATUS_IID = InstanceIdentifier.builder(TestStatus.class).build();
     private RpcRegistration<DsbenchmarkService> dstReg;
-    private DataBroker dataBroker;
-    private DOMDataBroker domDataBroker;
+    private final DataBroker bindingDataBroker;
+    private final DOMDataBroker domDataBroker;
 
     private final AtomicReference<ExecStatus> execStatus = new AtomicReference<ExecStatus>( ExecStatus.Idle );
     private long testsCompleted = 0;
 
-    public DsbenchmarkProvider(DOMDataBroker domDataBroker) {
+    public DsbenchmarkProvider(DOMDataBroker domDataBroker, DataBroker bindingDataBroker) {
         // We have to get the DOMDataBroker via the constructor, 
         // since we can't get it from the session 
+        this.bindingDataBroker = bindingDataBroker;
         this.domDataBroker = domDataBroker;
     }
 
     @Override
     public void onSessionInitiated(ProviderContext session) {
-        this.dataBroker = session.getSALService(DataBroker.class);
         this.dstReg = session.addRpcImplementation( DsbenchmarkService.class, this );
         setTestOperData(this.execStatus.get(), testsCompleted);
-
         LOG.info("DsbenchmarkProvider Session Initiated");
     }
 
@@ -141,7 +140,7 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
                                         .setTestsCompleted(tstCompl)
                                         .build();
 
-        WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
+        WriteTransaction tx = bindingDataBroker.newWriteOnlyTransaction();
         tx.put(LogicalDatastoreType.OPERATIONAL, TEST_STATUS_IID, status);
 
         try {
@@ -158,7 +157,7 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
                                 .setOuterList(Collections.<OuterList>emptyList())
                                 .build();
 
-        WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
+        WriteTransaction tx = bindingDataBroker.newWriteOnlyTransaction();
         tx.put(LogicalDatastoreType.CONFIGURATION, TEST_EXEC_IID, data);
         try {
             tx.submit().checkedGet();
@@ -176,19 +175,19 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
 
         final DatastoreWrite retVal;
         if ( oper == StartTestInput.Operation.DUMP) {
-            retVal = new DatastoreBaDump(input, dataBroker);
+            retVal = new DatastoreBaDump(input, bindingDataBroker);
         } else if ( oper == StartTestInput.Operation.PUT ) {
             retVal = (format ==  StartTestInput.DataFormat.BINDINGAWARE ? 
-                            new DatastoreBaPut(input, dataBroker) : 
+                            new DatastoreBaPut(input, bindingDataBroker) : 
                             new DatastoreDomPut(input, domDataBroker));
         }
         else if ( oper == StartTestInput.Operation.MERGE ) {
             retVal = (format ==  StartTestInput.DataFormat.BINDINGAWARE ? 
-                            new DatastoreBaMerge(input, dataBroker) :
+                            new DatastoreBaMerge(input, bindingDataBroker) :
                             new DatastoreDomMerge(input, domDataBroker));
         }
         else if ( oper == StartTestInput.Operation.DELETE ) {
-            retVal = new DatastoreBaDelete(input, dataBroker);
+            retVal = new DatastoreBaDelete(input, bindingDataBroker);
         } else {
             throw new IllegalArgumentException("Unsupported test type");
         }
