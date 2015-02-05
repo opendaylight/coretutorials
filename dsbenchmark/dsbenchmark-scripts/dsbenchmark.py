@@ -40,15 +40,15 @@ def send_test_request(operation, data_fmt, outer_elem, inner_elem, puts_per_tx):
 
 
 def print_results(run_type, idx, res):
-    print '%s #%d: status: %s, listBuildTime %d, testExecTime %d, txOk %d' % \
-          (run_type, idx, res[u'status'], res[u'listBuildTime'], res[u'execTime'], res[u'txOk'])
+    print '%s #%d: status: %s, listBuildTime %d, testExecTime %d, txOk %d, txError %d' % \
+          (run_type, idx, res[u'status'], res[u'listBuildTime'], res[u'execTime'], res[u'txOk'], res[u'txError'])
 
 
 def run_test(warmup_runs, test_runs, operation, data_fmt, outer_elem, inner_elem, puts_per_tx):
     total_build_time = 0.0
     total_exec_time = 0.0
 
-    print 'Openration: {0:s}, Data Format: {1:s}, Outer/Inner Elements: {2:d}/{3:d}, PutsPerTx' \
+    print 'Operation: {0:s}, Data Format: {1:s}, Outer/Inner Elements: {2:d}/{3:d}, PutsPerTx {4:d}' \
         .format(operation, data_fmt, outer_elem, inner_elem, puts_per_tx)
     for idx in range(warmup_runs):
         res = send_test_request(operation, data_fmt, outer_elem, inner_elem, puts_per_tx)
@@ -68,7 +68,7 @@ if __name__ == "__main__":
     # Test Parameters
     TOTAL_ELEMENTS = 100000
     INNER_ELEMENTS = [1, 10, 100, 1000, 10000, 100000]
-    PUTS_PER_TX = [1, 10, 100, 1000, 10000, 1000000]
+    WRITES_PER_TX = [1, 10, 100, 1000, 10000, 100000]
     OPERATIONS = ["PUT", "MERGE", "DELETE"]
     DATA_FORMATS = ["BINDING-AWARE", "BINDING-INDEPENDENT"]
 
@@ -85,25 +85,39 @@ if __name__ == "__main__":
 
     print send_test_request("PUT", "BINDING-AWARE", 10, 10, 1)
 
-    for fmt in DATA_FORMATS:
-        for oper in OPERATIONS:
-            for elem in INNER_ELEMENTS:
-                avg_build_time, avg_exec_time = \
-                    run_test(WARMUP_RUNS, TEST_RUNS, oper, fmt, TOTAL_ELEMENTS / elem, elem, 1)
-                headers.append(elem)
-                build_times.append(avg_build_time)
-                exec_times.append(avg_exec_time)
-                total_times.append(avg_build_time + avg_exec_time)
-
-    print build_times
-    print exec_times
-    print total_times
-
     f = open('test.csv', 'wt')
     try:
         writer = csv.writer(f)
-        for i in range(len(build_times)):
-            writer.writerow((headers[i], build_times[i], exec_times[i], build_times[i] + exec_times[i]))
+
+        for fmt in DATA_FORMATS:
+            print '***************************************'
+            print 'Data format: %s' % fmt
+            print '***************************************'
+            writer.writerow((('%s:' % fmt),''))
+
+            for oper in OPERATIONS:
+                print 'Operation: %s' % oper
+                writer.writerow(('', '%s:' % oper))
+
+                for elem in INNER_ELEMENTS:
+                    avg_build_time, avg_exec_time = \
+                        run_test(WARMUP_RUNS, TEST_RUNS, oper, fmt, TOTAL_ELEMENTS / elem, elem, 1)
+                    writer.writerow(('', '', elem, avg_build_time, avg_exec_time, (avg_build_time + avg_exec_time)))
+
+        for fmt in DATA_FORMATS:
+            print '***************************************'
+            print 'Data format: %s' % fmt
+            print '***************************************'
+            writer.writerow((('%s:' % fmt),''))
+
+            for oper in OPERATIONS:
+                print 'Operation: %s' % oper
+                writer.writerow(('', '%s:' % oper))
+
+                for wtx in WRITES_PER_TX:
+                    avg_build_time, avg_exec_time = \
+                        run_test(WARMUP_RUNS, TEST_RUNS, oper, fmt, TOTAL_ELEMENTS, 1, wtx)
+                    writer.writerow(('', '', wtx, avg_build_time, avg_exec_time, (avg_build_time + avg_exec_time)))
+
     finally:
         f.close()
-
