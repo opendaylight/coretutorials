@@ -59,11 +59,9 @@ public abstract class DatastoreDomAbstractWrite implements DatastoreWrite {
         DOMDataWriteTransaction tx = domDataBroker.newWriteOnlyTransaction();
         long putCnt = 0;
 
+        YangInstanceIdentifier pid = YangInstanceIdentifier.builder().node(TestExec.QNAME).node(OuterList.QNAME).build();
         for (MapEntryNode element : this.list) {
-            YangInstanceIdentifier yid = YangInstanceIdentifier.builder().node(TestExec.QNAME)
-                                                .node(OuterList.QNAME)
-                                                .nodeWithKey(OuterList.QNAME, element.getIdentifier().getKeyValues())
-                                                .build();            
+            YangInstanceIdentifier yid = pid.node(new NodeIdentifierWithPredicates(OuterList.QNAME, element.getIdentifier().getKeyValues()));
             txOperation(tx, LogicalDatastoreType.CONFIGURATION, yid, element);
             putCnt++;
             if (putCnt == putsPerTx) {
@@ -71,7 +69,7 @@ public abstract class DatastoreDomAbstractWrite implements DatastoreWrite {
                     tx.submit().checkedGet();
                     txOk++;
                 } catch (TransactionCommitFailedException e) {
-                    LOG.error("Transaction failed: {}", e.toString());
+                    LOG.error("Transaction failed", e);
                     txError++;
                 }
                 tx = domDataBroker.newWriteOnlyTransaction();
@@ -83,7 +81,7 @@ public abstract class DatastoreDomAbstractWrite implements DatastoreWrite {
             try {
                 tx.submit().checkedGet();
             } catch (TransactionCommitFailedException e) {
-                LOG.error("Transaction failed: {}", e.toString());
+                LOG.error("Transaction failed", e);
             }
         }
 
