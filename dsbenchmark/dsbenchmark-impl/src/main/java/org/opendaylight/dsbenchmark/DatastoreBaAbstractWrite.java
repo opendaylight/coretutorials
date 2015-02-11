@@ -2,7 +2,6 @@ package org.opendaylight.dsbenchmark;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -100,14 +99,12 @@ public abstract class DatastoreBaAbstractWrite implements DatastoreWrite {
     private List<InnerList> buildInnerList( int index, int elements ) {
         List<InnerList> innerList = new ArrayList<InnerList>( elements );
 
+        final String itemStr = "Item-" + String.valueOf(index) + "-";
         for( int i = 0; i < elements; i++ ) {
             innerList.add(new InnerListBuilder()
                                 .setKey( new InnerListKey( i ) )
                                 .setName(i)
-                                .setValue( "Item-"
-                                           + String.valueOf( index )
-                                           + "-"
-                                           + String.valueOf( i ) )
+                                .setValue( itemStr + String.valueOf( i ) )
                                 .build());
         }
 

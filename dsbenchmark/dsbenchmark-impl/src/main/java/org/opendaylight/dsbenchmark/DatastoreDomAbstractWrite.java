@@ -113,14 +113,12 @@ public abstract class DatastoreDomAbstractWrite implements DatastoreWrite {
     private MapNode buildInnerList( int index, int elements ) {
         CollectionNodeBuilder<MapEntryNode, MapNode> innerList = ImmutableNodes.mapNodeBuilder(InnerList.QNAME);
 
+        final String itemStr = "Item-" + String.valueOf(index) + "-";
         for( int i = 0; i < elements; i++ ) {
             innerList.addChild(ImmutableNodes.mapEntryBuilder()
                                 .withNodeIdentifier(new NodeIdentifierWithPredicates(InnerList.QNAME, IL_NAME, i))
                                 .withChild(ImmutableNodes.leafNode(IL_NAME, i))
-                                .withChild(ImmutableNodes.leafNode(IL_VALUE, "Item-"
-                                                                             + String.valueOf(index)
-                                                                             + "-"
-                                                                             + String.valueOf(i)))
+                                .withChild(ImmutableNodes.leafNode(IL_VALUE, itemStr + String.valueOf(i)))
                                 .build());
         }
         return innerList.build();
