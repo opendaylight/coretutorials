@@ -4,9 +4,35 @@ __copyright__ = "Copyright(c) 2015, Cisco Systems, Inc."
 __license__ = "New-style BSD"
 __email__ = "jmedved@cisco.com"
 
+import argparse
 import requests
 import json
 import csv
+
+parser = argparse.ArgumentParser(description='Datastore Benchmarking'
+                                             ''
+                                             'See documentation @:'
+                                             'https://wiki.opendaylight.org/view/Controller_Core_Functionality_Tutorials:Tutorials:Data_Store_Benchmarking_and_Data_Access_Patterns'
+                                             '')
+
+# Host Config
+parser.add_argument("--host", default="localhost", help="the IP of the target host to initiate benchmark testing on.")
+parser.add_argument("--port", type=int, default=8181, help="the port number of target host.")
+
+# Test Parameters
+parser.add_argument("--total", type=int, default=100000, help="total number of elements to process.")
+parser.add_argument("--inner", type=int, default=[1, 10, 100, 1000, 10000, 100000], help="number of inner elements to process.")
+parser.add_argument("--ops", type=int, default=[1, 10, 100, 1000, 10000, 100000], help="number of operations per transaction.")
+
+parser.add_argument("--optype", choices=["PUT", "MERGE", "DELETE"], nargs='+', default=["PUT", "MERGE", "DELETE"], help="list of the types operations to execute.")
+parser.add_argument("--format", choices=["BINDING-AWARE", "BINDING-INDEPENDENT"], nargs='+', default=["BINDING-AWARE", "BINDING-INDEPENDENT"], help="list of data formats to execute.")
+
+parser.add_argument("--warmup", type=int, default=10, help="number of warmup runs before official test runs")
+parser.add_argument("--runs", type=int, default=10, help="number of official test runs. Note: Reported results are based on these runs.")
+args = parser.parse_args()
+
+
+BASE_URL = "http://%s:%d/restconf/" % (args.host, args.port)
 
 
 def send_clear_request():
@@ -15,7 +41,7 @@ def send_clear_request():
     and clear the 'test-executing' flag.
     :return: None
     """
-    url = "http://localhost:8181/restconf/operations/dsbenchmark:cleanup-store"
+    url = BASE_URL + "operations/dsbenchmark:cleanup-store"
 
     r = requests.post(url, stream=False, auth=('admin', 'admin'))
     print r.status_code
@@ -33,7 +59,7 @@ def send_test_request(operation, data_fmt, outer_elem, inner_elem, ops_per_tx):
     :param ops_per_tx: Number of operations (PUTs, MERGEs or DELETEs) on each transaction
     :return:
     """
-    url = "http://localhost:8181/restconf/operations/dsbenchmark:start-test"
+    url = BASE_URL + "operations/dsbenchmark:start-test"
     postheaders = {'content-type': 'application/json', 'Accept': 'application/json'}
 
     test_request_template = '''{
@@ -105,15 +131,15 @@ def run_test(warmup_runs, test_runs, operation, data_fmt, outer_elem, inner_elem
 if __name__ == "__main__":
 
     # Test Parameters
-    TOTAL_ELEMENTS = 100000
-    INNER_ELEMENTS = [1, 10, 100, 1000, 10000, 100000]
-    OPS_PER_TX = [1, 10, 100, 1000, 10000, 100000]
-    OPERATIONS = ["PUT", "MERGE", "DELETE"]
-    DATA_FORMATS = ["BINDING-AWARE", "BINDING-INDEPENDENT"]
+    TOTAL_ELEMENTS = args.total
+    INNER_ELEMENTS = args.inner
+    OPS_PER_TX = args.ops
+    OPERATIONS = args.optype
+    DATA_FORMATS = args.format
 
     # Iterations
-    WARMUP_RUNS = 10
-    TEST_RUNS = 10
+    WARMUP_RUNS = args.warmup
+    TEST_RUNS = args.runs
 
     # Clean up any data that may be present in the data store
     send_clear_request()
