@@ -1,4 +1,4 @@
-package org.opendaylight.dsbenchmark;
+package org.opendaylight.dsbenchmark.simpletx;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
@@ -9,21 +9,21 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DatastoreBaPut extends DatastoreBaAbstractWrite {
-    private static final Logger LOG = LoggerFactory.getLogger(DatastoreBaPut.class);
+public class SimpletxBaMerge extends SimpletxBaAbstractWrite {
+    private static final Logger LOG = LoggerFactory.getLogger(SimpletxBaMerge.class);
 
-    public DatastoreBaPut(StartTestInput input, DataBroker dataBroker) {
+    public SimpletxBaMerge(StartTestInput input, DataBroker dataBroker) {
         super(input, dataBroker);
-        LOG.info("Creating DatastoreBaPut, input: {}", input);
+        LOG.info("Creating DatastoreBaMerge, input: {}", input );
     }
 
     @Override
-    protected void txOperation(WriteTransaction tx, 
-                               LogicalDatastoreType dst,
+    protected void txOperation(WriteTransaction tx,
+                               LogicalDatastoreType dst, 
                                InstanceIdentifier<OuterList> iid, 
                                OuterList element) {
 
-        tx.put(LogicalDatastoreType.CONFIGURATION, iid, element);
+        tx.merge(LogicalDatastoreType.CONFIGURATION, iid, element);
     }
 
 }

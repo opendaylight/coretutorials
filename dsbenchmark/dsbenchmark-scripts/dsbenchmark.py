@@ -97,9 +97,9 @@ def print_results(run_type, idx, res):
 
 def run_test(warmup_runs, test_runs, operation, data_fmt, outer_elem, inner_elem, ops_per_tx):
     """
-    Execute a single benchmark test with specified parameters. Performs the JVM 'wamrup'
-    before the test, executes the specified number of dsbenchmark test runs and computes the
-    average time for building the test data (a list of lists) and the average time for the
+    Execute a benchmark test. Performs the JVM 'wamrup' before the test, runs
+    the specified number of dsbenchmark test runs and computes the average time
+    for building the test data (a list of lists) and the average time for the
     execution of the test.
     :param warmup_runs: # of warmup runs
     :param test_runs: # of test runs
@@ -122,8 +122,8 @@ def run_test(warmup_runs, test_runs, operation, data_fmt, outer_elem, inner_elem
     for idx in range(test_runs):
         res = send_test_request(operation, data_fmt, outer_elem, inner_elem, ops_per_tx)
         print_results('TEST', idx, res)
-        total_build_time += res[u'listBuildTime']
-        total_exec_time += res[u'execTime']
+        total_build_time += res['listBuildTime']
+        total_exec_time += res['execTime']
 
     return total_build_time / test_runs, total_exec_time / test_runs
 
@@ -154,7 +154,6 @@ if __name__ == "__main__":
     try:
         writer = csv.writer(f)
 
-        # Determine the impact of data format and data structure om performance.
         # Iterate over all data formats, operation types, and different list-of-lists layouts; always
         # use a single operation in each transaction
         for fmt in DATA_FORMATS:
@@ -170,10 +169,8 @@ if __name__ == "__main__":
                 for elem in INNER_ELEMENTS:
                     avg_build_time, avg_exec_time = \
                         run_test(WARMUP_RUNS, TEST_RUNS, oper, fmt, TOTAL_ELEMENTS / elem, elem, 1)
-                    e_label = '%d/%d' % (TOTAL_ELEMENTS / elem, elem)
-                    writer.writerow(('', '', e_label, avg_build_time, avg_exec_time, (avg_build_time + avg_exec_time)))
+                    writer.writerow(('', '', elem, avg_build_time, avg_exec_time, (avg_build_time + avg_exec_time)))
 
-        # Determine the impact of number of writes per transaction om performance.
         # Iterate over all data formats, operation types, and operations-per-transaction; always
         # use a list of lists where the inner list has one parameter
         for fmt in DATA_FORMATS:
