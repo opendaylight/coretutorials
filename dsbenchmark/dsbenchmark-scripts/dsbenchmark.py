@@ -4,9 +4,40 @@ __copyright__ = "Copyright(c) 2015, Cisco Systems, Inc."
 __license__ = "New-style BSD"
 __email__ = "jmedved@cisco.com"
 
+import argparse
 import requests
 import json
 import csv
+
+parser = argparse.ArgumentParser(description='Datastore Benchmarking'
+                                             ''
+                                             'See documentation @:'
+                                             'https://wiki.opendaylight.org/view/Controller_Core_Functionality_Tutorials:Tutorials:Data_Store_Benchmarking_and_Data_Access_Patterns'
+                                             '')
+
+# Host Config
+parser.add_argument("--host", default="localhost", help="the IP of the target host to initiate benchmark testing on.")
+parser.add_argument("--port", type=int, default=8181, help="the port number of target host.")
+
+# Test Parameters
+parser.add_argument("--total", type=int, default=100000, help="total number of elements to process.")
+parser.add_argument("--inner", type=int, default=[1, 10, 100, 1000, 10000, 100000],
+                    help="number of inner elements to process.")
+parser.add_argument("--ops", type=int, default=[1, 10, 100, 1000, 10000, 100000],
+                    help="number of operations per transaction.")
+
+parser.add_argument("--optype", choices=["PUT", "MERGE", "DELETE"], nargs='+',
+                    default=["PUT", "MERGE", "DELETE"], help="list of the types operations to execute.")
+parser.add_argument("--format", choices=["BINDING-AWARE", "BINDING-INDEPENDENT"], nargs='+',
+                    default=["BINDING-AWARE", "BINDING-INDEPENDENT"], help="list of data formats to execute.")
+
+parser.add_argument("--warmup", type=int, default=10, help="number of warmup runs before official test runs")
+parser.add_argument("--runs", type=int, default=10,
+                    help="number of official test runs. Note: Reported results are based on these runs.")
+args = parser.parse_args()
+
+
+BASE_URL = "http://%s:%d/restconf/" % (args.host, args.port)
 
 
 def send_clear_request():
@@ -15,7 +46,7 @@ def send_clear_request():
     and clear the 'test-executing' flag.
     :return: None
     """
-    url = "http://localhost:8181/restconf/operations/dsbenchmark:cleanup-store"
+    url = BASE_URL + "operations/dsbenchmark:cleanup-store"
 
     r = requests.post(url, stream=False, auth=('admin', 'admin'))
     print r.status_code
@@ -33,7 +64,7 @@ def send_test_request(operation, data_fmt, outer_elem, inner_elem, ops_per_tx):
     :param ops_per_tx: Number of operations (PUTs, MERGEs or DELETEs) on each transaction
     :return:
     """
-    url = "http://localhost:8181/restconf/operations/dsbenchmark:start-test"
+    url = BASE_URL + "operations/dsbenchmark:start-test"
     postheaders = {'content-type': 'application/json', 'Accept': 'application/json'}
 
     test_request_template = '''{
@@ -57,11 +88,11 @@ def send_test_request(operation, data_fmt, outer_elem, inner_elem, ops_per_tx):
 
 def print_results(run_type, idx, res):
     """
-    Prints results from a dsbenchmakr test run to console
+    Prints results from a dsbenchmark test run to console
     :param run_type: String parameter that can be used to identify the type of the
                      test run (e.g. WARMUP or TEST)
     :param idx: Index of the test run
-    :param res: Parsed json (disctionary) that was returned from a dsbenchmark
+    :param res: Parsed json (dictionary) that was returned from a dsbenchmark
                 test run
     :return: None
     """
@@ -71,11 +102,11 @@ def print_results(run_type, idx, res):
 
 def run_test(warmup_runs, test_runs, operation, data_fmt, outer_elem, inner_elem, ops_per_tx):
     """
-    Execute a benchmark test. Performs the JVM 'wamrup' before the test, runs
-    the specified number of dsbenchmark test runs and computes the average time
-    for building the test data (a list of lists) and the average time for the
+    Executes a single benchmark test with specified parameters. Performs the JVM 'warm-up'
+    before the test, executes the specified number of dsbenchmark test runs and computes the
+    average time for building the test data (a list of lists) and the average time for the
     execution of the test.
-    :param warmup_runs: # of warmup runs
+    :param warm-up_runs: # of warm-up runs
     :param test_runs: # of test runs
     :param operation: PUT, MERGE or DELETE
     :param data_fmt: BINDING-AWARE or BINDING-INDEPENDENT
@@ -96,8 +127,8 @@ def run_test(warmup_runs, test_runs, operation, data_fmt, outer_elem, inner_elem
     for idx in range(test_runs):
         res = send_test_request(operation, data_fmt, outer_elem, inner_elem, ops_per_tx)
         print_results('TEST', idx, res)
-        total_build_time += res['listBuildTime']
-        total_exec_time += res['execTime']
+        total_build_time += res[u'listBuildTime']
+        total_exec_time += res[u'execTime']
 
     return total_build_time / test_runs, total_exec_time / test_runs
 
@@ -105,29 +136,25 @@ def run_test(warmup_runs, test_runs, operation, data_fmt, outer_elem, inner_elem
 if __name__ == "__main__":
 
     # Test Parameters
-    TOTAL_ELEMENTS = 100000
-    INNER_ELEMENTS = [1, 10, 100, 1000, 10000, 100000]
-    OPS_PER_TX = [1, 10, 100, 1000, 10000, 100000]
-    OPERATIONS = ["PUT", "MERGE", "DELETE"]
-    DATA_FORMATS = ["BINDING-AWARE", "BINDING-INDEPENDENT"]
+    TOTAL_ELEMENTS = args.total
+    INNER_ELEMENTS = args.inner
+    OPS_PER_TX = args.ops
+    OPERATIONS = args.optype
+    DATA_FORMATS = args.format
 
     # Iterations
-    WARMUP_RUNS = 10
-    TEST_RUNS = 10
+    WARMUP_RUNS = args.warmup
+    TEST_RUNS = args.runs
 
     # Clean up any data that may be present in the data store
     send_clear_request()
-
-    headers = []
-    build_times = []
-    exec_times = []
-    total_times = []
 
     # Run the benchmark tests and collect data in a csv file for import into a graphing software
     f = open('test.csv', 'wt')
     try:
         writer = csv.writer(f)
 
+        # Determine the impact of data format and data structure om performance.
         # Iterate over all data formats, operation types, and different list-of-lists layouts; always
         # use a single operation in each transaction
         for fmt in DATA_FORMATS:
@@ -143,8 +170,10 @@ if __name__ == "__main__":
                 for elem in INNER_ELEMENTS:
                     avg_build_time, avg_exec_time = \
                         run_test(WARMUP_RUNS, TEST_RUNS, oper, fmt, TOTAL_ELEMENTS / elem, elem, 1)
-                    writer.writerow(('', '', elem, avg_build_time, avg_exec_time, (avg_build_time + avg_exec_time)))
+                    e_label = '%d/%d' % (TOTAL_ELEMENTS / elem, elem)
+                    writer.writerow(('', '', e_label, avg_build_time, avg_exec_time, (avg_build_time + avg_exec_time)))
 
+        # Determine the impact of number of writes per transaction om performance.
         # Iterate over all data formats, operation types, and operations-per-transaction; always
         # use a list of lists where the inner list has one parameter
         for fmt in DATA_FORMATS:
