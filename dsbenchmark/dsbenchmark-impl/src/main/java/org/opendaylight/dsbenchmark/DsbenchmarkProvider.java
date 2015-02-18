@@ -19,6 +19,12 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RpcRegistration;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
+import org.opendaylight.dsbenchmark.simpletx.SimpletxBaDelete;
+import org.opendaylight.dsbenchmark.simpletx.SimpletxBaDump;
+import org.opendaylight.dsbenchmark.simpletx.SimpletxBaMerge;
+import org.opendaylight.dsbenchmark.simpletx.SimpletxBaPut;
+import org.opendaylight.dsbenchmark.simpletx.SimpletxDomMerge;
+import org.opendaylight.dsbenchmark.simpletx.SimpletxDomPut;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.DsbenchmarkService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.StartTestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.StartTestOutput;
@@ -176,19 +182,19 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
 
         final DatastoreWrite retVal;
         if ( oper == StartTestInput.Operation.DUMP) {
-            retVal = new DatastoreBaDump(input, dataBroker);
+            retVal = new SimpletxBaDump(input, dataBroker);
         } else if ( oper == StartTestInput.Operation.PUT ) {
             retVal = (format ==  StartTestInput.DataFormat.BINDINGAWARE ? 
-                            new DatastoreBaPut(input, dataBroker) : 
-                            new DatastoreDomPut(input, domDataBroker));
+                            new SimpletxBaPut(input, dataBroker) : 
+                            new SimpletxDomPut(input, domDataBroker));
         }
         else if ( oper == StartTestInput.Operation.MERGE ) {
             retVal = (format ==  StartTestInput.DataFormat.BINDINGAWARE ? 
-                            new DatastoreBaMerge(input, dataBroker) :
-                            new DatastoreDomMerge(input, domDataBroker));
+                            new SimpletxBaMerge(input, dataBroker) :
+                            new SimpletxDomMerge(input, domDataBroker));
         }
         else if ( oper == StartTestInput.Operation.DELETE ) {
-            retVal = new DatastoreBaDelete(input, dataBroker);
+            retVal = new SimpletxBaDelete(input, dataBroker);
         } else {
             throw new IllegalArgumentException("Unsupported test type");
         }

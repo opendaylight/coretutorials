@@ -1,4 +1,4 @@
-package org.opendaylight.dsbenchmark;
+package org.opendaylight.dsbenchmark.simpletx;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
@@ -12,11 +12,11 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DatastoreBaDump extends DatastoreBaAbstractWrite{
-    private static final Logger LOG = LoggerFactory.getLogger(DatastoreBaDump.class);
+public class SimpletxBaDump extends SimpletxBaAbstractWrite{
+    private static final Logger LOG = LoggerFactory.getLogger(SimpletxBaDump.class);
     private static final InstanceIdentifier<TestExec> TEST_EXEC_IID = InstanceIdentifier.builder(TestExec.class).build();
 
-    public DatastoreBaDump(StartTestInput input, DataBroker dataBroker) {
+    public SimpletxBaDump(StartTestInput input, DataBroker dataBroker) {
         super(input, dataBroker);
         LOG.info("Creating DatastoreDump, input: {}", input );
     }

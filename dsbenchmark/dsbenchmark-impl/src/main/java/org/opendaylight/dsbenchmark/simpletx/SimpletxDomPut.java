@@ -1,4 +1,4 @@
-package org.opendaylight.dsbenchmark;
+package org.opendaylight.dsbenchmark.simpletx;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
@@ -9,10 +9,10 @@ import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DatastoreDomPut extends DatastoreDomAbstractWrite {
-    private static final Logger LOG = LoggerFactory.getLogger(DatastoreDomPut.class);
+public class SimpletxDomPut extends SimpletxDomAbstractWrite {
+    private static final Logger LOG = LoggerFactory.getLogger(SimpletxDomPut.class);
 
-    public DatastoreDomPut(StartTestInput input, DOMDataBroker domDataBroker) {
+    public SimpletxDomPut(StartTestInput input, DOMDataBroker domDataBroker) {
         super(input, domDataBroker);
         LOG.info("Creating DatastoreBiPut, input: {}", input);
     }
