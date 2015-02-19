@@ -20,11 +20,8 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderCo
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RpcRegistration;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.dsbenchmark.simpletx.SimpletxBaDelete;
-import org.opendaylight.dsbenchmark.simpletx.SimpletxBaDump;
-import org.opendaylight.dsbenchmark.simpletx.SimpletxBaMerge;
-import org.opendaylight.dsbenchmark.simpletx.SimpletxBaPut;
-import org.opendaylight.dsbenchmark.simpletx.SimpletxDomMerge;
-import org.opendaylight.dsbenchmark.simpletx.SimpletxDomPut;
+import org.opendaylight.dsbenchmark.simpletx.SimpletxBaWrite;
+import org.opendaylight.dsbenchmark.simpletx.SimpletxDomWrite;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.DsbenchmarkService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.StartTestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.StartTestOutput;
@@ -100,16 +97,16 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
         cleanupTestStore();
         
         // Get the appropriate writer based on operation type and data format
-        DatastoreWrite dsWriter = getDatastoreWrite(input);
+        DatastoreAbstractWriter dsWriter = getDatastoreWriter(input);
 
         long startTime, endTime, listCreateTime, execTime;
         
         startTime = System.nanoTime();
-        dsWriter.createList(input);;
+        dsWriter.createList();;
         endTime = System.nanoTime();
         listCreateTime = (endTime - startTime) / 1000000;
 
-        // Run the tests
+        // Run the test and measure the execution time
         try {
             startTime = System.nanoTime();
             dsWriter.writeList();
@@ -176,30 +173,34 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
 
     }
 
-    DatastoreWrite getDatastoreWrite(StartTestInput input ) {
-        StartTestInput.Operation oper = input.getOperation();
-        StartTestInput.DataFormat format = input.getDataFormat();
+    DatastoreAbstractWriter getDatastoreWriter(StartTestInput input) {
 
-        final DatastoreWrite retVal;
-        if ( oper == StartTestInput.Operation.DUMP) {
-            retVal = new SimpletxBaDump(input, dataBroker);
-        } else if ( oper == StartTestInput.Operation.PUT ) {
-            retVal = (format ==  StartTestInput.DataFormat.BINDINGAWARE ? 
-                            new SimpletxBaPut(input, dataBroker) : 
-                            new SimpletxDomPut(input, domDataBroker));
-        }
-        else if ( oper == StartTestInput.Operation.MERGE ) {
-            retVal = (format ==  StartTestInput.DataFormat.BINDINGAWARE ? 
-                            new SimpletxBaMerge(input, dataBroker) :
-                            new SimpletxDomMerge(input, domDataBroker));
-        }
-        else if ( oper == StartTestInput.Operation.DELETE ) {
-            retVal = new SimpletxBaDelete(input, dataBroker);
+        final DatastoreAbstractWriter retVal;
+        if (input.getDataFormat() == StartTestInput.DataFormat.BINDINGAWARE) {
+            if (StartTestInput.Operation.DELETE == input.getOperation()) {
+                retVal = new SimpletxBaDelete(this.dataBroker,
+                                              input.getOperation(),
+                                              input.getOuterElements().intValue(),
+                                              input.getInnerElements().intValue(),
+                                              input.getPutsPerTx().intValue());
+            } else {
+                retVal = new SimpletxBaWrite(this.dataBroker, 
+                                             input.getOperation(), 
+                                             input.getOuterElements().intValue(),
+                                             input.getInnerElements().intValue(),
+                                             input.getPutsPerTx().intValue());
+            }
+        } else if (input.getDataFormat() == StartTestInput.DataFormat.BINDINGINDEPENDENT) {
+            retVal = new SimpletxDomWrite(this.domDataBroker, 
+                                          input.getOperation(), 
+                                          input.getOuterElements().intValue(),
+                                          input.getInnerElements().intValue(),
+                                          input.getPutsPerTx().intValue());
+
         } else {
             throw new IllegalArgumentException("Unsupported test type");
         }
-      
+
         return retVal;
-        
     }
 }

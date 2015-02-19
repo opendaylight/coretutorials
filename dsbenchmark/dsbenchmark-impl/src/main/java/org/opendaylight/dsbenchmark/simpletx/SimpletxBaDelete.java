@@ -1,10 +1,11 @@
 package org.opendaylight.dsbenchmark.simpletx;
 
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
-import org.opendaylight.dsbenchmark.DatastoreWrite;
+import org.opendaylight.dsbenchmark.DatastoreAbstractWriter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.StartTestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.TestExec;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.test.exec.OuterList;
@@ -13,19 +14,15 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SimpletxBaDelete implements DatastoreWrite {
-    private static final Logger LOG = LoggerFactory.getLogger(SimpletxBaDelete.class);
+public class SimpletxBaDelete extends DatastoreAbstractWriter {
+    private static final Logger LOG = (Logger) LoggerFactory.getLogger(SimpletxBaDelete.class);
     private DataBroker dataBroker;
-    private long putsPerTx;
-    private long outerElements;
-    private int txOk = 0;
-    private int txError = 0;
 
-    public SimpletxBaDelete(StartTestInput input, DataBroker dataBroker) {
-        LOG.info("Creating DatastoreDelete, input: {}", input );
-        this.putsPerTx = input.getPutsPerTx();
-        this.outerElements = input.getOuterElements();
+    public SimpletxBaDelete(DataBroker dataBroker, StartTestInput.Operation oper,
+            int outerListElem, int innerListElem, long writesPerTx) {
+        super(oper, outerListElem, innerListElem, writesPerTx);
         this.dataBroker = dataBroker;
+        LOG.info("Created SimpletxBaDelete");
     }
 
     @Override
@@ -33,12 +30,12 @@ public class SimpletxBaDelete implements DatastoreWrite {
             WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
             long putCnt = 0;
 
-            for (long l = 0; l < outerElements; l++) {
+            for (long l = 0; l < outerListElem; l++) {
                 InstanceIdentifier<OuterList> iid = InstanceIdentifier.create(TestExec.class)
                                                         .child(OuterList.class, new OuterListKey((int)l));
                 tx.delete(LogicalDatastoreType.CONFIGURATION, iid);
                 putCnt++;
-                if (putCnt == putsPerTx) {
+                if (putCnt == writesPerTx) {
                     try {
                         tx.submit().checkedGet();
                         txOk++;
@@ -60,21 +57,16 @@ public class SimpletxBaDelete implements DatastoreWrite {
     }
 
     @Override
-    public int getTxError() {
-        return txError;
-    }
-
-    @Override
-    public int getTxOk() {
-        return txOk;
-    }
-
-    @Override
-    public void createList(StartTestInput input) {
+    public void createList() {
         LOG.info("DatastoreDelete: creating data in the data store");
-        SimpletxBaDump dd = new SimpletxBaDump(input, dataBroker);
-        dd.createList(input);
+        
+        // Dump the whole list into the data store in a single PUT transaction (
+        SimpletxBaWrite dd = new SimpletxBaWrite(dataBroker,
+                                                 StartTestInput.Operation.PUT,
+                                                 outerListElem, 
+                                                 innerListElem, 
+                                                 outerListElem);
+        dd.createList();
         dd.writeList();
     }
-
 }

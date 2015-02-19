@@ -82,13 +82,8 @@ module dsbenchmark {
                         description
                           "The merge operation";
                     }
-                    enum "DUMP" {
-                        value 3;
-                        description
-                            "Dump the whole list into the data store in a single put and a single commit";
-                    }
                     enum "DELETE" {
-                        value 4;
+                        value 3;
                         description
                             "Delete items from a list sotred in the data store";
                     }
@@ -109,7 +104,21 @@ module dsbenchmark {
                 }
                 description
                     "Data format:-binding-aware or binding-independent";
-               }
+            }
+
+            leaf transaction-type {
+                mandatory true;
+                type enumeration {
+                    enum "SIMPLE-TX" {
+                        value 1;
+                    }
+                    enum "TX-CHAINING" {
+                        value 2;
+                    }
+                }
+                description
+                    "Data format:-binding-aware or binding-independent";
+            }
 
             leaf outerElements {
                 type uint32;

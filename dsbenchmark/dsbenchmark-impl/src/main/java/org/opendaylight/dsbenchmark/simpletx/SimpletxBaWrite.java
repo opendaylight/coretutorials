@@ -7,7 +7,7 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.dsbenchmark.BaListBuilder;
-import org.opendaylight.dsbenchmark.DatastoreWrite;
+import org.opendaylight.dsbenchmark.DatastoreAbstractWriter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.StartTestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.TestExec;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.test.exec.OuterList;
@@ -15,41 +15,40 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class SimpletxBaAbstractWrite implements DatastoreWrite {
-    private static final Logger LOG = LoggerFactory.getLogger(SimpletxBaAbstractWrite.class);
-    protected DataBroker dataBroker;
-    protected List<OuterList> list;
-    private long putsPerTx;
-    protected int txOk = 0;
-    protected int txError = 0;
+public class SimpletxBaWrite extends DatastoreAbstractWriter {
+    private static final Logger LOG = LoggerFactory.getLogger(SimpletxBaWrite.class);
+    private final DataBroker dataBroker;
+    private List<OuterList> list;
 
-    abstract protected void txOperation(WriteTransaction tx,
-                                        LogicalDatastoreType dst, 
-                                        InstanceIdentifier<OuterList> iid, 
-                                        OuterList elem);
-
- public SimpletxBaAbstractWrite(StartTestInput input, DataBroker dataBroker) {
-        this.putsPerTx = input.getPutsPerTx();
+    public SimpletxBaWrite(DataBroker dataBroker, StartTestInput.Operation oper,
+            int outerListElem, int innerListElem, long writesPerTx) {
+        super(oper, outerListElem, innerListElem, writesPerTx);
         this.dataBroker = dataBroker;
+        LOG.info("Created SimpletxBaWrite");
     }
 
      @Override
-     public void createList(StartTestInput input) {
-         list = BaListBuilder.buildOuterList(input.getOuterElements().intValue(), 
-                                             input.getInnerElements().intValue());
+     public void createList() {
+         list = BaListBuilder.buildOuterList(this.outerListElem, this.innerListElem); 
      }
 
     @Override
     public void writeList() {
         WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
-        long putCnt = 0;
+        long writeCnt = 0;
 
         for (OuterList element : this.list) {
             InstanceIdentifier<OuterList> iid = InstanceIdentifier.create(TestExec.class)
                                                     .child(OuterList.class, element.getKey());
-            txOperation(tx, LogicalDatastoreType.CONFIGURATION, iid, element);
-            putCnt++;
-            if (putCnt == putsPerTx) {
+            if (oper == StartTestInput.Operation.PUT) {
+                tx.put(LogicalDatastoreType.CONFIGURATION, iid, element);
+            } else {
+                tx.merge(LogicalDatastoreType.CONFIGURATION, iid, element);                
+            }
+
+            writeCnt++;
+
+            if (writeCnt == writesPerTx) {
                 try {
                     tx.submit().checkedGet();
                     txOk++;
@@ -58,27 +57,17 @@ public abstract class SimpletxBaAbstractWrite implements DatastoreWrite {
                     txError++;
                 }
                 tx = dataBroker.newWriteOnlyTransaction();
-                putCnt = 0;
+                writeCnt = 0;
             }
         }
 
-        if (putCnt != 0) {
+        if (writeCnt != 0) {
             try {
                 tx.submit().checkedGet();
             } catch (TransactionCommitFailedException e) {
                 LOG.error("Transaction failed: {}", e.toString());
             }
         }
-    }
-
-    @Override
-    public int getTxError() {
-        return txError;
-    }
-
-    @Override
-    public int getTxOk() {
-        return txOk;
     }
 
 }
