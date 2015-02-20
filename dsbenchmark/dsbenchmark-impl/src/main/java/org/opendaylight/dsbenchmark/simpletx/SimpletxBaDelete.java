@@ -18,9 +18,8 @@ public class SimpletxBaDelete extends DatastoreAbstractWriter {
     private static final Logger LOG = (Logger) LoggerFactory.getLogger(SimpletxBaDelete.class);
     private DataBroker dataBroker;
 
-    public SimpletxBaDelete(DataBroker dataBroker, StartTestInput.Operation oper,
-            int outerListElem, int innerListElem, long writesPerTx) {
-        super(oper, outerListElem, innerListElem, writesPerTx);
+    public SimpletxBaDelete(DataBroker dataBroker, int outerListElem, int innerListElem, long writesPerTx) {
+        super(StartTestInput.Operation.DELETE, outerListElem, innerListElem, writesPerTx);
         this.dataBroker = dataBroker;
         LOG.info("Created SimpletxBaDelete");
     }
@@ -60,7 +59,8 @@ public class SimpletxBaDelete extends DatastoreAbstractWriter {
     public void createList() {
         LOG.info("DatastoreDelete: creating data in the data store");
         
-        // Dump the whole list into the data store in a single PUT transaction (
+        // Dump the whole list into the data store in a single transaction
+        // with <outerListElem> PUTs on the transaction
         SimpletxBaWrite dd = new SimpletxBaWrite(dataBroker,
                                                  StartTestInput.Operation.PUT,
                                                  outerListElem, 

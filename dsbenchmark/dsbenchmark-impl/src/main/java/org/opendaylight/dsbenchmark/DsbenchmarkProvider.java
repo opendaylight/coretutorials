@@ -22,6 +22,8 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.dsbenchmark.simpletx.SimpletxBaDelete;
 import org.opendaylight.dsbenchmark.simpletx.SimpletxBaWrite;
 import org.opendaylight.dsbenchmark.simpletx.SimpletxDomWrite;
+import org.opendaylight.dsbenchmark.txchain.TxchainBaDelete;
+import org.opendaylight.dsbenchmark.txchain.TxchainBaWrite;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.DsbenchmarkService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.StartTestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.StartTestOutput;
@@ -43,20 +45,23 @@ import com.google.common.util.concurrent.Futures;
 public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkService, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(DsbenchmarkProvider.class);
+    private final AtomicReference<ExecStatus> execStatus = new AtomicReference<ExecStatus>( ExecStatus.Idle );
 
     private static final InstanceIdentifier<TestExec> TEST_EXEC_IID = InstanceIdentifier.builder(TestExec.class).build();
     private static final InstanceIdentifier<TestStatus> TEST_STATUS_IID = InstanceIdentifier.builder(TestStatus.class).build();
+    private final DOMDataBroker domDataBroker;
+    private final DataBroker bindingDataBroker;
+
     private RpcRegistration<DsbenchmarkService> dstReg;
     private DataBroker dataBroker;
-    private DOMDataBroker domDataBroker;
 
-    private final AtomicReference<ExecStatus> execStatus = new AtomicReference<ExecStatus>( ExecStatus.Idle );
     private long testsCompleted = 0;
 
-    public DsbenchmarkProvider(DOMDataBroker domDataBroker) {
+    public DsbenchmarkProvider(DOMDataBroker domDataBroker, DataBroker bindingDataBroker) {
         // We have to get the DOMDataBroker via the constructor, 
         // since we can't get it from the session 
         this.domDataBroker = domDataBroker;
+        this.bindingDataBroker = bindingDataBroker;
     }
 
     @Override
@@ -176,31 +181,49 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
     DatastoreAbstractWriter getDatastoreWriter(StartTestInput input) {
 
         final DatastoreAbstractWriter retVal;
-        if (input.getDataFormat() == StartTestInput.DataFormat.BINDINGAWARE) {
-            if (StartTestInput.Operation.DELETE == input.getOperation()) {
-                retVal = new SimpletxBaDelete(this.dataBroker,
-                                              input.getOperation(),
-                                              input.getOuterElements().intValue(),
-                                              input.getInnerElements().intValue(),
-                                              input.getPutsPerTx().intValue());
+        
+        StartTestInput.TransactionType txType = input.getTransactionType();
+        StartTestInput.Operation oper = input.getOperation();
+        StartTestInput.DataFormat dataFormat = input.getDataFormat();
+        int outerListElem = input.getOuterElements().intValue();
+        int innerListElem = input.getInnerElements().intValue();
+        int writesPerTx = input.getPutsPerTx().intValue();
+
+        try {
+            if (txType == StartTestInput.TransactionType.SIMPLETX) {
+                if (dataFormat == StartTestInput.DataFormat.BINDINGAWARE) {
+                    if (StartTestInput.Operation.DELETE == oper) {
+                        retVal = new SimpletxBaDelete(this.dataBroker, outerListElem,
+                                innerListElem,writesPerTx); 
+                    } else {
+                        retVal = new SimpletxBaWrite(this.dataBroker, oper, outerListElem,
+                                innerListElem,writesPerTx);
+                    }
+                } else if (dataFormat == StartTestInput.DataFormat.BINDINGINDEPENDENT) {
+                    retVal = new SimpletxDomWrite(this.domDataBroker, oper, outerListElem,
+                            innerListElem,writesPerTx);
+
+                } else {
+                    throw new IllegalArgumentException("Unsupported test type");
+                }
+            } else if (txType == StartTestInput.TransactionType.TXCHAINING) {
+                if (dataFormat == StartTestInput.DataFormat.BINDINGAWARE) {
+                    if (StartTestInput.Operation.DELETE == oper) {
+                        retVal = new TxchainBaDelete(this.dataBroker,outerListElem,
+                                innerListElem,writesPerTx); 
+                    } else {
+                        retVal = new TxchainBaWrite(this.bindingDataBroker, oper, outerListElem,
+                                innerListElem,writesPerTx);
+                    }
+                } else {
+                        throw new IllegalArgumentException("Unsupported test type");
+                }
             } else {
-                retVal = new SimpletxBaWrite(this.dataBroker, 
-                                             input.getOperation(), 
-                                             input.getOuterElements().intValue(),
-                                             input.getInnerElements().intValue(),
-                                             input.getPutsPerTx().intValue());
+                throw new IllegalArgumentException("Unsupported test type");
             }
-        } else if (input.getDataFormat() == StartTestInput.DataFormat.BINDINGINDEPENDENT) {
-            retVal = new SimpletxDomWrite(this.domDataBroker, 
-                                          input.getOperation(), 
-                                          input.getOuterElements().intValue(),
-                                          input.getInnerElements().intValue(),
-                                          input.getPutsPerTx().intValue());
-
-        } else {
-            throw new IllegalArgumentException("Unsupported test type");
+        } finally {
+            execStatus.set(ExecStatus.Idle);
         }
-
         return retVal;
     }
 }

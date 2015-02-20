@@ -25,7 +25,8 @@ public class DsbenchmarkImplModule extends org.opendaylight.yang.gen.v1.urn.open
 
     @Override
     public java.lang.AutoCloseable createInstance() {
-        DsbenchmarkProvider provider = new DsbenchmarkProvider(getDomDataBrokerDependency());
+        DsbenchmarkProvider provider = new DsbenchmarkProvider(getDomDataBrokerDependency(),
+                                                               getBindingDataBrokerDependency());
         getBrokerDependency().registerProvider(provider);
         return provider;
     }
