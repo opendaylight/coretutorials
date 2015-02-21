@@ -21,9 +21,11 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RpcRegistr
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.dsbenchmark.simpletx.SimpletxBaDelete;
 import org.opendaylight.dsbenchmark.simpletx.SimpletxBaWrite;
+import org.opendaylight.dsbenchmark.simpletx.SimpletxDomDelete;
 import org.opendaylight.dsbenchmark.simpletx.SimpletxDomWrite;
 import org.opendaylight.dsbenchmark.txchain.TxchainBaDelete;
 import org.opendaylight.dsbenchmark.txchain.TxchainBaWrite;
+import org.opendaylight.dsbenchmark.txchain.TxchainDomWrite;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.DsbenchmarkService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.StartTestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.StartTestOutput;
@@ -51,7 +53,6 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
     private static final InstanceIdentifier<TestStatus> TEST_STATUS_IID = InstanceIdentifier.builder(TestStatus.class).build();
     private final DOMDataBroker domDataBroker;
     private final DataBroker bindingDataBroker;
-
     private RpcRegistration<DsbenchmarkService> dstReg;
     private DataBroker dataBroker;
 
@@ -107,7 +108,7 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
         long startTime, endTime, listCreateTime, execTime;
         
         startTime = System.nanoTime();
-        dsWriter.createList();;
+        dsWriter.createList();
         endTime = System.nanoTime();
         listCreateTime = (endTime - startTime) / 1000000;
 
@@ -178,7 +179,7 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
 
     }
 
-    DatastoreAbstractWriter getDatastoreWriter(StartTestInput input) {
+    private DatastoreAbstractWriter getDatastoreWriter(StartTestInput input) {
 
         final DatastoreAbstractWriter retVal;
         
@@ -199,14 +200,16 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
                         retVal = new SimpletxBaWrite(this.dataBroker, oper, outerListElem,
                                 innerListElem,writesPerTx);
                     }
-                } else if (dataFormat == StartTestInput.DataFormat.BINDINGINDEPENDENT) {
-                    retVal = new SimpletxDomWrite(this.domDataBroker, oper, outerListElem,
-                            innerListElem,writesPerTx);
-
                 } else {
-                    throw new IllegalArgumentException("Unsupported test type");
-                }
-            } else if (txType == StartTestInput.TransactionType.TXCHAINING) {
+                    if (StartTestInput.Operation.DELETE == oper) {
+                        retVal = new SimpletxDomDelete(this.domDataBroker, outerListElem,
+                                innerListElem, writesPerTx); 
+                    } else {
+                        retVal = new SimpletxDomWrite(this.domDataBroker, oper, outerListElem,
+                            innerListElem,writesPerTx);
+                    }
+                } 
+            } else {
                 if (dataFormat == StartTestInput.DataFormat.BINDINGAWARE) {
                     if (StartTestInput.Operation.DELETE == oper) {
                         retVal = new TxchainBaDelete(this.dataBroker,outerListElem,
@@ -216,10 +219,14 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
                                 innerListElem,writesPerTx);
                     }
                 } else {
-                        throw new IllegalArgumentException("Unsupported test type");
+                    if (StartTestInput.Operation.DELETE == oper) {
+                        retVal = new SimpletxDomDelete(this.domDataBroker, outerListElem,
+                                innerListElem, writesPerTx); 
+                    } else {
+                        retVal = new TxchainDomWrite(this.domDataBroker, oper, outerListElem,
+                            innerListElem,writesPerTx);
+                    }
                 }
-            } else {
-                throw new IllegalArgumentException("Unsupported test type");
             }
         } finally {
             execStatus.set(ExecStatus.Idle);
