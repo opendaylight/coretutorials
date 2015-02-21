@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.test.exec.OuterList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.test.exec.outer.list.InnerList;
+import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifierWithPredicates;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
@@ -12,25 +13,27 @@ import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.api.CollectionNodeBuilder;
 
 public final class DomListBuilder {
-    static public List<MapEntryNode> buildOuterList(org.opendaylight.yangtools.yang.common.QName OL_ID,
-                                                    org.opendaylight.yangtools.yang.common.QName IL_NAME,
-                                                    org.opendaylight.yangtools.yang.common.QName IL_VALUE,
-                                                    int outerElements, int innerElements) {
+    // Inner List Qname identifiers for yang model's 'name' and 'value'
+    private static final org.opendaylight.yangtools.yang.common.QName IL_NAME = QName.create(InnerList.QNAME, "name");
+    private static final org.opendaylight.yangtools.yang.common.QName IL_VALUE = QName.create(InnerList.QNAME, "value");
+
+    // Outer List Qname identifier for yang model's 'id'
+    private static final org.opendaylight.yangtools.yang.common.QName OL_ID = QName.create(OuterList.QNAME, "id");
+    
+    static public List<MapEntryNode> buildOuterList(int outerElements, int innerElements) {
         List<MapEntryNode> outerList = new ArrayList<MapEntryNode>(outerElements);
         for (int j = 0; j < outerElements; j++) {
             outerList.add(ImmutableNodes.mapEntryBuilder()
                                 .withNodeIdentifier(new NodeIdentifierWithPredicates(OuterList.QNAME, OL_ID, j))
                                 .withChild(ImmutableNodes.leafNode(OL_ID, j))
-                                .withChild(buildInnerList(IL_NAME, IL_VALUE, j, innerElements)) 
+                                .withChild(buildInnerList(j, innerElements)) 
                                 .build());
         }
 
         return outerList;
     }
 
-    static private MapNode buildInnerList(org.opendaylight.yangtools.yang.common.QName IL_NAME,
-                                          org.opendaylight.yangtools.yang.common.QName IL_VALUE,
-                                          int index, int elements ) {
+    static private MapNode buildInnerList(int index, int elements ) {
         CollectionNodeBuilder<MapEntryNode, MapNode> innerList = ImmutableNodes.mapNodeBuilder(InnerList.QNAME);
 
         final String itemStr = "Item-" + String.valueOf(index) + "-";

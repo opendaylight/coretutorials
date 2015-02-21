@@ -11,8 +11,6 @@ import org.opendaylight.dsbenchmark.DomListBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.StartTestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.TestExec;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.test.exec.OuterList;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.test.exec.outer.list.InnerList;
-import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifierWithPredicates;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
@@ -22,14 +20,6 @@ import org.slf4j.LoggerFactory;
 public class SimpletxDomWrite extends DatastoreAbstractWriter {
     private static final Logger LOG = LoggerFactory.getLogger(SimpletxDomWrite.class);
     private final DOMDataBroker domDataBroker;
-
-    // Inner List Qname identifiers for yang model's 'name' and 'value'
-    private static final org.opendaylight.yangtools.yang.common.QName IL_NAME = QName.create(InnerList.QNAME, "name");
-    private static final org.opendaylight.yangtools.yang.common.QName IL_VALUE = QName.create(InnerList.QNAME, "value");
-
-    // Outer List Qname identifier for yang model's 'id'
-    private static final org.opendaylight.yangtools.yang.common.QName OL_ID = QName.create(OuterList.QNAME, "id");
-    
     private List<MapEntryNode> list;
 
     public SimpletxDomWrite(DOMDataBroker domDataBroker, StartTestInput.Operation oper,
@@ -41,8 +31,7 @@ public class SimpletxDomWrite extends DatastoreAbstractWriter {
 
     @Override
     public void createList() {
-        list = DomListBuilder.buildOuterList(OL_ID, IL_NAME, IL_VALUE,
-                                             this.outerListElem, this.innerListElem);
+        list = DomListBuilder.buildOuterList(this.outerListElem, this.innerListElem);
     }
 
     @Override
@@ -57,7 +46,7 @@ public class SimpletxDomWrite extends DatastoreAbstractWriter {
             if (oper == StartTestInput.Operation.PUT) {
                 tx.put(LogicalDatastoreType.CONFIGURATION, yid, element);
             } else {
-                tx.merge(LogicalDatastoreType.CONFIGURATION, yid, element);                
+                tx.merge(LogicalDatastoreType.CONFIGURATION, yid, element);
             }
 
             writeCnt++;

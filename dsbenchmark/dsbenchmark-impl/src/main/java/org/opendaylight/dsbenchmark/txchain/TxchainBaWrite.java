@@ -77,15 +77,16 @@ public class TxchainBaWrite extends DatastoreAbstractWriter implements Transacti
             }
         }
 
+        // *** Clean up and close the transaction chain ***
         // Submit the outstanding transaction even if it's empty and wait for it to finish
-        // We need to empty the chain before closing it
+        // We need to empty the transaction chain before closing it
         try {
-            if (writeCnt > 0) {
-                txSubmitted++;
-            }
+            txSubmitted++;
             tx.submit().checkedGet();
+            txOk++;
         } catch (TransactionCommitFailedException e) {
             LOG.error("Transaction failed", e);
+            txError++;
         }
         try {
             chain.close();

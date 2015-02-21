@@ -25,6 +25,20 @@ public class SimpletxBaDelete extends DatastoreAbstractWriter {
     }
 
     @Override
+    public void createList() {
+        LOG.info("DatastoreDelete: creating data in the data store");
+        // Dump the whole list into the data store in a single transaction
+        // with <outerListElem> PUTs on the transaction
+        SimpletxBaWrite dd = new SimpletxBaWrite(dataBroker,
+                                                 StartTestInput.Operation.PUT,
+                                                 outerListElem, 
+                                                 innerListElem, 
+                                                 outerListElem);
+        dd.createList();
+        dd.writeList();
+    }
+
+    @Override
     public void writeList() {
             WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
             long putCnt = 0;
@@ -53,20 +67,5 @@ public class SimpletxBaDelete extends DatastoreAbstractWriter {
                     LOG.error("Transaction failed: {}", e.toString());
                 }
             }
-    }
-
-    @Override
-    public void createList() {
-        LOG.info("DatastoreDelete: creating data in the data store");
-        
-        // Dump the whole list into the data store in a single transaction
-        // with <outerListElem> PUTs on the transaction
-        SimpletxBaWrite dd = new SimpletxBaWrite(dataBroker,
-                                                 StartTestInput.Operation.PUT,
-                                                 outerListElem, 
-                                                 innerListElem, 
-                                                 outerListElem);
-        dd.createList();
-        dd.writeList();
     }
 }
