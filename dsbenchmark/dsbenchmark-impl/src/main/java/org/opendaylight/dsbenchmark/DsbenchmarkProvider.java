@@ -25,6 +25,7 @@ import org.opendaylight.dsbenchmark.simpletx.SimpletxDomDelete;
 import org.opendaylight.dsbenchmark.simpletx.SimpletxDomWrite;
 import org.opendaylight.dsbenchmark.txchain.TxchainBaDelete;
 import org.opendaylight.dsbenchmark.txchain.TxchainBaWrite;
+import org.opendaylight.dsbenchmark.txchain.TxchainDomDelete;
 import org.opendaylight.dsbenchmark.txchain.TxchainDomWrite;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.DsbenchmarkService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.StartTestInput;
@@ -212,7 +213,7 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
             } else {
                 if (dataFormat == StartTestInput.DataFormat.BINDINGAWARE) {
                     if (StartTestInput.Operation.DELETE == oper) {
-                        retVal = new TxchainBaDelete(this.dataBroker,outerListElem,
+                        retVal = new TxchainBaDelete(this.bindingDataBroker,outerListElem,
                                 innerListElem,writesPerTx); 
                     } else {
                         retVal = new TxchainBaWrite(this.bindingDataBroker, oper, outerListElem,
@@ -220,7 +221,7 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
                     }
                 } else {
                     if (StartTestInput.Operation.DELETE == oper) {
-                        retVal = new SimpletxDomDelete(this.domDataBroker, outerListElem,
+                        retVal = new TxchainDomDelete(this.domDataBroker, outerListElem,
                                 innerListElem, writesPerTx); 
                     } else {
                         retVal = new TxchainDomWrite(this.domDataBroker, oper, outerListElem,

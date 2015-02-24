@@ -56,7 +56,7 @@ public class TxchainDomDelete extends DatastoreAbstractWriter implements Transac
         DOMDataWriteTransaction tx = chain.newWriteOnlyTransaction();
 
         YangInstanceIdentifier pid = YangInstanceIdentifier.builder().node(TestExec.QNAME).node(OuterList.QNAME).build();
-        for (long l = 0; l < outerListElem; l++) {
+        for (int l = 0; l < outerListElem; l++) {
             YangInstanceIdentifier yid = pid.node(new NodeIdentifierWithPredicates(OuterList.QNAME, OL_ID, l));
             tx.delete(LogicalDatastoreType.CONFIGURATION, yid);
 
@@ -80,15 +80,16 @@ public class TxchainDomDelete extends DatastoreAbstractWriter implements Transac
             }
         }
 
+        // *** Clean up and close the transaction chain ***
         // Submit the outstanding transaction even if it's empty and wait for it to finish
-        // We need to empty the chain before closing it
+        // We need to empty the transaction chain before closing it
         try {
-            if (writeCnt > 0) {
-                txSubmitted++;
-            }
+            txSubmitted++;
             tx.submit().checkedGet();
+            txOk++;
         } catch (TransactionCommitFailedException e) {
             LOG.error("Transaction failed", e);
+            txError++;
         }
         try {
             chain.close();

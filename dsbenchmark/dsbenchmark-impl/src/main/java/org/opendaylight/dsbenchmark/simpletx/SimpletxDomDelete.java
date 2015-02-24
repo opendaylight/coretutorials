@@ -56,7 +56,6 @@ public class SimpletxDomDelete extends DatastoreAbstractWriter {
                                          .node(OuterList.QNAME)
                                          .nodeWithKey(OuterList.QNAME, OL_ID, l)
                                          .build();
-            LOG.info("yid {}", yid);
 
             tx.delete(LogicalDatastoreType.CONFIGURATION, yid);
             writeCnt++;

@@ -20,6 +20,7 @@ parser.add_argument("--host", default="localhost", help="the IP of the target ho
 parser.add_argument("--port", type=int, default=8181, help="the port number of target host.")
 
 # Test Parameters
+parser.add_argument("--txtype", choices=["TX-CHAINING", "SIMPLE-TX"], nargs='+', default=["TX-CHAINING", "SIMPLE-TX"], help="list of the transaction types to execute.")
 parser.add_argument("--total", type=int, default=100000, help="total number of elements to process.")
 parser.add_argument("--inner", type=int, default=[1, 10, 100, 1000, 10000, 100000], help="number of inner elements to process.")
 parser.add_argument("--ops", type=int, default=[1, 10, 100, 1000, 10000, 100000], help="number of operations per transaction.")
@@ -47,7 +48,7 @@ def send_clear_request():
     print r.status_code
 
 
-def send_test_request(operation, data_fmt, outer_elem, inner_elem, ops_per_tx):
+def send_test_request(tx_type, operation, data_fmt, outer_elem, inner_elem, ops_per_tx):
     """
     Sends a request to the dsbenchmark app to start a data store benchmark test run.
     The dsbenchmark app will perform the requested benchmark test and return measured
@@ -64,6 +65,7 @@ def send_test_request(operation, data_fmt, outer_elem, inner_elem, ops_per_tx):
 
     test_request_template = '''{
         "input": {
+            "transaction-type": "%s",
             "operation": "%s",
             "data-format": "%s",
             "outerElements": %d,
@@ -71,7 +73,7 @@ def send_test_request(operation, data_fmt, outer_elem, inner_elem, ops_per_tx):
             "putsPerTx": %d
         }
     }'''
-    data = test_request_template % (operation, data_fmt, outer_elem, inner_elem, ops_per_tx)
+    data = test_request_template % (tx_type, operation, data_fmt, outer_elem, inner_elem, ops_per_tx)
     r = requests.post(url, data, headers=postheaders, stream=False, auth=('admin', 'admin'))
     result = {u'http-status': r.status_code}
     if r.status_code == 200:
@@ -95,7 +97,7 @@ def print_results(run_type, idx, res):
           (run_type, idx, res[u'status'], res[u'listBuildTime'], res[u'execTime'], res[u'txOk'], res[u'txError'])
 
 
-def run_test(warmup_runs, test_runs, operation, data_fmt, outer_elem, inner_elem, ops_per_tx):
+def run_test(warmup_runs, test_runs, tx_type, operation, data_fmt, outer_elem, inner_elem, ops_per_tx):
     """
     Execute a benchmark test. Performs the JVM 'wamrup' before the test, runs
     the specified number of dsbenchmark test runs and computes the average time
@@ -113,14 +115,14 @@ def run_test(warmup_runs, test_runs, operation, data_fmt, outer_elem, inner_elem
     total_build_time = 0.0
     total_exec_time = 0.0
 
-    print 'Operation: {0:s}, Data Format: {1:s}, Outer/Inner Elements: {2:d}/{3:d}, PutsPerTx {4:d}' \
-        .format(operation, data_fmt, outer_elem, inner_elem, ops_per_tx)
+    print 'Tx Type: {0:s}, Operation: {1:s}, Data Format: {2:s}, Outer/Inner Elements: {3:d}/{4:d}, PutsPerTx {5:d}' \
+        .format(tx_type, operation, data_fmt, outer_elem, inner_elem, ops_per_tx)
     for idx in range(warmup_runs):
-        res = send_test_request(operation, data_fmt, outer_elem, inner_elem, ops_per_tx)
+        res = send_test_request(tx_type, operation, data_fmt, outer_elem, inner_elem, ops_per_tx)
         print_results('WARMUP', idx, res)
 
     for idx in range(test_runs):
-        res = send_test_request(operation, data_fmt, outer_elem, inner_elem, ops_per_tx)
+        res = send_test_request(tx_type, operation, data_fmt, outer_elem, inner_elem, ops_per_tx)
         print_results('TEST', idx, res)
         total_build_time += res['listBuildTime']
         total_exec_time += res['execTime']
@@ -129,8 +131,8 @@ def run_test(warmup_runs, test_runs, operation, data_fmt, outer_elem, inner_elem
 
 
 if __name__ == "__main__":
-
     # Test Parameters
+    TX_TYPES = args.txtype
     TOTAL_ELEMENTS = args.total
     INNER_ELEMENTS = args.inner
     OPS_PER_TX = args.ops
@@ -144,49 +146,58 @@ if __name__ == "__main__":
     # Clean up any data that may be present in the data store
     send_clear_request()
 
-    headers = []
-    build_times = []
-    exec_times = []
-    total_times = []
-
     # Run the benchmark tests and collect data in a csv file for import into a graphing software
     f = open('test.csv', 'wt')
     try:
         writer = csv.writer(f)
 
-        # Iterate over all data formats, operation types, and different list-of-lists layouts; always
-        # use a single operation in each transaction
-        for fmt in DATA_FORMATS:
+        # Determine the impact of transaction type, data format and data structure on performance.
+        # Iterate over all transaction types, data formats, operation types, and different
+        # list-of-lists layouts; always use a single operation in each transaction
+        for tx_type in TX_TYPES:
             print '***************************************'
-            print 'Data format: %s' % fmt
+            print 'Transaction Type: %s' % tx_type
             print '***************************************'
-            writer.writerow((('%s:' % fmt), ''))
+            writer.writerow((('%s:' % tx_type), '', ''))
 
-            for oper in OPERATIONS:
-                print 'Operation: %s' % oper
-                writer.writerow(('', '%s:' % oper))
+            for fmt in DATA_FORMATS:
+                print '---------------------------------------'
+                print 'Data format: %s' % fmt
+                print '---------------------------------------'
+                writer.writerow(('', ('%s:' % fmt), ''))
 
-                for elem in INNER_ELEMENTS:
-                    avg_build_time, avg_exec_time = \
-                        run_test(WARMUP_RUNS, TEST_RUNS, oper, fmt, TOTAL_ELEMENTS / elem, elem, 1)
-                    writer.writerow(('', '', elem, avg_build_time, avg_exec_time, (avg_build_time + avg_exec_time)))
+                for oper in OPERATIONS:
+                    print 'Operation: %s' % oper
+                    writer.writerow(('', '', '%s:' % oper))
 
-        # Iterate over all data formats, operation types, and operations-per-transaction; always
-        # use a list of lists where the inner list has one parameter
-        for fmt in DATA_FORMATS:
+                    for elem in INNER_ELEMENTS:
+                        avg_build_time, avg_exec_time = \
+                            run_test(WARMUP_RUNS, TEST_RUNS, tx_type, oper, fmt, TOTAL_ELEMENTS / elem, elem, 1)
+                        writer.writerow(('', '', '', elem, avg_build_time, avg_exec_time, (avg_build_time + avg_exec_time)))
+
+        # Determine the impact of number of writes per transaction on performance.
+        # Iterate over all transaction types, data formats, operation types, and
+        # operations-per-transaction; always use a list of lists where the inner list has one parameter
+        for tx_type in TX_TYPES:
             print '***************************************'
-            print 'Data format: %s' % fmt
+            print 'Transaction Type: %s' % tx_type
             print '***************************************'
-            writer.writerow((('%s:' % fmt), ''))
+            writer.writerow((('%s:' % tx_type), '', ''))
 
-            for oper in OPERATIONS:
-                print 'Operation: %s' % oper
-                writer.writerow(('', '%s:' % oper))
+            for fmt in DATA_FORMATS:
+                print '---------------------------------------'
+                print 'Data format: %s' % fmt
+                print '---------------------------------------'
+                writer.writerow(('', ('%s:' % fmt), ''))
 
-                for wtx in OPS_PER_TX:
-                    avg_build_time, avg_exec_time = \
-                        run_test(WARMUP_RUNS, TEST_RUNS, oper, fmt, TOTAL_ELEMENTS, 1, wtx)
-                    writer.writerow(('', '', wtx, avg_build_time, avg_exec_time, (avg_build_time + avg_exec_time)))
+                for oper in OPERATIONS:
+                    print 'Operation: %s' % oper
+                    writer.writerow(('', '', '%s:' % oper))
+
+                    for wtx in OPS_PER_TX:
+                        avg_build_time, avg_exec_time = \
+                            run_test(WARMUP_RUNS, TEST_RUNS, tx_type, oper, fmt, TOTAL_ELEMENTS, 1, wtx)
+                        writer.writerow(('', '', '', wtx, avg_build_time, avg_exec_time, (avg_build_time + avg_exec_time)))
 
     finally:
         f.close()
