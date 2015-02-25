@@ -154,6 +154,9 @@ if __name__ == "__main__":
         # Determine the impact of transaction type, data format and data structure on performance.
         # Iterate over all transaction types, data formats, operation types, and different
         # list-of-lists layouts; always use a single operation in each transaction
+        print '\n#######################################'
+        print 'Tx type, data format & data structure'
+        print '#######################################'
         for tx_type in TX_TYPES:
             print '***************************************'
             print 'Transaction Type: %s' % tx_type
@@ -173,11 +176,15 @@ if __name__ == "__main__":
                     for elem in INNER_ELEMENTS:
                         avg_build_time, avg_exec_time = \
                             run_test(WARMUP_RUNS, TEST_RUNS, tx_type, oper, fmt, TOTAL_ELEMENTS / elem, elem, 1)
-                        writer.writerow(('', '', '', elem, avg_build_time, avg_exec_time, (avg_build_time + avg_exec_time)))
+                        e_label = '%d/%d' % (TOTAL_ELEMENTS / elem, elem)
+                        writer.writerow(('', '', '', e_label, avg_build_time, avg_exec_time, (avg_build_time + avg_exec_time)))
 
         # Determine the impact of number of writes per transaction on performance.
         # Iterate over all transaction types, data formats, operation types, and
         # operations-per-transaction; always use a list of lists where the inner list has one parameter
+        print '\n#######################################'
+        print 'Puts per tx'
+        print '#######################################'
         for tx_type in TX_TYPES:
             print '***************************************'
             print 'Transaction Type: %s' % tx_type
