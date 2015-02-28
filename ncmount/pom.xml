@@ -24,6 +24,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   </prerequisites>
   <modules>
     <module>api</module>
+    <module>xrmodels</module>
     <module>impl</module>
     <module>karaf</module>
     <module>features</module>
