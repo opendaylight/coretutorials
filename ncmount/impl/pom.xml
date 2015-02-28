@@ -26,6 +26,16 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
       <artifactId>ncmount-api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>ncmount-xrmodels</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.controller.model</groupId>
+      <artifactId>model-inventory</artifactId>
+      <version>${mdsal.version}</version>
+    </dependency>
 
     <!-- Testing Dependencies -->
     <dependency>
@@ -40,5 +50,32 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <build>
+   <plugins>
+    <plugin>
+       <groupId>org.codehaus.mojo</groupId>
+       <artifactId>build-helper-maven-plugin</artifactId>
+       <executions>
+         <execution>
+           <id>netconf-attach-artifacts</id>
+           <phase>package</phase>
+           <goals>
+             <goal>attach-artifact</goal>
+           </goals>
+           <configuration>
+             <artifacts>
+               <artifact>
+                 <file>src/main/config/xrnodes-config.xml</file>
+                 <type>xml</type>
+                 <classifier>xrnodes</classifier>
+               </artifact>
+             </artifacts>
+           </configuration>
+         </execution>
+       </executions>
+     </plugin>
+    </plugins>
+  </build>
 
 </project>

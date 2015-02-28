@@ -18,12 +18,18 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <feature version='${yangtools.version}'>odl-yangtools-models</feature>
     <bundle>mvn:org.opendaylight.coretutorials/ncmount-api/${project.version}</bundle>
   </feature>
+  <feature name='odl-ncmount-xrmodels' version='${project.version}' description='OpenDaylight :: ncmount :: xrmodels'>
+    <feature version='${yangtools.version}'>odl-yangtools-models</feature>
+    <bundle>mvn:org.opendaylight.coretutorials/ncmount-xrmodels/${project.version}</bundle>
+  </feature>
   <feature name='odl-ncmount' version='${project.version}' description='OpenDaylight :: ncmount'>
     <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
     <feature version='${mdsal.version}'>odl-netconf-connector-ssh</feature>
     <feature version='${project.version}'>odl-ncmount-api</feature>
+    <feature version='${project.version}'>odl-ncmount-xrmodels</feature>
     <bundle>mvn:org.opendaylight.coretutorials/ncmount-impl/${project.version}</bundle>
     <configfile finalname="${configfile.directory}/ncmount.xml">mvn:org.opendaylight.coretutorials/ncmount-impl/${project.version}/xml/config</configfile>
+    <configfile finalname="${configfile.directory}/xrnodes-config.xml">mvn:org.opendaylight.coretutorials/ncmount-impl/${project.version}/xml/xrnodes</configfile>
   </feature>
   <feature name='odl-ncmount-rest' version='${project.version}' description='OpenDaylight :: ncmount :: REST'>
     <feature version="${project.version}">odl-ncmount</feature>
