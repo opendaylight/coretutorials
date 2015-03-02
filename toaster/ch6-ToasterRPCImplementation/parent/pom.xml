@@ -50,7 +50,6 @@
     <properties>
         <!-- INTERNAL TODO: Need explanation of what's going on. -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <nexusproxy>http://nexus.opendaylight.org/content</nexusproxy>
         <sitedeploy>dav:http://nexus.opendaylight.org/content/sites/site</sitedeploy>
 
         <!-- These properties are used in later sections. If you don't specify
@@ -507,58 +506,4 @@
             </plugins>
         </pluginManagement>
     </build>
-
-    <!-- Repositories and pluginRepositories are the pointers to nexus
-    INTERNAL TODO: These will be deprecated once we require local settings of the XML in local .m2 -->
-    <repositories>
-        <repository>
-            <id>opendaylight-mirror</id>
-            <name>opendaylight-mirror</name>
-            <url>http://nexus.opendaylight.org/content/groups/public/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-        </repository>
-        <repository>
-            <id>opendaylight-snapshot</id>
-            <name>opendaylight-snapshot</name>
-            <url>http://nexus.opendaylight.org/content/repositories/opendaylight.snapshot/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>opendaylight-mirror</id>
-            <name>opendaylight-mirror</name>
-            <url>http://nexus.opendaylight.org/content/groups/public/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-        </pluginRepository>
-        <pluginRepository>
-            <id>opendaylight-snapshot</id>
-            <name>opendaylight-snapshot</name>
-            <url>http://nexus.opendaylight.org/content/repositories/opendaylight.snapshot/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </pluginRepository>
-    </pluginRepositories>
 </project>
