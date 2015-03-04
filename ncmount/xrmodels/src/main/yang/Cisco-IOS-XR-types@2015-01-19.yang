@@ -21,12 +21,14 @@ module Cisco-IOS-XR-types {
     "This module contains a collection of IOS-XR derived YANG data 
      types.
     
-     Copyright (c) 2013-2014 by Cisco Systems, Inc.
+     Copyright (c) 2013-2015 by Cisco Systems, Inc.
      All rights reserved.";
 
-  revision "2013-07-22" {
+  revision "2015-01-19" {
     description
-      "Initial revision.";
+     "This revision adds the following new data types:
+      - Bgp-ipv4-flowspec-address
+      - Bgp-ipv6-flowspec-address";
   }
 
   extension xr-cli-map {
@@ -125,6 +127,7 @@ module Cisco-IOS-XR-types {
   typedef Interface-name {
     type string {
       pattern "(([a-zA-Z0-9_]*\d+/){3}\d+)|"+
+              "(([a-zA-Z0-9_]*\d+/){4}\d+)|"+
               "(([a-zA-Z0-9_]*\d+/){3}\d+\.\d+)|"+
               "(([a-zA-Z0-9_]*\d+/){2}([a-zA-Z0-9_]*\d+))|"+
               "([a-zA-Z0-9_-]*\d+)|"+
@@ -141,7 +144,7 @@ module Cisco-IOS-XR-types {
   
   typedef Cisco-ios-xr-string {
     type string {
-      pattern "[\w\-\.:,_@#%\$\+=\|;]+";
+      pattern "[\w\-\.:,_@#%$\+=\|;]+";
     }
     description "Special characters are not allowed.";
   }
@@ -396,4 +399,17 @@ module Cisco-IOS-XR-types {
        it as is in the data store.";
   }
   
+  typedef Bgp-ipv4-flowspec-address {
+    type string {
+      pattern "[a-fA-F0-9]{4096}";
+    }
+    description "An IPV4 Flowspec address in hexadecimal notation.";
+  }
+
+  typedef Bgp-ipv6-flowspec-address {
+    type string {
+      pattern "[a-fA-F0-9]{4096}";
+    }
+    description "An IPV6 Flowspec address in hexadecimal notation.";
+  }
 }

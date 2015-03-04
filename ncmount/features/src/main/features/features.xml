@@ -14,6 +14,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
   <repository>mvn:org.opendaylight.controller/features-restconf/${mdsal.version}/xml/features</repository>
   <repository>mvn:org.opendaylight.controller/features-netconf-connector/${mdsal.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.dlux/features-dlux/${dlux.version}/xml/features</repository>
   <feature name='odl-ncmount-api' version='${project.version}' description='OpenDaylight :: ncmount :: api'>
     <feature version='${yangtools.version}'>odl-yangtools-models</feature>
     <bundle>mvn:org.opendaylight.coretutorials/ncmount-api/${project.version}</bundle>
@@ -38,6 +39,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <feature name='odl-ncmount-ui' version='${project.version}' description='OpenDaylight :: ncmount :: UI'>
     <feature version="${project.version}">odl-ncmount-rest</feature>
     <feature version="${mdsal.version}">odl-mdsal-apidocs</feature>
+    <feature version="${dlux.version}">odl-dlux-core</feature>
     <feature version="${mdsal.version}">odl-mdsal-xsql</feature>
   </feature>
 
