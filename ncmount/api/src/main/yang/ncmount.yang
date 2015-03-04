@@ -20,8 +20,8 @@ module ncmount {
             }
         }
         output {
-            leaf interfaces {
-                type uint32;
+            leaf msg {
+                type string;
                 description
                   "Number of interfaces on the node. Just a mock today";
               }
@@ -29,4 +29,21 @@ module ncmount {
         }
     }
 
+    rpc list-nodes {
+        description
+          "Returns a list of netconf nodes for each data store space";
+
+        output {
+            leaf-list nc-config-nodes {
+                type string;
+                description
+                  "List of netconf nodes in the config space";
+            }
+            leaf-list nc-oper-nodes {
+                type string;
+                description
+                  "List of netconf nodes in the operational space";
+              }
+        }
+    }
 }
