@@ -7,13 +7,17 @@
  */
 package ncmount.impl;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.Future;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.MountPoint;
+import org.opendaylight.controller.md.sal.binding.api.MountPointService;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
@@ -22,9 +26,6 @@ import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RpcRegistration;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
-import org.opendaylight.controller.sal.binding.api.mount.MountInstance;
-import org.opendaylight.controller.sal.binding.api.mount.MountProviderService;
-import org.opendaylight.controller.sal.binding.api.mount.MountService;
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ifmgr.cfg.rev150107.InterfaceConfigurations;
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ifmgr.cfg.rev150107._interface.configurations.InterfaceConfiguration;
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ifmgr.oper.rev150107.InterfaceProperties;
@@ -36,7 +37,6 @@ import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ifmgr.op
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ifmgr.oper.rev150107._interface.table.interfaces.Interface;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeFields.ConnectionStatus;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.fields.AvailableCapabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.network.topology.topology.topology.types.TopologyNetconf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.ListNodesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.ListNodesOutputBuilder;
@@ -65,7 +65,7 @@ public class NcmountProvider implements DataChangeListener, NcmountService, Bind
                                                                         .create(NetworkTopology.class)
                                                                         .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())));
     private RpcRegistration<NcmountService> rpcReg;
-    private MountService mountService;
+    private MountPointService mountService;
     private DataBroker dataBroker;
 
     @Override
@@ -73,16 +73,16 @@ public class NcmountProvider implements DataChangeListener, NcmountService, Bind
         LOG.info("NcmountProvider Session Initiated");
         // Register the RPC and Mount services
         this.rpcReg = session.addRpcImplementation(NcmountService.class, this);
-        this.mountService = session.getSALService(MountProviderService.class);
+        this.mountService = session.getSALService(MountPointService.class);
         this.dataBroker = session.getSALService(DataBroker.class);
-        
+
         // Register ourselves as data change listener for changes on any Netconf
-        // node. Netconf nodes are accessed via "Netconf Topology" - a special 
-        // topology created by the system infra, which contains all netconf 
+        // node. Netconf nodes are accessed via "Netconf Topology" - a special
+        // topology created by the system infra, which contains all netconf
         // nodes. NETCONF_TOPO_IID is equivalent to the following URL:
         // .../restconf/operational/network-topology:network-topology/topology/topology-netconf
         if (dataBroker != null) {
-            dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL, 
+            dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
                     NETCONF_TOPO_IID.child(Node.class), this, DataChangeScope.SUBTREE);
         }
 
@@ -92,28 +92,45 @@ public class NcmountProvider implements DataChangeListener, NcmountService, Bind
     public void close() throws Exception {
         LOG.info("NcmountProvider Closed");
         if (rpcReg != null) {
-        	rpcReg.close();
+            rpcReg.close();
         }
     }
 
     @Override
     public Future<RpcResult<ShowNodeOutput>> showNode(ShowNodeInput input) {
         LOG.info("showNode called, input {}", input);
-        
+
         // Get the mount point for the specified node
         // Equivalent to '.../restconf/<config | operational>/opendaylight-inventory:nodes/node/<node-name>/yang-ext:mount/'
         // Note that we can read both config and operational data from the same
         // mount point
-        MountInstance xrNode = mountService.getMountPoint(NETCONF_TOPO_IID
-                                                          .child(Node.class, new NodeKey(new NodeId(input.getNodeName()))));
+        final Optional<MountPoint> xrNodeOptional = mountService.getMountPoint(NETCONF_TOPO_IID
+                .child(Node.class, new NodeKey(new NodeId(input.getNodeName()))));
+        Preconditions.checkArgument(xrNodeOptional.isPresent(), "Unable to locate mountpoint: %s, not mounted yet or not configured", input.getNodeName());
+        final MountPoint xrNode = xrNodeOptional.get();
+        // Get the DataBroker for mounted node
+        final DataBroker xrNodeBroker = xrNode.getService(DataBroker.class).get();
+        // Start a read only transaction for the mount point
+        final ReadOnlyTransaction xrNodeReadTx = xrNodeBroker.newReadOnlyTransaction();
 
         // Browse through the node's interface configuration data (as example)
         // Equivalent to '.../yang-ext:mount/Cisco-IOS-XR-ifmgr-cfg:interface-configurations'
-        InstanceIdentifier<InterfaceConfigurations> iid = InstanceIdentifier.create(InterfaceConfigurations.class); 
-        InterfaceConfigurations ifConfig = (InterfaceConfigurations)xrNode.readConfigurationData(iid);
-        List<InterfaceConfiguration> ifConfigs = ifConfig.getInterfaceConfiguration();
-        for (InterfaceConfiguration config : ifConfigs) {
-            LOG.info("Config for '{}': config {}", config.getInterfaceName().getValue(), config);
+        InstanceIdentifier<InterfaceConfigurations> iid = InstanceIdentifier.create(InterfaceConfigurations.class);
+        Optional<InterfaceConfigurations> ifConfig;
+        try {
+            // Read from transaction is asynchronous, but a simple get/checkedGet makes the call synchronous
+            ifConfig = xrNodeReadTx.read(LogicalDatastoreType.CONFIGURATION, iid).checkedGet();
+        } catch (ReadFailedException e) {
+            throw new IllegalStateException("Unexpected error reading data from " + input.getNodeName(), e);
+        }
+
+        if(ifConfig.isPresent()) {
+            List<InterfaceConfiguration> ifConfigs = ifConfig.get().getInterfaceConfiguration();
+            for (InterfaceConfiguration config : ifConfigs) {
+                LOG.info("Config for '{}': config {}", config.getInterfaceName().getValue(), config);
+            }
+        } else {
+            LOG.info("No data present on path '{}' for mountpoint: {}", iid, input.getNodeName());
         }
 
         // Browse through node's interface operational data
@@ -121,26 +138,37 @@ public class NcmountProvider implements DataChangeListener, NcmountService, Bind
         // Note that we are not using the top level container here
         InstanceIdentifier<DataNodes> idn = InstanceIdentifier.create(InterfaceProperties.class)
                                                               .child(DataNodes.class);
-        DataNodes ldn = (DataNodes)xrNode.readOperationalData(idn);
-
-        List<DataNode> dataNodes = ldn.getDataNode();
-        for (DataNode node : dataNodes) {
-            LOG.info("DataNode '{}'", node.getDataNodeName().getValue());
-            
-            Locationviews lw = node.getLocationviews();
-            List<Locationview> locationViews = lw.getLocationview();
-            for (Locationview view : locationViews) {
-                LOG.info("LocationView '{}': {}", view.getKey().getLocationviewName().getValue(), view);
-            }
-
-            Interfaces ifc = node.getSystemView().getInterfaces();
-            List<Interface> ifList = ifc.getInterface();
-            for (Interface intf : ifList) {
-                LOG.info("Interface '{}': {}", intf.getInterface().getValue(), intf);
-            }
-
+        Optional<DataNodes> ldn;
+        try {
+            ldn = xrNodeReadTx.read(LogicalDatastoreType.OPERATIONAL, idn).checkedGet();
+        } catch (ReadFailedException e) {
+            throw new IllegalStateException("Unexpected error reading data from " + input.getNodeName(), e);
         }
-        
+
+
+        if(ldn.isPresent()) {
+            List<DataNode> dataNodes = ldn.get().getDataNode();
+            for (DataNode node : dataNodes) {
+                LOG.info("DataNode '{}'", node.getDataNodeName().getValue());
+
+                Locationviews lw = node.getLocationviews();
+                List<Locationview> locationViews = lw.getLocationview();
+                for (Locationview view : locationViews) {
+                    LOG.info("LocationView '{}': {}", view.getKey().getLocationviewName().getValue(), view);
+                }
+
+                Interfaces ifc = node.getSystemView().getInterfaces();
+                List<Interface> ifList = ifc.getInterface();
+                for (Interface intf : ifList) {
+                    LOG.info("Interface '{}': {}", intf.getInterface().getValue(), intf);
+                }
+
+            }
+        } else {
+            LOG.info("No data present on path '{}' for mountpoint: {}", idn, input.getNodeName());
+        }
+
+
         ShowNodeOutput output = new ShowNodeOutputBuilder()
                                     .setMsg("See the ODL log for results (in karaf console, type 'display')")
                                     .build();
@@ -155,7 +183,7 @@ public class NcmountProvider implements DataChangeListener, NcmountService, Bind
         ListNodesOutputBuilder outBld = new ListNodesOutputBuilder();
 
         ReadTransaction tx = dataBroker.newReadOnlyTransaction();
-        
+
         // Get all the nodes from configuration space
         try {
             nodes = tx.read(LogicalDatastoreType.CONFIGURATION, NETCONF_TOPO_IID).checkedGet().get().getNode();
@@ -196,7 +224,7 @@ public class NcmountProvider implements DataChangeListener, NcmountService, Bind
         outBld.setNcOperNodes(results);
 
         return RpcResultBuilder.success(outBld.build()).buildFuture();
-	}
+    }
 
     @Override
     public void onDataChanged(
