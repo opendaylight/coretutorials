@@ -6,6 +6,24 @@ module ncmount {
     revision "2015-01-05" {
         description "Initial revision of ncmount model";
     }
+    
+    grouping xr-node {
+    	leaf node-name {
+    		type string;
+    		description 
+    			"Name of the node";
+    	}
+    	leaf status {
+    		type string;
+    		description
+    			"Node status";
+    	}
+    	leaf-list properties {
+    		type string;
+    		description
+    			"List of properties";
+    	}
+    }
 
     rpc show-node {
         description
@@ -20,12 +38,43 @@ module ncmount {
             }
         }
         output {
-            leaf msg {
-                type string;
-                description
-                  "Number of interfaces on the node. Just a mock today";
-              }
+            container if-cfg-data {
+                list ifc {
+                    key "active interface-name";
+                    description "A small subset of an interface 
+                        configuration; provides an example of processing
+                        of data retrieved from a device.";
 
+                    leaf interface-name {
+                        type string;
+                        description
+                          "The name of the interface";
+                    }
+                    leaf active {
+                        type string;
+                        description
+                            "Whether the interface is active or preconfigured";
+                    }
+                    leaf description {
+                        type string;
+                        description "Interface description";
+                    }
+                    leaf bandwidth {
+                        type int32;
+                        description "The bandwidth of the interface in kbps";
+                      }
+                      leaf link-status {
+                        type string;
+                        description
+                          "Enable interface and line-protocol state change
+                          alarms";
+                      }
+                }
+
+            }
+            container if-oper-data {
+
+            }
         }
     }
 
