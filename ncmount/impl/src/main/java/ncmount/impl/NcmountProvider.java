@@ -156,7 +156,11 @@ public class NcmountProvider implements DataChangeListener, NcmountService, Bind
                                 .setBandwidth(config.getBandwidth())
                                 .setDescription(config.getDescription())
                                 .setInterfaceName(ifcName)
+<<<<<<< HEAD
+                                .setLinkStatus(config.isLinkStatus() == Boolean.TRUE ? "Up" : "Down")
+=======
                                 .setLinkStatus(config.isLinkStatus() == true ? "Up" : "Down")
+>>>>>>> fdcf8263621a00f6a3f46f0df5f38e58d24f251d
                                 .setKey(new IfcKey(ifcActive, ifcName))
                                 .build());
             }
@@ -223,7 +227,10 @@ public class NcmountProvider implements DataChangeListener, NcmountService, Bind
 
         // EXAMPLE: Get all the nodes from configuration space
         try {
-            nodes = tx.read(LogicalDatastoreType.CONFIGURATION, NETCONF_TOPO_IID).checkedGet().get().getNode();
+            nodes = tx.read(LogicalDatastoreType.CONFIGURATION, NETCONF_TOPO_IID)
+                                .checkedGet()
+                                .get()
+                                .getNode();
         } catch (ReadFailedException e) {
             LOG.error("Failed to read node config from datastore", e);
             throw new IllegalStateException(e);
@@ -236,10 +243,18 @@ public class NcmountProvider implements DataChangeListener, NcmountService, Bind
         }
         outBld.setNcConfigNodes(results);
 
+<<<<<<< HEAD
+        // EXAMPLE: Get all the nodes from operational space. The Netconf
+        // connector puts discovered nodes into the operational space.
+=======
         // EXAMPLE: Get all the nodes from operational space. The Netconf connector puts 
         // discovered nodes into the operational space.  
+>>>>>>> fdcf8263621a00f6a3f46f0df5f38e58d24f251d
         try {
-            nodes = tx.read(LogicalDatastoreType.OPERATIONAL, NETCONF_TOPO_IID).checkedGet().get().getNode();
+            nodes = tx.read(LogicalDatastoreType.OPERATIONAL, NETCONF_TOPO_IID)
+                                .checkedGet()
+                                .get()
+                                .getNode();
         } catch (ReadFailedException e) {
             LOG.error("Failed to read node config from datastore", e);
             throw new IllegalStateException(e);
@@ -253,7 +268,9 @@ public class NcmountProvider implements DataChangeListener, NcmountService, Bind
                 // We have a Netconf device
                 ConnectionStatus csts = nnode.getConnectionStatus();
                 if (csts == ConnectionStatus.Connected) {
-                    List<String> capabilities = nnode.getAvailableCapabilities().getAvailableCapability();
+                    List<String> capabilities = nnode
+                                                .getAvailableCapabilities()
+                                                .getAvailableCapability();
                     LOG.info("Capabilities: {}", capabilities);
                 }
             }
@@ -281,7 +298,8 @@ public class NcmountProvider implements DataChangeListener, NcmountService, Bind
                 NetconfNode nnode = (NetconfNode)entry.getValue();
                 ConnectionStatus csts = nnode.getConnectionStatus();
                 if (csts == ConnectionStatus.Connected) {
-                    List<String> capabilities = nnode.getAvailableCapabilities().getAvailableCapability();
+                    List<String> capabilities = nnode.getAvailableCapabilities()
+                                                      .getAvailableCapability();
                     LOG.info("Capabilities: {}", capabilities);
                 }
             }
@@ -295,7 +313,9 @@ public class NcmountProvider implements DataChangeListener, NcmountService, Bind
                 NetconfNode nnode = (NetconfNode)entry.getValue();
                 ConnectionStatus csts = nnode.getConnectionStatus();
                 if (csts == ConnectionStatus.Connected) {
-                    List<String> capabilities = nnode.getAvailableCapabilities().getAvailableCapability();
+                    List<String> capabilities = nnode
+                                                   .getAvailableCapabilities()
+                                                   .getAvailableCapability();
                     LOG.info("Capabilities: {}", capabilities);
                 }
             }
