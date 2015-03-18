@@ -27,6 +27,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <feature name='odl-ncmount' version='${project.version}' description='OpenDaylight :: ncmount'>
     <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
     <feature version='${mdsal.version}'>odl-netconf-connector-ssh</feature>
+    <feature version='${mdsal.version}'>odl-netconf-mdsal</feature>
     <feature version='${project.version}'>odl-ncmount-api</feature>
     <feature version='${project.version}'>odl-ncmount-xrmodels</feature>
     <bundle>mvn:org.opendaylight.coretutorials/ncmount-impl/${project.version}</bundle>

@@ -31,7 +31,6 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ifmgr.cfg.rev150107.InterfaceConfigurations;
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ifmgr.cfg.rev150107._interface.configurations.InterfaceConfiguration;
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ifmgr.oper.rev150107.InterfaceProperties;
-import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ifmgr.oper.rev150107._interface.dampening.nodes.node.show.dampening.interfaces.InterfaceBuilder;
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ifmgr.oper.rev150107._interface.properties.DataNodes;
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ifmgr.oper.rev150107._interface.properties.data.nodes.DataNode;
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ifmgr.oper.rev150107._interface.properties.data.nodes.data.node.Locationviews;
@@ -68,9 +67,10 @@ import org.slf4j.LoggerFactory;
 
 public class NcmountProvider implements DataChangeListener, NcmountService, BindingAwareProvider, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(NcmountProvider.class);
-    public static final InstanceIdentifier<Topology> NETCONF_TOPO_IID = InstanceIdentifier
-                                                                        .create(NetworkTopology.class)
-                                                                        .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())));
+    public static final InstanceIdentifier<Topology> NETCONF_TOPO_IID = 
+            InstanceIdentifier
+            .create(NetworkTopology.class)
+            .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())));
     private RpcRegistration<NcmountService> rpcReg;
     private MountPointService mountService;
     private DataBroker dataBroker;
@@ -86,11 +86,11 @@ public class NcmountProvider implements DataChangeListener, NcmountService, Bind
         // Register ourselves as the REST API RPC implementation 
         this.rpcReg = session.addRpcImplementation(NcmountService.class, this);
 
-        // Register ourselves as data change listener for changes on Netconf nodes.
-        // Netconf nodes are accessed via "Netconf Topology" - a special topology 
-        // that is created by the system infrastructure. It contains all Netconf 
-        // nodes the Netconf connector knows about. NETCONF_TOPO_IID is equivalent 
-        // to the following URL:
+        // Register ourselves as data change listener for changes on Netconf 
+        // nodes. Netconf nodes are accessed via "Netconf Topology" - a special
+        // topology that is created by the system infrastructure. It contains 
+        // all Netconf nodes the Netconf connector knows about. NETCONF_TOPO_IID
+        // is equivalent to the following URL:
         // .../restconf/operational/network-topology:network-topology/topology/topology-netconf
         if (dataBroker != null) {
             dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
@@ -118,8 +118,8 @@ public class NcmountProvider implements DataChangeListener, NcmountService, Bind
                 .child(Node.class, new NodeKey(new NodeId(input.getNodeName()))));
         
         Preconditions.checkArgument(xrNodeOptional.isPresent(),
-        		"Unable to locate mountpoint: %s, not mounted yet or not configured", 
-        		input.getNodeName());
+                "Unable to locate mountpoint: %s, not mounted yet or not configured", 
+                input.getNodeName());
         final MountPoint xrNode = xrNodeOptional.get();
  
         // Get the DataBroker for mounted node
@@ -128,12 +128,13 @@ public class NcmountProvider implements DataChangeListener, NcmountService, Bind
         final ReadOnlyTransaction xrNodeReadTx = xrNodeBroker.newReadOnlyTransaction();
 
         // EXAMPLE: Browsing through the node's interface configuration data
-        // First, we get an Instance Identifier for the configuration data. Note that 
-        //  the Instance Identifier is relative to the mountpoint (we got the path to 
-        // the mountpoint above). The Instance Identifier path is equivalent to: 
+        // First, we get an Instance Identifier for the configuration data. Note
+        // that the Instance Identifier is relative to the mountpoint (we got 
+        // the path to the mountpoint above). The Instance Identifier path is 
+        // equivalent to: 
         // '.../yang-ext:mount/Cisco-IOS-XR-ifmgr-cfg:interface-configurations'
         InstanceIdentifier<InterfaceConfigurations> iid = 
-        		InstanceIdentifier.create(InterfaceConfigurations.class);
+                InstanceIdentifier.create(InterfaceConfigurations.class);
 
         Optional<InterfaceConfigurations> ifConfig;
         try {
@@ -145,7 +146,7 @@ public class NcmountProvider implements DataChangeListener, NcmountService, Bind
         }
 
         List<Ifc> ifcList = new ArrayList<Ifc>();
-        if(ifConfig.isPresent()) {
+        if (ifConfig.isPresent()) {
             List<InterfaceConfiguration> ifConfigs = ifConfig.get().getInterfaceConfiguration();
             for (InterfaceConfiguration config : ifConfigs) {
                 LOG.info("Config for '{}': config {}", config.getInterfaceName().getValue(), config);
@@ -156,6 +157,7 @@ public class NcmountProvider implements DataChangeListener, NcmountService, Bind
                                 .setBandwidth(config.getBandwidth())
                                 .setDescription(config.getDescription())
                                 .setInterfaceName(ifcName)
+                                .setLinkStatus(config.isLinkStatus() == Boolean.TRUE ? "Up" : "Down")
                                 .setLinkStatus(config.isLinkStatus() == true ? "Up" : "Down")
                                 .setKey(new IfcKey(ifcActive, ifcName))
                                 .build());
@@ -179,7 +181,7 @@ public class NcmountProvider implements DataChangeListener, NcmountService, Bind
             throw new IllegalStateException("Unexpected error reading data from " + input.getNodeName(), e);
         }
 
-        if(ldn.isPresent()) {
+        if (ldn.isPresent()) {
             List<DataNode> dataNodes = ldn.get().getDataNode();
             for (DataNode node : dataNodes) {
                 LOG.info("DataNode '{}'", node.getDataNodeName().getValue());
@@ -187,18 +189,22 @@ public class NcmountProvider implements DataChangeListener, NcmountService, Bind
                 Locationviews lw = node.getLocationviews();
                 List<Locationview> locationViews = lw.getLocationview();
                 for (Locationview view : locationViews) {
-                    LOG.info("LocationView '{}': {}", view.getKey().getLocationviewName().getValue(), view);
+                    LOG.info("LocationView '{}': {}",
+                            view.getKey().getLocationviewName().getValue(), 
+                            view);
                 }
 
                 Interfaces ifc = node.getSystemView().getInterfaces();
                 List<Interface> ifList = ifc.getInterface();
                 for (Interface intf : ifList) {
-                    LOG.info("Interface '{}': {}", intf.getInterface().getValue(), intf);
+                    LOG.info("Interface '{}': {}",
+                            intf.getInterface().getValue(), intf);
                 }
 
             }
         } else {
-            LOG.info("No data present on path '{}' for mountpoint: {}", idn, input.getNodeName());
+            LOG.info("No data present on path '{}' for mountpoint: {}",
+                    idn, input.getNodeName());
         }
 
         // Finally, we build the RPC response with the retrieved data and return 
@@ -213,8 +219,8 @@ public class NcmountProvider implements DataChangeListener, NcmountService, Bind
     @Override
     public Future<RpcResult<ListNodesOutput>> listNodes() {
         // Use this method for one-off operations, when you need to find out 
-    	// something about the nodes currently in the Netconf Topology. An 
-    	// application that needs to handle netconf node discovery/disappearance,
+        // something about the nodes currently in the Netconf Topology. An 
+        // application that needs to handle netconf node discovery/disappearance,
         // a data change listener over Netconf topology should be used.
         List<Node> nodes;
         ListNodesOutputBuilder outBld = new ListNodesOutputBuilder();
@@ -223,37 +229,43 @@ public class NcmountProvider implements DataChangeListener, NcmountService, Bind
 
         // EXAMPLE: Get all the nodes from configuration space
         try {
-            nodes = tx.read(LogicalDatastoreType.CONFIGURATION, NETCONF_TOPO_IID).checkedGet().get().getNode();
+            nodes = tx.read(LogicalDatastoreType.CONFIGURATION, NETCONF_TOPO_IID)
+                                .checkedGet()
+                                .get()
+                                .getNode();
         } catch (ReadFailedException e) {
             LOG.error("Failed to read node config from datastore", e);
             throw new IllegalStateException(e);
         }
 
         List<String> results = new ArrayList<String>();
-        for( Node node : nodes) {
+        for (Node node : nodes) {
             LOG.info("Node: {}", node);
             results.add(node.getNodeId().getValue());
         }
         outBld.setNcConfigNodes(results);
 
-        // EXAMPLE: Get all the nodes from operational space. The Netconf connector puts 
-        // discovered nodes into the operational space.  
         try {
-            nodes = tx.read(LogicalDatastoreType.OPERATIONAL, NETCONF_TOPO_IID).checkedGet().get().getNode();
+            nodes = tx.read(LogicalDatastoreType.OPERATIONAL, NETCONF_TOPO_IID)
+                                .checkedGet()
+                                .get()
+                                .getNode();
         } catch (ReadFailedException e) {
             LOG.error("Failed to read node config from datastore", e);
             throw new IllegalStateException(e);
         }
 
         results = new ArrayList<String>();
-        for( Node node : nodes) {
+        for (Node node : nodes) {
             LOG.info("Node: {}", node);
             NetconfNode nnode = node.getAugmentation(NetconfNode.class);
             if (nnode != null) {
                 // We have a Netconf device
                 ConnectionStatus csts = nnode.getConnectionStatus();
                 if (csts == ConnectionStatus.Connected) {
-                    List<String> capabilities = nnode.getAvailableCapabilities().getAvailableCapability();
+                    List<String> capabilities = nnode
+                                                .getAvailableCapabilities()
+                                                .getAvailableCapability();
                     LOG.info("Capabilities: {}", capabilities);
                 }
             }
@@ -267,35 +279,41 @@ public class NcmountProvider implements DataChangeListener, NcmountService, Bind
     @Override
     public void onDataChanged(
             AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-    	// We need to handle two types of events: 
-    	// 1. discovery of new nodes
-    	// 2. status change in existing nodes
+        // We need to handle two types of events: 
+        // 1. discovery of new nodes
+        // 2. status change in existing nodes
         LOG.info("OnDataChange, change: {}", change);
 
         // EXAMPLE: New node discovery
         // React to new Netconf nodes added to the Netconf topology or existing
         // Netconf nodes deleted from the Netconf topology
-        for ( Entry<InstanceIdentifier<?>, DataObject> entry : change.getCreatedData().entrySet()) {
-            if( entry.getKey().getTargetType() == NetconfNode.class) {
+        for ( Entry<InstanceIdentifier<?>, 
+                DataObject> entry : change.getCreatedData().entrySet()) {
+            if (entry.getKey().getTargetType() == NetconfNode.class) {
                 // We have a Netconf device
                 NetconfNode nnode = (NetconfNode)entry.getValue();
                 ConnectionStatus csts = nnode.getConnectionStatus();
                 if (csts == ConnectionStatus.Connected) {
-                    List<String> capabilities = nnode.getAvailableCapabilities().getAvailableCapability();
+                    List<String> capabilities = nnode.getAvailableCapabilities()
+                                                      .getAvailableCapability();
                     LOG.info("Capabilities: {}", capabilities);
                 }
             }
         }
         
         // EXAMPLE: Status change in existing node(s)
-        // React to data changes in Netconf nodes present in the Netconf topology 
-        for ( Entry<InstanceIdentifier<?>, DataObject> entry : change.getUpdatedData().entrySet()) {
-            if( entry.getKey().getTargetType() == NetconfNode.class) {
+        // React to data changes in Netconf nodes present in the Netconf 
+        // topology 
+        for ( Entry<InstanceIdentifier<?>, 
+                DataObject> entry : change.getUpdatedData().entrySet()) {
+            if (entry.getKey().getTargetType() == NetconfNode.class) {
                 // We have a Netconf device
                 NetconfNode nnode = (NetconfNode)entry.getValue();
                 ConnectionStatus csts = nnode.getConnectionStatus();
                 if (csts == ConnectionStatus.Connected) {
-                    List<String> capabilities = nnode.getAvailableCapabilities().getAvailableCapability();
+                    List<String> capabilities = nnode
+                                                   .getAvailableCapabilities()
+                                                   .getAvailableCapability();
                     LOG.info("Capabilities: {}", capabilities);
                 }
             }
