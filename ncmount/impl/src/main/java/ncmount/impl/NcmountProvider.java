@@ -158,7 +158,6 @@ public class NcmountProvider implements DataChangeListener, NcmountService, Bind
                                 .setDescription(config.getDescription())
                                 .setInterfaceName(ifcName)
                                 .setLinkStatus(config.isLinkStatus() == Boolean.TRUE ? "Up" : "Down")
-                                .setLinkStatus(config.isLinkStatus() == true ? "Up" : "Down")
                                 .setKey(new IfcKey(ifcActive, ifcName))
                                 .build());
             }
