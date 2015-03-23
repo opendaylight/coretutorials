@@ -288,17 +288,10 @@ public class NcmountProvider implements DataChangeListener, NcmountService, Bind
         for ( Entry<InstanceIdentifier<?>,
                 DataObject> entry : change.getCreatedData().entrySet()) {
             if (entry.getKey().getTargetType() == NetconfNode.class) {
-                NodeId nodeId = getNodeId(entry);
-                LOG.info("NETCONF Node: {}", nodeId.getValue());
+                NodeId nodeId = getNodeId(entry.getKey());
+                LOG.info("NETCONF Node: {} was created", nodeId.getValue());
 
-                // We have a Netconf device
-                NetconfNode nnode = (NetconfNode)entry.getValue();
-                ConnectionStatus csts = nnode.getConnectionStatus();
-                if (csts == ConnectionStatus.Connected) {
-                    List<String> capabilities = nnode.getAvailableCapabilities()
-                                                      .getAvailableCapability();
-                    LOG.info("Capabilities: {}", capabilities);
-                }
+                // Not much can be done at this point, we need UPDATE event with state set to connected
             }
         }
 
@@ -308,35 +301,60 @@ public class NcmountProvider implements DataChangeListener, NcmountService, Bind
         for ( Entry<InstanceIdentifier<?>,
                 DataObject> entry : change.getUpdatedData().entrySet()) {
             if (entry.getKey().getTargetType() == NetconfNode.class) {
-                NodeId nodeId = getNodeId(entry);
-                LOG.info("NETCONF Node: {}", nodeId.getValue());
+                NodeId nodeId = getNodeId(entry.getKey());
 
                 // We have a Netconf device
                 NetconfNode nnode = (NetconfNode)entry.getValue();
                 ConnectionStatus csts = nnode.getConnectionStatus();
-                if (csts == ConnectionStatus.Connected) {
-                    List<String> capabilities = nnode
-                                                   .getAvailableCapabilities()
-                                                   .getAvailableCapability();
-                    LOG.info("Capabilities: {}", capabilities);
+
+                switch (csts) {
+                    case Connected: {
+                        // Fully connected, all services for remote device available from MountPointService
+                        LOG.info("NETCONF Node: {} is fully connected", nodeId.getValue());
+                        List<String> capabilities =
+                                nnode.getAvailableCapabilities().getAvailableCapability();
+                        LOG.info("Capabilities: {}", capabilities);
+                        break;
+                    }
+                    case Connecting: {
+                        // Connecting state is set initially but netconf device can get back to it after a disconnect
+                        // Note that device could jump back and forth between connected and connecting for various reasons:
+                        // disconnect from remote device, network connectivity loss etc.
+                        LOG.info("NETCONF Node: {} was disconnected", nodeId.getValue());
+                        break;
+                    }
+                    case UnableToConnect: {
+                        // Its over for the device, no more reconnects
+                        LOG.info("NETCONF Node: {} connection failed", nodeId.getValue());
+                        break;
+                    }
                 }
+            }
+        }
+
+        for (InstanceIdentifier<?> removedPath : change.getRemovedPaths()) {
+            final NodeId nodeId = getNodeId(removedPath);
+            if (nodeId != null) {
+                // User removed the netconf connector for this node
+                // Before its removed, the netconf node changes state to connecting (just as if it was disconnected)
+                // This might be triggered multiple times since listener is scoped to SUBTREE
+                LOG.info("NETCONF Node: {} was removed", nodeId.getValue());
             }
         }
 
     }
 
-    private NodeId getNodeId(final Entry<InstanceIdentifier<?>, DataObject> entry) {
-        NodeId nodeId = null;
-        for (InstanceIdentifier.PathArgument pathArgument : entry.getKey().getPathArguments()) {
+    private NodeId getNodeId(final InstanceIdentifier<?> path) {
+        for (InstanceIdentifier.PathArgument pathArgument : path.getPathArguments()) {
             if (pathArgument instanceof InstanceIdentifier.IdentifiableItem<?, ?>) {
 
                 final Identifier key = ((InstanceIdentifier.IdentifiableItem) pathArgument).getKey();
                 if(key instanceof NodeKey) {
-                    nodeId = ((NodeKey) key).getNodeId();
+                    return ((NodeKey) key).getNodeId();
                 }
             }
         }
-        return nodeId;
+        return null;
     }
 
 
