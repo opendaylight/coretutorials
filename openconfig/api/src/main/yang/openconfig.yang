@@ -1,0 +1,9 @@
+module openconfig {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:openconfig";
+    prefix "openconfig";
+
+    revision "2015-01-05" {
+        description "Initial revision of openconfig model";
+    }
+}

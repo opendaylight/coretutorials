@@ -1,0 +1,35 @@
+module openconfig-impl {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:openconfig:impl";
+    prefix "openconfig-impl";
+
+    import config { prefix config; revision-date 2013-04-05; }
+    import opendaylight-md-sal-binding { prefix md-sal-binding; revision-date 2013-10-28;}
+
+    description
+        "Service definition for openconfig project";
+
+    revision "2014-12-10" {
+        description
+            "Initial revision";
+    }
+
+    identity openconfig {
+        base config:module-type;
+        config:java-name-prefix Openconfig;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case openconfig {
+            when "/config:modules/config:module/config:type = 'openconfig'";
+            container broker {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity md-sal-binding:binding-broker-osgi-registry;
+                    }
+                }
+            }
+        }
+    }
+}
