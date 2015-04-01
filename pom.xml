@@ -26,6 +26,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
     <module>hello</module>
     <module>dsbenchmark</module>
     <module>ncmount</module>
+    <module>xmpp-agent</module>
   </modules>
 
 </project>
