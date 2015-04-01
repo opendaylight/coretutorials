@@ -1,0 +1,46 @@
+module xmpp-agent-impl {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:xmpp-agent:impl";
+    prefix "xmpp-agent-impl";
+
+    import config { prefix config; revision-date 2013-04-05; }
+    import opendaylight-md-sal-dom {prefix dom; revision-date 2013-10-28;}
+    import opendaylight-md-sal-binding { prefix md-sal-binding; revision-date 2013-10-28;}
+
+    description
+        "Service definition for xmpp-agent project";
+
+    revision "2014-12-10" {
+        description
+            "Initial revision";
+    }
+
+    identity xmpp-agent {
+        base config:module-type;
+        config:java-name-prefix XmppAgent;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case xmpp-agent {
+            when "/config:modules/config:module/config:type = 'xmpp-agent'";
+            container xmpp-agent {
+                container dom-broker {
+                    uses config:service-ref {
+                        refine type {
+                            mandatory true;
+                            config:required-identity dom:dom-broker-osgi-registry;
+                        }
+                    }
+                }
+                container binding-broker {
+                    uses config:service-ref {
+                        refine type {
+                            mandatory true;
+                            config:required-identity md-sal-binding:binding-broker-osgi-registry;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

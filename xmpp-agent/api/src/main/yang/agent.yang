@@ -1,0 +1,37 @@
+module agent {
+    yang-version 1;
+    namespace "urn:cisco:params:xml:ns:yang:user-agent";
+    prefix "user-agent";
+
+    description "Management of XMPPL user agents";
+
+    revision "2015-10-14" {
+        description "Initial revision";
+    }
+
+    container xmpp-user-agents {
+        list xmpp-user-agent {
+            key "agent-id";
+
+            leaf agent-id {
+	            type string;
+            }
+
+            leaf ip-address {
+                type string;
+            }
+
+            leaf port {
+                type int32;
+            }
+
+            leaf username {
+                type string;
+            }
+
+            leaf password {
+                type string;
+            }
+        }
+    }
+}
