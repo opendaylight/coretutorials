@@ -89,7 +89,7 @@ public class IetfsyslogProvider implements BindingAwareProvider,
 						logging_facility.getFacility()).getLocalName();
 				Severity severity = logging_facility.getSeverity();
 				if (!selector_str.isEmpty()) {
-					selector_str += "; ";
+					selector_str += ";";
 				}
 				selector_str += facility + "." + adv_op
 						+ severity.toString().toLowerCase();
@@ -100,11 +100,11 @@ public class IetfsyslogProvider implements BindingAwareProvider,
 		} else if (scope instanceof LoggingFacilityNone) {
 			selector_str = "*.none";
 		}
-	    return String.format("%-50s", this.formatout(selector_str, 50).toString());
+	    return this.formatout(selector_str, 50).toString();
 	}
 
 	private StringBuilder formatout(String input, int maxPerLine) {
-		boolean isFirstLine = true;
+		boolean isFirstItem = true;
 		int avail = maxPerLine;
 		String offstring = String.format("%-7s", "");
 		StringBuilder strCache = new StringBuilder();
@@ -112,41 +112,28 @@ public class IetfsyslogProvider implements BindingAwareProvider,
 		String out[] = input.split(";");
 
 		for (int i = 0; i < out.length; i++) {
-			if (isFirstLine) {
-				if (i < out.length - 1) { // not the last
-					String ss = out[i] + ";";
-					if (ss.length() >= avail) {
-						strCache.append(ss).append("\\\r\n").append(offstring);
-						avail = maxPerLine - offstring.length();
-						isFirstLine = false;
-					} else { // (ss.length() < avail)
-						strCache.append(ss);
-						avail -= ss.length();
-						if (avail < out[i + 1].length()) {
-							strCache.append("\\\r\n").append(offstring);
-							avail = maxPerLine - offstring.length();
-							isFirstLine = false;
-						}
-					}
-				} else { // the last
-					String ss = out[i];
-					strCache.append(ss);
-					isFirstLine = false;
-				}
+			String ss = out[i];
 
-			} else { // !if (isFirstLine)
-				if (i < out.length - 1) { // not the last
-					String ss = out[i] + ";";
+			if (i < out.length - 1) { // not the last
+				if (ss.length() >= avail - 1) {
+					strCache.append(";\\\r\n").append(offstring).append(ss);
+					avail = maxPerLine - offstring.length() - ss.length();
+					isFirstItem = false;
+				} else { // (ss.length() < avail)
+					if (isFirstItem) {
+						isFirstItem = false;
+					} else {
+						ss = "; " + ss;
+					}
 					strCache.append(ss);
 					avail -= ss.length();
-					if (avail < out[i + 1].length()) {
-						strCache.append("\\\r\n").append(offstring);
-						avail = maxPerLine - offstring.length();
-					}
-				} else { // the last
-					String ss = out[i];
-					strCache.append(ss);
 				}
+			} else { // the last
+				if (!isFirstItem) {
+					strCache.append("; ");
+					avail -= 2;
+				}
+				strCache.append(String.format("%-" + avail + "s", ss));
 			}
 		} // loop
 
