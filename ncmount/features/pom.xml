@@ -91,7 +91,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
       <type>xml</type>
       <classifier>config</classifier>
     </dependency>
-
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>ncmount-api</artifactId>
