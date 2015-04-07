@@ -1,0 +1,78 @@
+module hweventsource-impl {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:hweventsource:impl";
+    prefix "hweventsource-impl";
+
+    import config { prefix config; revision-date 2013-04-05; }
+    import opendaylight-md-sal-binding { prefix md-sal-binding; revision-date 2013-10-28;}
+    import opendaylight-md-sal-dom {prefix dom;}
+    import messagebus-event-source-registry  {prefix mb-esr;}
+    
+    description
+        "Service definition for hweventsource project";
+
+    revision "2014-12-10" {
+        description
+            "Initial revision";
+    }
+
+    identity hweventsource {
+        base config:module-type;
+        config:java-name-prefix Hweventsource;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case hweventsource {
+            when "/config:modules/config:module/config:type = 'hweventsource'";
+            container broker {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity md-sal-binding:binding-broker-osgi-registry;
+                    }
+                }
+            }
+
+            container dom-broker {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity dom:dom-broker-osgi-registry;
+                    }
+                }
+            }
+
+            container event-source-registry {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity mb-esr:event-source-registry;
+                    }
+                }
+            }
+
+            leaf number-event-sources {
+                type uint8 {
+                    range "1 .. 20";
+                    }
+                description "Sample application will generate given number of sample event sources.";
+            } 
+
+            leaf message-generate-period {
+                type uint8 {
+                    range "1 .. 10";
+                    }
+                description "Each event source will generate message in given interval (seconds).";
+            }
+
+            leaf message-text {
+                type string {
+                    length "1 .. 1024";
+                    }
+                description "Text of message produced by each event source";
+            }
+
+        }
+
+    }
+}
