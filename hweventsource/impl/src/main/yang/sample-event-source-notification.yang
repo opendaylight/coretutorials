@@ -1,0 +1,34 @@
+module sample-event-source-notification {
+    namespace "urn:opendaylight:sample-event-source-notification";
+    prefix "sample-event-source-notification";
+
+    revision 2015-03-18 {
+        description "Initial revision";
+    }
+
+    typedef source-identifier{
+        type string {
+            length 1..max;
+        }
+    }
+    
+    notification sample-event-source-notification {
+        
+        description
+            "Simple notification used in event source example.";
+        
+        leaf source-id {
+            type source-identifier;
+            mandatory true;
+            description
+                "source identifier";
+        }
+        
+        leaf message {
+            type string;
+            mandatory true;
+            description
+                "message / content of notification";
+        }
+    }
+}
