@@ -1,0 +1,29 @@
+// Contents of "hweventsource-uagent-service"
+module uagent-topic-read {
+    namespace "urn:opendaylight:params:xml:ns:yang:hweventsource:uagent:topic";
+    prefix "hweventsource-uagent-topic";
+
+    revision 2015-04-08 {
+        description "Initial revision";
+    }
+
+    typedef topic-id {
+        type string {
+            length 1..max;
+        }
+        description
+            "A topic identifier. It uniquely defines a topic";
+    }
+
+    rpc read-topic {
+        description
+            "Request to read nofication from topic identified by topicId.";
+
+        input {
+            leaf topic-id {
+                type topic-id;
+                mandatory true;
+            }
+        }
+    }
+}
