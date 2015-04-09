@@ -13,7 +13,9 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <repository>mvn:org.opendaylight.yangtools/features-yangtools/${yangtools.version}/xml/features</repository>
   <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
   <repository>mvn:org.opendaylight.controller/features-restconf/${mdsal.version}/xml/features</repository>
-  <feature name='odl-dsbenchmark-api' version='${project.version}' description='OpenDaylight :: dsbenchmark :: api '>
+  <repository>mvn:org.opendaylight.dlux/features-dlux/${dlux.version}/xml/features</repository>
+
+    <feature name='odl-dsbenchmark-api' version='${project.version}' description='OpenDaylight :: dsbenchmark :: api '>
     <feature version='${yangtools.version}'>odl-yangtools-models</feature>
     <bundle>mvn:org.opendaylight.coretutorials/dsbenchmark-api/${project.version}</bundle>
   </feature>
@@ -31,6 +33,8 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <feature version="${project.version}">odl-dsbenchmark-impl-rest</feature>
     <feature version="${mdsal.version}">odl-mdsal-apidocs</feature>
     <feature version="${mdsal.version}">odl-mdsal-xsql</feature>
+    <feature version="${dlux.version}">odl-dlux-all</feature>
+
   </feature>
 
 </features>
