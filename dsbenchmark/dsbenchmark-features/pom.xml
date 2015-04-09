@@ -22,6 +22,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   </prerequisites>
   <properties>
     <mdsal.version>1.2.0-SNAPSHOT</mdsal.version>
+      <dlux.version>0.2.0-SNAPSHOT</dlux.version>
     <yangtools.version>0.7.0-SNAPSHOT</yangtools.version>
   </properties>
   <dependencyManagement>
@@ -60,6 +61,13 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
       <version>${mdsal.version}</version>
       <type>xml</type>
       <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.dlux</groupId>
+      <artifactId>features-dlux</artifactId>
+      <version>${dlux.version}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
