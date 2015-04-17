@@ -1,0 +1,36 @@
+// module define example of notification for Hello World event source application purposes
+module hweventsource {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:hweventsource:api";
+    prefix "hweventsource";
+
+    revision "2015-04-08" {
+        description "Initial revision of hweventsource-api model";
+    }
+
+    typedef source-identifier{
+        type string {
+            length 1..max;
+        }
+    }
+
+    notification sample-event-source-notification {
+        
+        description
+            "Simple notification used in event source example.";
+        
+        leaf source-id {
+            type source-identifier;
+            mandatory true;
+            description
+                "source identifier";
+        }
+        
+        leaf message {
+            type string;
+            mandatory true;
+            description
+                "message / content of notification";
+        }
+    }
+}

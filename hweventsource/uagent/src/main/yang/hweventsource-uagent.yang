@@ -1,0 +1,55 @@
+
+module hweventsource-uagent {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:hweventsource:uagent";
+    prefix "hweventsource-uagent";
+
+    import config { prefix config; revision-date 2013-04-05; }
+    import opendaylight-md-sal-binding { prefix md-sal-binding; revision-date 2013-10-28;}
+    import opendaylight-md-sal-dom {prefix dom;}
+
+    description
+        "Service definition for hweventsource-uagent project";
+
+    revision "2015-04-08" {
+        description
+            "Initial revision";
+    }
+
+    identity hweventsource-uagent {
+        base config:module-type;
+        config:java-name-prefix HweventsourceUagent;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case hweventsource-uagent {
+            when "/config:modules/config:module/config:type = 'hweventsource-uagent'";
+            container broker {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity md-sal-binding:binding-broker-osgi-registry;
+                    }
+                }
+            }
+
+            container dom-broker {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity dom:dom-broker-osgi-registry;
+                    }
+                }
+            }
+
+            leaf output-file-name {
+                type string {
+                    length "1 .. 1024";
+                    }
+                description "Name of file where hweventsource-uagent will write notification";
+            } 
+
+        }
+
+    }
+}
