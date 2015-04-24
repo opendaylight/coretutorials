@@ -20,12 +20,12 @@ import com.google.common.base.Preconditions;
 
 /**
  * HelloWorldEventSourceManager manage event sources in this example application
- * Event sources are created by {@Link SampleEventSourceGenerator}.
+ * Event sources are created by {@link SampleEventSourceGenerator}.
  * This generating process simulates origin of event source.
  * Actual implementation will identify origin of event source
  * by various ways (e.g. listen on changes in topology, create connection of devices etc.).
  *
- * Method addNewEventSource(HelloWorldEventSource eventSource) is called by {@Link SampleEventSourceGenerator}
+ * Method addNewEventSource(HelloWorldEventSource eventSource) is called by {@link SampleEventSourceGenerator}
  * when generator created new event source and it want to register it.
  *
  * Manager registers all added event sources in {@link EventSourceRegistry} and store {@link EventSourceRegistration} objects.
@@ -45,7 +45,7 @@ public class HelloWorldEventSourceManager implements AutoCloseable {
     }
 
     /*
-     * This method is called by by {@Link SampleEventSourceGenerator} when generator
+     * This method is called by by {@link SampleEventSourceGenerator} when generator
      * wants to add new event source.
      */
     void addNewEventSource(HelloWorldEventSource eventSource){

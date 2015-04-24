@@ -38,7 +38,7 @@ public final class Util {
      * Method filters SchemaPath namespace based on wildcard strings
      *
      * @param list
-     * @param patterh matching pattern
+     * @param pattern matching pattern
      * @return list of filtered SchemaPath
      */
     public static List<SchemaPath> selectSchemaPath(final List<SchemaPath> list, final Pattern pattern) {
