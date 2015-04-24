@@ -75,13 +75,13 @@ import org.slf4j.LoggerFactory;
  *
 
  */
-public class NcmountProvider implements DataChangeListener, NcmountService, 
+public class NcmountProvider implements DataChangeListener, NcmountService,
                                     BindingAwareProvider, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(NcmountProvider.class);
     public static final InstanceIdentifier<Topology> NETCONF_TOPO_IID =
             InstanceIdentifier
             .create(NetworkTopology.class)
-            .child(Topology.class, 
+            .child(Topology.class,
                    new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())));
     private RpcRegistration<NcmountService> rpcReg;
     private ListenerRegistration<DataChangeListener> dclReg;
@@ -90,16 +90,15 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
 
     /**
      * A method called when the session to MD-SAL is established. It initializes
-     * references to MD-SAL services needed throughout the lifetime of the 
+     * references to MD-SAL services needed throughout the lifetime of the
      * ncmount application and registers its RPC implementation and Data change
-     * Listener with the MD-SAL 
+     * Listener with the MD-SAL
      *
      * The skeleton for this method was generated with the MD-SAL application
      * archetype.
      *
 
      * @param session Reference to the established MD-SAL session
-     * @return        None
      */
     @Override
     public void onSessionInitiated(ProviderContext session) {
@@ -120,19 +119,16 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
         // .../restconf/operational/network-topology:network-topology/topology/topology-netconf
         if (dataBroker != null) {
             this.dclReg = dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                    NETCONF_TOPO_IID.child(Node.class), 
-                    this, 
+                    NETCONF_TOPO_IID.child(Node.class),
+                    this,
                     DataChangeScope.SUBTREE);
         }
     }
 
      /**
       * A method called when the session to MD-SAL is closed. It closes
-      * registrations in MD-SAL 
-      * Listener with the MD-SAL 
-      *
-      * @param session Reference to the established MD-SAL session
-      * @return        None
+      * registrations in MD-SAL
+      * Listener with the MD-SAL
       */
     @Override
     public void close() throws Exception {
@@ -150,7 +146,7 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
 
     /**
      * This method is the implementation of the 'show-node' RESTCONF service,
-     * which is one of the external APIs into the ncmount application. The 
+     * which is one of the external APIs into the ncmount application. The
      * service provides two example functions:
      * 1. Browse through a subset of a mounted node's configuration data
      * 2. Browse through  a subset of a mounted node's operational data
@@ -181,7 +177,7 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
 
         // Get the DataBroker for the mounted node
         final DataBroker xrNodeBroker = xrNode.getService(DataBroker.class).get();
-        // Start a new read only transaction that we will use to read data 
+        // Start a new read only transaction that we will use to read data
         // from the device
         final ReadOnlyTransaction xrNodeReadTx = xrNodeBroker.newReadOnlyTransaction();
 
@@ -210,7 +206,7 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
                                                      .get()
                                                      .getInterfaceConfiguration();
             for (InterfaceConfiguration config : ifConfigs) {
-                LOG.info("Config for '{}': config {}", 
+                LOG.info("Config for '{}': config {}",
                         config.getInterfaceName().getValue(), config);
                 String ifcActive = config.getActive().getValue();
                 String ifcName = config.getInterfaceName().getValue();
@@ -224,17 +220,17 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
                                 .build());
             }
         } else {
-            LOG.info("No data present on path '{}' for mountpoint: {}", 
-                    iid, 
+            LOG.info("No data present on path '{}' for mountpoint: {}",
+                    iid,
                     input.getNodeName());
         }
 
         // EXAMPLE: Browsing through the node's interface operational data
 
-        // First, we get an Instance Identifier for the portion of the 
-        // operational data that we want to browse through. Note that we are 
-        // getting an identifier to a more specific path - the data-nodes 
-        // container within the interface-properties container. The Instance 
+        // First, we get an Instance Identifier for the portion of the
+        // operational data that we want to browse through. Note that we are
+        // getting an identifier to a more specific path - the data-nodes
+        // container within the interface-properties container. The Instance
         // Identifier path is equivalent to:
         // '.../yang-ext:mount/Cisco-IOS-XR-ifmgr-oper:interface-properties/data-nodes'
         InstanceIdentifier<DataNodes> idn = InstanceIdentifier.create(InterfaceProperties.class)
@@ -282,8 +278,8 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
     }
 
     /**
-     * This method is the implementation of the 'list-nodes' RESTCONF service, 
-     * which is one of the external APIs into the ncmount application. The 
+     * This method is the implementation of the 'list-nodes' RESTCONF service,
+     * which is one of the external APIs into the ncmount application. The
      * service provides two example functions:
      * 1. Lists nodes in the Netconf Topology's configuration data
      * 2. Lists nodes in the Netconf Topology's operational data
@@ -296,8 +292,7 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
      * The signature for this method was generated by yang tools from the
      * ncmount API model.
      *
-     * @param   None
-     * @return  Lists of nodes found in Netconf Topology's configuration and 
+     * @return  Lists of nodes found in Netconf Topology's configuration and
      *          operational spaces
      */
     @Override
@@ -362,18 +357,17 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
     }
 
     /**
-     * This method is ncmount's Data Change Listener on the Netconf Topology 
-     * namespace. It registers at the root of the Netconf Topology subtree for 
-     * changes in the entire subtree. At this point the method only logs the 
-     * data change to demonstrate the basic design pattern. A real application 
-     * would use the the data contained in the data change event to, for 
+     * This method is ncmount's Data Change Listener on the Netconf Topology
+     * namespace. It registers at the root of the Netconf Topology subtree for
+     * changes in the entire subtree. At this point the method only logs the
+     * data change to demonstrate the basic design pattern. A real application
+     * would use the the data contained in the data change event to, for
      * example, maintain paths to connected netconf nodes.
      *
      * The skeleton for this method was generated with the MD-SAL application
      * archetype.
      *
      * @param change Data change event
-     * @return  None
      */
      @Override
     public void onDataChanged(
@@ -399,7 +393,7 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
         }
 
         // EXAMPLE: Status change in existing node(s)
-        // React to data changes in Netconf nodes that are present in the 
+        // React to data changes in Netconf nodes that are present in the
         // Netconf topology
         for ( Entry<InstanceIdentifier<?>,
                 DataObject> entry : change.getUpdatedData().entrySet()) {
@@ -423,7 +417,7 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
                     case Connecting: {
                         // A Netconf device's will be in the 'Connecting' state
                         // initially, and go back to it after disconnect.
-                        // Note that a device could be moving back and forth 
+                        // Note that a device could be moving back and forth
                         // between the 'Connected' and 'Connecting' states for
                         // various reasons, such as disconnect from remote
                         // device, network connectivity loss etc.
@@ -431,8 +425,8 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
                         break;
                     }
                     case UnableToConnect: {
-                        // The maximum configured number of reconnect attempts 
-                        // have been reached. No more reconnects will be 
+                        // The maximum configured number of reconnect attempts
+                        // have been reached. No more reconnects will be
                         // attempted by the Netconf Connector.
                         LOG.info("NETCONF Node: {} connection failed", nodeId.getValue());
                         break;
@@ -446,7 +440,7 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
             final NodeId nodeId = getNodeId(removedPath);
             if (nodeId != null) {
                 // A User removed the Netconf connector for this node
-                // Before a node is removed, it changes its state to connecting 
+                // Before a node is removed, it changes its state to connecting
                 // (just as if it was disconnected). We may see this multiple
                 // times, since our listener is scoped to SUBTREE.
                 LOG.info("NETCONF Node: {} was removed", nodeId.getValue());
