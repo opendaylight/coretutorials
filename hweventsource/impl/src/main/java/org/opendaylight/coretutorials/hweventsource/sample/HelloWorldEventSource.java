@@ -34,6 +34,7 @@ import org.opendaylight.controller.messagebus.spi.EventSourceRegistry;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.messagebus.eventaggregator.rev141202.NotificationPattern;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.messagebus.eventaggregator.rev141202.TopicId;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.messagebus.eventaggregator.rev141202.TopicNotification;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.messagebus.eventsource.rev141202.DisJoinTopicInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.messagebus.eventsource.rev141202.JoinTopicInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.messagebus.eventsource.rev141202.JoinTopicOutput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.messagebus.eventsource.rev141202.JoinTopicOutputBuilder;
@@ -106,7 +107,7 @@ public class HelloWorldEventSource implements EventSource {
     private final ScheduledExecutorService scheduler;
     private final DOMNotificationPublishService domPublish;
     private final List<SchemaPath> listSchemaPaths = new ArrayList<>();
-    private final List<JoinTopicInput> listAcceptedTopics = new ArrayList<>();
+    private final List<TopicId> listAcceptedTopics = new ArrayList<>();
     private final String messageText;
 
     public HelloWorldEventSource(DOMNotificationPublishService domPublish, Node sourceNode, Short messageGeneratePeriod, String messageText) {
@@ -149,7 +150,7 @@ public class HelloWorldEventSource implements EventSource {
         if(Util.isNullOrEmpty(matchingNotifications) == false){
             // if there is at least one SchemaPath matched with NotificationPattern then topic is add into the list
             LOG.info("Node {} Join topic {}", sourceNode.getNodeId().getValue(), input.getTopicId().getValue());
-            listAcceptedTopics.add(input);
+            listAcceptedTopics.add(input.getTopicId());
             joinTopicStatus = JoinTopicStatus.Up;
         }
         final JoinTopicOutput output = new JoinTopicOutputBuilder().setStatus(joinTopicStatus).build();
@@ -253,7 +254,7 @@ public class HelloWorldEventSource implements EventSource {
             String message = this.messageText + " [" + Calendar.getInstance().getTime().toString() +"]";
             LOG.debug("Sample message generated: {}",message);
 
-            for(JoinTopicInput jointTopicInput : listAcceptedTopics){
+            for(TopicId jointTopic : listAcceptedTopics){
                 // notification is published for each accepted topic 
                 // if there is no accepted topic, no notification will publish
 
@@ -265,7 +266,7 @@ public class HelloWorldEventSource implements EventSource {
                 builder.setSourceId(new SourceIdentifier(this.eventSourceIdent));
                 SampleEventSourceNotification notification = builder.build();
 
-                final String topicId = jointTopicInput.getTopicId().getValue();
+                final String topicId = jointTopic.getValue();
 
                 // notification is encapsulated into TopicDOMNotification and publish via DOMNotificationPublisherService
                 TopicDOMNotification topicNotification = createNotification(notification,this.eventSourceIdent,topicId);
@@ -361,5 +362,11 @@ public class HelloWorldEventSource implements EventSource {
             }
             return document.createElement(qName);
         }
+    }
+
+    @Override
+    public Future<RpcResult<Void>> disJoinTopic(DisJoinTopicInput input) {
+        listAcceptedTopics.remove(input.getTopicId());
+        return immediateFuture(RpcResultBuilder.success((Void) null).build());
     }
 }
