@@ -3,14 +3,18 @@ module ncmount {
     namespace "urn:opendaylight:params:xml:ns:yang:ncmount";
     prefix "ncmount";
 
+  import ietf-inet-types {
+    prefix "inet";
+  }
+
     revision "2015-01-05" {
         description "Initial revision of ncmount model";
     }
-    
+
     grouping xr-node {
     	leaf node-name {
     		type string;
-    		description 
+    		description
     			"Name of the node";
     	}
     	leaf status {
@@ -23,6 +27,68 @@ module ncmount {
     		description
     			"List of properties";
     	}
+    }
+
+    rpc write-routes {
+        description
+        "Artificial RPC that illustrates:
+        How to handle a list of route entries and transform + send them to a netconf device in a single edit transaction.
+        This is not possible by using just Restconf, since Restconf can send only a single list entry in a transaction (which is much slower).
+        This RPC demonstrates a couple of things:
+            1. How to write to a mounted netconf device from (binding aware) code level
+            2. How to transform input (from rpc-input to netconf device specific data)
+            3. How to improve performance of writing to a netconf device by batching a bunch of list entries in a single transaction
+
+        A single invocation of this RPC with 20 route entries over Restconf
+        is equal to 20 invocations of typical writes over Restconf with 1 route per call
+
+        RPC can be invoked using POST to http://localhost:8181/restconf/operations/ncmount:write-routes
+        with payload:
+        <input xmlns="urn:opendaylight:params:xml:ns:yang:ncmount">
+            <mount-name>testtool</mount-name>
+            <vrf-id>vrf1</vrf-id>
+            <route>
+                <ipv4-prefix>1.2.3.4</ipv4-prefix>
+                <ipv4-prefix-length>32</ipv4-prefix-length>
+                <ipv4-next-hop>4.3.2.1</ipv4-next-hop>
+            </route>
+
+            <route>
+                <ipv4-prefix>127.0.0.1</ipv4-prefix>
+                <ipv4-prefix-length>32</ipv4-prefix-length>
+                <ipv4-next-hop>10.0.0.1</ipv4-next-hop>
+            </route>
+
+        </input>";
+
+        input {
+            leaf mount-name {
+                type string;
+                description "Id of mounted note to write the l2-fibs to";
+            }
+
+            leaf vrf-id {
+                type string;
+                description "Id of Vrf which should be modified (add new routes)";
+            }
+
+            list route {
+
+              key "ipv4-prefix";
+
+                leaf ipv4-prefix {
+                    type inet:ipv4-address;
+                }
+
+                leaf ipv4-prefix-length {
+                    type uint16;
+                }
+
+                leaf ipv4-next-hop {
+                    type inet:ipv4-address;
+                }
+            }
+        }
     }
 
     rpc show-node {
@@ -41,7 +107,7 @@ module ncmount {
             container if-cfg-data {
                 list ifc {
                     key "active interface-name";
-                    description "A small subset of an interface 
+                    description "A small subset of an interface
                         configuration; provides an example of processing
                         of data retrieved from a device.";
 
