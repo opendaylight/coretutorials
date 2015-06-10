@@ -7,24 +7,33 @@
  */
 package ncmount.impl;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.Futures;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.MountPoint;
 import org.opendaylight.controller.md.sal.binding.api.MountPointService;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RpcRegistration;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
@@ -37,6 +46,24 @@ import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ifmgr.op
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ifmgr.oper.rev150107._interface.properties.data.nodes.data.node.locationviews.Locationview;
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ifmgr.oper.rev150107._interface.table.Interfaces;
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ifmgr.oper.rev150107._interface.table.interfaces.Interface;
+import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._static.cfg.rev130722.RouterStatic;
+import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._static.cfg.rev130722.address.family.AddressFamilyBuilder;
+import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._static.cfg.rev130722.address.family.address.family.Vrfipv4Builder;
+import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._static.cfg.rev130722.router._static.Vrfs;
+import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._static.cfg.rev130722.router._static.vrfs.Vrf;
+import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._static.cfg.rev130722.router._static.vrfs.VrfBuilder;
+import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._static.cfg.rev130722.router._static.vrfs.VrfKey;
+import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._static.cfg.rev130722.vrf.prefix.table.VrfPrefixes;
+import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._static.cfg.rev130722.vrf.prefix.table.VrfPrefixesBuilder;
+import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._static.cfg.rev130722.vrf.prefix.table.vrf.prefixes.VrfPrefix;
+import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._static.cfg.rev130722.vrf.prefix.table.vrf.prefixes.VrfPrefixBuilder;
+import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._static.cfg.rev130722.vrf.prefix.table.vrf.prefixes.VrfPrefixKey;
+import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._static.cfg.rev130722.vrf.route.VrfRouteBuilder;
+import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._static.cfg.rev130722.vrf.route.vrf.route.VrfNextHopsBuilder;
+import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._static.cfg.rev130722.vrf.route.vrf.route.vrf.next.hops.NextHopAddressBuilder;
+import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._static.cfg.rev130722.vrf.unicast.VrfUnicastBuilder;
+import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.xr.types.rev150119.CiscoIosXrString;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeFields.ConnectionStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.network.topology.topology.topology.types.TopologyNetconf;
@@ -46,10 +73,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.ShowNodeInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.ShowNodeOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.ShowNodeOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.WriteRoutesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.show.node.output.IfCfgDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.show.node.output._if.cfg.data.Ifc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.show.node.output._if.cfg.data.IfcBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.show.node.output._if.cfg.data.IfcKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.write.routes.input.Route;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
@@ -61,6 +90,7 @@ import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.Identifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
@@ -83,10 +113,12 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
             .create(NetworkTopology.class)
             .child(Topology.class,
                    new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())));
+
     private RpcRegistration<NcmountService> rpcReg;
     private ListenerRegistration<DataChangeListener> dclReg;
     private MountPointService mountService;
     private DataBroker dataBroker;
+    private RpcResult<Void> SUCCESS = RpcResultBuilder.<Void>success().build();
 
     /**
      * A method called when the session to MD-SAL is established. It initializes
@@ -275,6 +307,92 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
                                                         .build())
                                     .build();
         return RpcResultBuilder.success(output).buildFuture();
+    }
+
+    LoadingCache<String, KeyedInstanceIdentifier<Node, NodeKey>> mountIds = CacheBuilder.newBuilder()
+            .maximumSize(20)
+            .build(
+                    new CacheLoader<String, KeyedInstanceIdentifier<Node, NodeKey>>() {
+                        public KeyedInstanceIdentifier<Node, NodeKey> load(final String key) {
+                            return NETCONF_TOPO_IID.child(Node.class, new NodeKey(new NodeId(key)));
+                        }
+                    });
+
+    /**
+     * Write list of routes to specified netconf device.
+     * The resulting routes conform to Cisco-IOS-XR-ip-static-cfg.yang yang model.
+     *
+     * @param input Input list of simple routes
+     * @return Success if routes were written to mounted netconf device
+     */
+    @Override
+    public Future<RpcResult<Void>> writeRoutes(final WriteRoutesInput input) {
+        final Optional<MountPoint> mountPoint;
+        try {
+            // Get mount point for specified device
+            mountPoint = mountService.getMountPoint(mountIds.get(input.getMountName()));
+        } catch (ExecutionException e) {
+            throw new IllegalArgumentException(e);
+        }
+
+        // Get DataBroker API and create a write tx
+        final DataBroker dataBroker = mountPoint.get().getService(DataBroker.class).get();
+        final WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
+
+        // Build InstanceIdentifier to point to a specific VRF in the device
+        final CiscoIosXrString name = new CiscoIosXrString(input.getVrfId());
+        final InstanceIdentifier<Vrf> routesInstanceId = InstanceIdentifier.create(RouterStatic.class)
+                .child(Vrfs.class).child(Vrf.class, new VrfKey(name));
+
+        // Prepare the actual routes for VRF. Transform Rpc input routes into VRF routes
+        final VrfPrefixes transformedRoutes = new VrfPrefixesBuilder()
+                .setVrfPrefix(Lists.transform(input.getRoute(), new Function<Route, VrfPrefix>() {
+
+                    @Override
+                    public VrfPrefix apply(final Route input) {
+                        final IpAddress prefix = new IpAddress(input.getIpv4Prefix());
+                        final IpAddress nextHop = new IpAddress(input.getIpv4NextHop());
+                        final long prefixLength = input.getIpv4PrefixLength();
+                        return new VrfPrefixBuilder()
+                                .setVrfRoute(new VrfRouteBuilder()
+                                        .setVrfNextHops(new VrfNextHopsBuilder()
+                                                .setNextHopAddress(Collections.singletonList(new NextHopAddressBuilder()
+                                                        .setNextHopAddress(nextHop)
+                                                        .build()))
+                                                .build())
+                                        .build())
+                                .setPrefix(prefix)
+                                .setPrefixLength(prefixLength)
+                                .setKey(new VrfPrefixKey(prefix, prefixLength))
+                                .build();
+                    }
+                })).build();
+
+        // Build the parent data structure for VRF
+        final Vrf newRoutes = new VrfBuilder()
+                .setVrfName(name)
+                .setKey(new VrfKey(name))
+                .setAddressFamily(new AddressFamilyBuilder()
+                        .setVrfipv4(new Vrfipv4Builder()
+                                .setVrfUnicast(new VrfUnicastBuilder()
+                                        .setVrfPrefixes(transformedRoutes)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+
+        // invoke edit-config, merge the route list for vrf identified by input.getVrfId()
+        writeTransaction.merge(LogicalDatastoreType.CONFIGURATION, routesInstanceId, newRoutes);
+
+        // commit
+        final CheckedFuture<Void, TransactionCommitFailedException> submit = writeTransaction.submit();
+        return Futures.transform(submit, new Function<Void, RpcResult<Void>>() {
+            @Override
+            public RpcResult<Void> apply(final Void result) {
+                LOG.info("{} Route(s) written to {}", input.getRoute().size(), input.getMountName());
+                return SUCCESS;
+            }
+        });
     }
 
     /**
