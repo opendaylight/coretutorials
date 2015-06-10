@@ -20,4 +20,12 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <version>1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
+
+  <dependencies>
+    <dependency>
+      <groupId>org.opendaylight.yangtools.model</groupId>
+      <artifactId>ietf-inet-types</artifactId>
+    </dependency>
+  </dependencies>
+
 </project>
