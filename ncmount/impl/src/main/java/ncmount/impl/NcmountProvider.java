@@ -22,10 +22,13 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import ncmount.impl.listener.LoggingNotificationListener;
+import ncmount.impl.listener.PerformanceAwareNotificationListener;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.MountPoint;
 import org.opendaylight.controller.md.sal.binding.api.MountPointService;
+import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
@@ -37,6 +40,7 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFaile
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RpcRegistration;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
+import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ifmgr.cfg.rev150107.InterfaceConfigurations;
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ifmgr.cfg.rev150107._interface.configurations.InterfaceConfiguration;
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ifmgr.oper.rev150107.InterfaceProperties;
@@ -63,6 +67,11 @@ import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._stat
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._static.cfg.rev130722.vrf.route.vrf.route.vrf.next.hops.NextHopAddressBuilder;
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._static.cfg.rev130722.vrf.unicast.VrfUnicastBuilder;
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.xr.types.rev150119.CiscoIosXrString;
+import org.opendaylight.yang.gen.v1.org.opendaylight.coretutorials.ncmount.example.notifications.rev150611.ExampleNotificationsListener;
+import org.opendaylight.yang.gen.v1.org.opendaylight.coretutorials.ncmount.example.notifications.rev150611.VrfRouteNotification;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.CreateSubscriptionInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.NotificationsService;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.StreamNameType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeFields.ConnectionStatus;
@@ -91,6 +100,7 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.Identifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
@@ -530,6 +540,12 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
                         List<String> capabilities =
                                 nnode.getAvailableCapabilities().getAvailableCapability();
                         LOG.info("Capabilities: {}", capabilities);
+
+                        // Check if device supports our example notification and if it does, register a notification listener
+                        if(capabilities.contains(QName.create(VrfRouteNotification.QNAME, "Example-notifications").toString())) {
+                            registerNotificationListener(nodeId);
+                        }
+
                         break;
                     }
                     case Connecting: {
@@ -566,7 +582,53 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
         }
     }
 
-     /**
+    private void registerNotificationListener(final NodeId nodeId) {
+        final Optional<MountPoint> mountPoint;
+        try {
+            // Get mount point for specified device
+            mountPoint = mountService.getMountPoint(mountIds.get(nodeId.getValue()));
+        } catch (ExecutionException e) {
+            throw new IllegalArgumentException(e);
+        }
+
+        // Instantiate notification listener
+        final ExampleNotificationsListener listener;
+        // The PerformanceAwareNotificationListener is a special version of listener that
+        // measures the time until a specified number of notifications was received
+        // The performance is calculated as number of received notifications / elapsed time in seconds
+        // This is used for performance testing/measurements and can be ignored
+        if(PerformanceAwareNotificationListener.shouldMeasurePerformance(nodeId) &&
+                !nodeId.getValue().equals("controller-config")/*exclude loopback netconf connection*/) {
+            listener = new PerformanceAwareNotificationListener(nodeId);
+        } else {
+            // Regular simple notification listener with a simple log message
+            listener = new LoggingNotificationListener();
+        }
+
+        // Register notification listener
+        final Optional<NotificationService> service1 = mountPoint.get().getService(NotificationService.class);
+        LOG.info("Registering notification listener on {} for node: {}", VrfRouteNotification.QNAME, nodeId);
+        final ListenerRegistration<ExampleNotificationsListener> accessTopologyListenerListenerRegistration =
+                service1.get().registerNotificationListener(listener);
+
+        // We have the listener registered, but we need to start the notification stream from device by
+        // invoking the create-subscription rpc with for stream named "STREAM_NAME". "STREAM_NAME" is not a valid
+        // stream name and serves only for demonstration
+        // ---
+        // This snippet also demonstrates how to invoke custom RPCs on a mounted netconf node
+        // The rpc being invoked here can be found at: https://tools.ietf.org/html/rfc5277#section-2.1.1
+        // Note that there is no yang model for it in ncmount, but it is in org.opendaylight.controller:ietf-netconf-notifications
+        // which is a transitive dependency in ncmount-impl
+        final String streamName = "STREAM_NAME";
+        final Optional<RpcConsumerRegistry> service = mountPoint.get().getService(RpcConsumerRegistry.class);
+        final NotificationsService rpcService = service.get().getRpcService(NotificationsService.class);
+        final CreateSubscriptionInputBuilder createSubscriptionInputBuilder = new CreateSubscriptionInputBuilder();
+        createSubscriptionInputBuilder.setStream(new StreamNameType(streamName));
+        LOG.info("Triggering notification stream {} for node {}", streamName, nodeId);
+        final Future<RpcResult<Void>> subscription = rpcService.createSubscription(createSubscriptionInputBuilder.build());
+    }
+
+    /**
       * Determines the Netconf Node Node ID, given the node's instance
       * identifier.
       *
