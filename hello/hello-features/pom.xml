@@ -9,20 +9,20 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   <parent>
     <groupId>org.opendaylight.odlparent</groupId>
     <artifactId>features-parent</artifactId>
-    <version>1.5.0-SNAPSHOT</version>
+    <version>1.5.0-Lithium</version>
     <relativePath/>
   </parent>
   <groupId>org.opendaylight.coretutorials</groupId>
   <artifactId>hello-features</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0-Lithium</version>
   <name>${project.artifactId}</name>
   <modelVersion>4.0.0</modelVersion>
   <prerequisites>
     <maven>3.1.1</maven>
   </prerequisites>
   <properties>
-    <mdsal.version>1.2.0-SNAPSHOT</mdsal.version>
-    <yangtools.version>0.7.0-SNAPSHOT</yangtools.version>
+    <mdsal.version>1.2.0-Lithium</mdsal.version>
+    <yangtools.version>0.7.0-Lithium</yangtools.version>
   </properties>
   <dependencyManagement>
     <dependencies>

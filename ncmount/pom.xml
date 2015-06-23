@@ -10,13 +10,13 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   <parent>
     <groupId>org.opendaylight.odlparent</groupId>
     <artifactId>odlparent</artifactId>
-    <version>1.5.0-SNAPSHOT</version>
+    <version>1.5.0-Lithium</version>
     <relativePath/>
   </parent>
 
   <groupId>org.opendaylight.coretutorials</groupId>
   <artifactId>ncmount-aggregator</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0-Lithium</version>
   <name>ncmount</name>
   <packaging>pom</packaging>
   <modelVersion>4.0.0</modelVersion>

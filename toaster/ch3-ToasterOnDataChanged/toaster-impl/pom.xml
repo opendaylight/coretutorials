@@ -8,7 +8,7 @@
         <groupId>org.opendaylight.toaster</groupId>
         <artifactId>toaster-parent</artifactId>
         <relativePath>../parent</relativePath>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.1-Lithium</version>
     </parent>
 
     <!-- This pom.xml is providing the hook to the toaster implementation  -->
@@ -23,12 +23,12 @@
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>config-api</artifactId>
-            <version>0.3.0-SNAPSHOT</version>
+            <version>0.3.0-Lithium</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal-binding-config</artifactId>
-            <version>1.2.0-SNAPSHOT</version>
+            <version>1.2.0-Lithium</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
