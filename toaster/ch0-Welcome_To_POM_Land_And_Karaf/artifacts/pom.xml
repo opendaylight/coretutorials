@@ -17,7 +17,7 @@
     <artifactId>toaster-artifacts</artifactId>
     <!-- MANDATORY TODO: This is CRUCIAL. This is the "REAL" project version. For now ensure that all other references
     to project version matches in pom.xmls match THIS ONE -->
-    <version>0.0.1-Lithium</version>
+    <version>0.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <prerequisites>
