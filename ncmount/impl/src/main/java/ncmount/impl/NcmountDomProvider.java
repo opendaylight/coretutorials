@@ -4,11 +4,14 @@ import com.google.common.util.concurrent.CheckedFuture;
 import java.util.Collection;
 import java.util.Collections;
 import javax.annotation.Nonnull;
+
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMMountPointService;
 import org.opendaylight.controller.md.sal.dom.api.DOMNotificationService;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcException;
@@ -28,11 +31,17 @@ import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.model.api.SchemaPath;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NcmountDomProvider implements Provider, AutoCloseable, DOMRpcImplementation, DOMDataChangeListener {
 
-    public static final YangInstanceIdentifier NETCONF_TOPO_IID;
-    private static final DOMRpcIdentifier SHOW_NODE_RPC_ID = DOMRpcIdentifier.create(SchemaPath.create(true, QName.create(ShowNodeInput.QNAME, "show-node")));
+	private static final Logger LOG = LoggerFactory.getLogger(NcmountDomProvider.class);
+	
+	public static final YangInstanceIdentifier NETCONF_TOPO_IID;
+    private static final DOMRpcIdentifier SHOW_NODE_RPC_ID = DOMRpcIdentifier.create(SchemaPath.create(true, QName.create(ShowNodeInput.QNAME, "show-node"))); 
+    private static final DOMRpcIdentifier LIST_NODES_ID = DOMRpcIdentifier.create(SchemaPath.create(true, QName.create("urn:opendaylight:params:xml:ns:yang:ncmount", "2015-01-05", "list-nodes")));
+    private static final DOMRpcIdentifier WRITE_NODES_ID = DOMRpcIdentifier.create(SchemaPath.create(true, QName.create("urn:opendaylight:params:xml:ns:yang:ncmount", "2015-01-05", "write-routes")));
 
     static {
         final org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder builder =
@@ -46,20 +55,22 @@ public class NcmountDomProvider implements Provider, AutoCloseable, DOMRpcImplem
     }
 
     private DOMMountPointService mountPointService;
+    private DOMDataBroker globalDomDataBroker;
 
     @Override
     public void onSessionInitiated(final Broker.ProviderSession providerSession) {
         // get the DOM versions of MD-SAL services
-        final DOMDataBroker dataBroker = providerSession.getService(DOMDataBroker.class);
+        this.globalDomDataBroker = providerSession.getService(DOMDataBroker.class);
         this.mountPointService = providerSession.getService(DOMMountPointService.class);
 
         final DOMRpcProviderService service = providerSession.getService(DOMRpcProviderService.class);
-        service.registerRpcImplementation(this, SHOW_NODE_RPC_ID);
-        // TODO do the same for 2 other rpcs
-
+        service.registerRpcImplementation(this, SHOW_NODE_RPC_ID, LIST_NODES_ID, WRITE_NODES_ID);
+        
         final YangInstanceIdentifier nodeIid = YangInstanceIdentifier.builder(NETCONF_TOPO_IID).node(Node.QNAME).build();
 
-        dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
+        LOG.info("NcmountDomProvider is registered");
+        
+        this.globalDomDataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
                 nodeIid,
                 this,
                 AsyncDataBroker.DataChangeScope.SUBTREE);
@@ -80,9 +91,21 @@ public class NcmountDomProvider implements Provider, AutoCloseable, DOMRpcImplem
     @Nonnull
     @Override
     public CheckedFuture<DOMRpcResult, DOMRpcException> invokeRpc(@Nonnull final DOMRpcIdentifier domRpcIdentifier, final NormalizedNode<?, ?> normalizedNode) {
-        if(domRpcIdentifier.equals(SHOW_NODE_RPC_ID)) {
+    	
+    	// I think, we can replace following with the switch
+    	// statement http://stackoverflow.com/questions/10240538/use-string-in-switch-case-in-java
+    	if(domRpcIdentifier.equals(SHOW_NODE_RPC_ID)) {
             return showNode(normalizedNode);
         }
+        
+        if (domRpcIdentifier.equals(LIST_NODES_ID)) {
+			return listNodes();
+		}
+        
+        if (domRpcIdentifier.equals(WRITE_NODES_ID)) {
+			return writeNode(normalizedNode);
+		}
+        
         return null;
     }
 
@@ -91,14 +114,42 @@ public class NcmountDomProvider implements Provider, AutoCloseable, DOMRpcImplem
 
         // Normalized node is the generic supertype for all normalized nodes e.g. container node, map node etc.
         // Its really important to know the normalized node structure when trying to parse/itarate over normalized nodes
-
-        final YangInstanceIdentifier iid = null;
+    	
+    	YangInstanceIdentifier iid = null;
+    	
         mountPointService.getMountPoint(iid).get().getService(DOMDataBroker.class).get().newReadOnlyTransaction();
         mountPointService.getMountPoint(iid).get().getService(DOMRpcService.class).get().invokeRpc(null, null);
         mountPointService.getMountPoint(iid).get().getService(DOMNotificationService.class);
         return null;
     }
 
+    private CheckedFuture<DOMRpcResult, DOMRpcException> listNodes() {
+    	// TODO: write the implementation for the List-Node.
+    	LOG.info(" invoked RPC List-Node");
+    	
+    	CheckedFuture<DOMRpcResult, DOMRpcException> output = null;
+    	
+    	DOMDataReadOnlyTransaction rtx = this.globalDomDataBroker.newReadOnlyTransaction();
+    	
+    	try {
+			NormalizedNode<?, ?> ncNodes = rtx.read(LogicalDatastoreType.CONFIGURATION, NETCONF_TOPO_IID).checkedGet().get();
+			if (ncNodes != null) {
+				LOG.info("### Read is successful ####");
+			}
+		} catch (ReadFailedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();		
+		}
+    	
+		return output;
+	}
+    
+    private CheckedFuture<DOMRpcResult, DOMRpcException> writeNode(final NormalizedNode<?, ?> normalizedNode) {
+    	// TODO: write the implementation for the Write-Node.
+    	LOG.info("invoked RPC Write-Node");
+		return null;
+	}
+    
     @Override
     public void onDataChanged(final AsyncDataChangeEvent<YangInstanceIdentifier, NormalizedNode<?, ?>> asyncDataChangeEvent) {
         // TODO the data change has to be handled in the same way as in NcmountProvider
