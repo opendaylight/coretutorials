@@ -30,6 +30,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
     <module>ietfsyslog</module>
     <module>openconfig</module>
     <module>hweventsource</module>
+    <module>rpcbenchmark</module>
   </modules>
 
 </project>
