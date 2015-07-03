@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_7e862915",
+        "filename": "ncmount/impl/src/main/java/ncmount/impl/NcmountDomProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2015-07-03T11:55:32Z",
+      "side": 1,
+      "message": "You could use same form as on line above.",
+      "range": {
+        "startLine": 43,
+        "startChar": 119,
+        "endLine": 43,
+        "endChar": 178
+      },
+      "revId": "35348f2537bbc684aa217bf6eedb027107160256",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_9e89c528",
+        "filename": "ncmount/impl/src/main/java/ncmount/impl/NcmountDomProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2015-07-03T11:55:32Z",
+      "side": 1,
+      "message": "If you are reading topology... you will get MapEntryNode\nwhich represent topology.\nso you should do if(ncNodes instanceof MapEntryNode).\n\nOnce you cast it to MapEntryNode you will have access to getChild(PathArgument) method, which you could use to read child entries.",
+      "range": {
+        "startLine": 136,
+        "startChar": 3,
+        "endLine": 138,
+        "endChar": 4
+      },
+      "revId": "35348f2537bbc684aa217bf6eedb027107160256",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_1e96154d",
+        "filename": "ncmount/impl/src/main/java/ncmount/impl/NcmountDomProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2015-07-03T11:55:32Z",
+      "side": 1,
+      "message": "Use LOG.warn or LOG.error to log exception.",
+      "range": {
+        "startLine": 141,
+        "startChar": 3,
+        "endLine": 141,
+        "endChar": 23
+      },
+      "revId": "35348f2537bbc684aa217bf6eedb027107160256",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
