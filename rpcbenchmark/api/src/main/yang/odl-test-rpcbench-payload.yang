@@ -1,0 +1,29 @@
+module odl-test-rpcbench-payload {
+    yang-version 1;
+    namespace "odl-test-rpcbench-payload";
+    prefix "rpcb";
+
+    revision "2015-07-02" {
+        description "Initial revision of rpcbenchmark model";
+    }
+    
+    grouping payload {
+    	list payload {
+            key id;
+            leaf id {
+                type int32;
+            }
+    	}   	
+    }
+    rpc global-rpc-bench {
+        description
+          "Payload for the RPC benchmark";
+		input {
+			uses payload;
+        }
+        output {        	
+			uses payload;
+        }
+    }
+
+}

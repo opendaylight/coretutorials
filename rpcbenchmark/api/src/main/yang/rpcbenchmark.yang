@@ -1,0 +1,110 @@
+module rpcbenchmark {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:rpcbenchmark";
+    prefix "rpcbenchmark";
+
+    revision "2015-07-02" {
+        description "Initial revision of rpcbenchmark model";
+    }
+    
+    rpc test-status {
+        description
+          "Get test status";
+        output {
+            leaf execStatus {
+                type enumeration {
+                    enum "idle" {
+                        value 1;
+                    }
+                    enum "executing" {
+                        value 2;
+                    }
+                }
+            }
+        	leaf global-server-cnt {
+        		type uint32;
+                default 0;
+                description
+                  "The number of times the Global RPC server was invoked";
+       		
+        	}
+        }
+    }
+
+    rpc start-test {
+        description
+            "Start a new RPC test run";
+
+        input {
+        	leaf operation {
+                mandatory true;
+                type enumeration {
+                    enum "GLOBAL-RTC" {
+                        value 1;
+                        description
+                          "Use Global RPC service and run-to-completion
+                        	client";
+                    }
+                    enum "ROUTED-RTC" {
+                        value 2;
+                        description
+                          "Use routed RPC service and run-to-completion
+                        	client";
+                    }
+                }
+                description
+                    "RPC type and client type to use in the test";
+            }
+        	leaf num-threads {
+        		type uint32;
+                default 1;
+                description
+                  "The number client threads to start";    		
+        	}
+        	leaf payload-size {
+        		type uint32;
+                default 1;
+                description
+                  "Payload size: the number of elements in the list that 
+                	constitutes the input parameter of the RPC call";    		
+        	}
+        	leaf iterations {
+        		type uint32;
+                default 1;
+                description
+                  "Number of RPC calls to be made by each thread during 
+                	the test run";    		
+        	}
+
+ 	    }
+        
+        output {
+        	leaf global-rtc-client-ok {
+        		type uint32;
+                default 0;
+                description
+                  "The number of run-to-completion successful client's calls 
+                	to the Global RPC server";    		
+        	}
+        	leaf global-rtc-client-error {
+        		type uint32;
+                default 0;
+                description
+                  "The number of run-to-completion errored client's calls to 
+                	the Global RPC server";    		
+        	}   
+        	leaf exec-time {
+        		type uint32;
+                default 0;
+                description
+                  "Execution time";    		
+        	}        	
+        	leaf rate {
+        		type uint32;
+                default 0;
+                description
+                  "RPC rate (RPCs/sec)";    		
+        	}        	
+        }
+    }
+}
