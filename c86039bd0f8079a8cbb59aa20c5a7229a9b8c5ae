@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_18a9457b",
+        "filename": "pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2015-07-07T08:04:22Z",
+      "side": 1,
+      "message": "This module is not part of commit, could you please remove it?\n\nOtherwise build will fail.\nI believe it was accidentally added.",
+      "range": {
+        "startLine": 34,
+        "startChar": 4,
+        "endLine": 34,
+        "endChar": 26
+      },
+      "revId": "c86039bd0f8079a8cbb59aa20c5a7229a9b8c5ae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
