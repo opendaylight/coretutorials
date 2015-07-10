@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vi: set et smarttab sw=4 tabstop=4: -->
+<!--
+Copyright (c) 2015 Cisco Systems Inc.
+
+This program and the accompanying materials are made available under the
+terms of the Eclipse Public License v1.0 which accompanies this distribution,
+and is available at http://www.eclipse.org/legal/epl-v10.html
+-->
+<features name="odl-ntfbenchmark-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
+  <repository>mvn:org.opendaylight.yangtools/features-yangtools/${yangtools.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.controller/features-restconf/${mdsal.version}/xml/features</repository>
+  <feature name='odl-ntfbenchmark-api' version='${project.version}' description='OpenDaylight :: ntfbenchmark :: api'>
+    <feature version='${yangtools.version}'>odl-yangtools-models</feature>
+    <bundle>mvn:org.opendaylight.coretutorials/ntfbenchmark-api/${project.version}</bundle>
+  </feature>
+  <feature name='odl-ntfbenchmark' version='${project.version}' description='OpenDaylight :: ntfbenchmark'>
+    <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
+    <feature version='${project.version}'>odl-ntfbenchmark-api</feature>
+    <bundle>mvn:org.opendaylight.coretutorials/ntfbenchmark-impl/${project.version}</bundle>
+    <configfile finalname="${configfile.directory}/ntfbenchmark.xml">mvn:org.opendaylight.coretutorials/ntfbenchmark-impl/${project.version}/xml/config</configfile>
+  </feature>
+  <feature name='odl-ntfbenchmark-rest' version='${project.version}' description='OpenDaylight :: ntfbenchmark :: REST'>
+    <feature version="${project.version}">odl-ntfbenchmark</feature>
+    <feature version="${mdsal.version}">odl-restconf</feature>
+  </feature>
+  <feature name='odl-ntfbenchmark-ui' version='${project.version}' description='OpenDaylight :: ntfbenchmark :: UI'>
+    <feature version="${project.version}">odl-ntfbenchmark-rest</feature>
+    <feature version="${mdsal.version}">odl-mdsal-apidocs</feature>
+    <feature version="${mdsal.version}">odl-mdsal-xsql</feature>
+  </feature>
+
+</features>

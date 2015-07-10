@@ -31,6 +31,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
     <module>openconfig</module>
     <module>hweventsource</module>
     <module>rpcbenchmark</module>
+    <module>ntfbenchmark</module>
   </modules>
 
 </project>
