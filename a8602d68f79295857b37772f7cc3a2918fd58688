@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_695c18ee",
+        "filename": "ncmount/impl/src/main/config/default-config.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-07-14T14:50:39Z",
+      "side": 1,
+      "message": "the namespace here is not necessary, but should be here",
+      "range": {
+        "startLine": 27,
+        "startChar": 15,
+        "endLine": 27,
+        "endChar": 21
+      },
+      "revId": "a8602d68f79295857b37772f7cc3a2918fd58688",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_c96c4c9f",
+        "filename": "ncmount/impl/src/main/java/ncmount/impl/NcmountDomProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-07-14T14:50:39Z",
+      "side": 1,
+      "message": "trailing whitespaces need to be avoided",
+      "range": {
+        "startLine": 57,
+        "startChar": 158,
+        "endLine": 57,
+        "endChar": 159
+      },
+      "revId": "a8602d68f79295857b37772f7cc3a2918fd58688",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_49103c01",
+        "filename": "ncmount/impl/src/main/java/ncmount/impl/NcmountDomProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-07-14T14:50:39Z",
+      "side": 1,
+      "message": "this way of creating qname is perfectly fine, but you can use generated classes to get the namespace and revision, just like the SHOW_NODE_RPC_ID does... this way you do not need to keep namespace and revision strings anywhere.",
+      "range": {
+        "startLine": 58,
+        "startChar": 112,
+        "endLine": 58,
+        "endChar": 118
+      },
+      "revId": "a8602d68f79295857b37772f7cc3a2918fd58688",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_692ad82d",
+        "filename": "ncmount/impl/src/main/java/ncmount/impl/NcmountDomProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-07-14T14:50:39Z",
+      "side": 1,
+      "message": "using string switch is fine in this case ... but in general there would be a concern, using just the local name of rpc might cause problems for 2 rpcs from different namespaces (2 yang models defining rpc with the same name)",
+      "range": {
+        "startLine": 113,
+        "startChar": 11,
+        "endLine": 113,
+        "endChar": 20
+      },
+      "revId": "a8602d68f79295857b37772f7cc3a2918fd58688",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_a993104e",
+        "filename": "ncmount/impl/src/main/java/ncmount/impl/NcmountDomProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-07-14T14:50:39Z",
+      "side": 1,
+      "message": "isPresent check is missing here",
+      "range": {
+        "startLine": 153,
+        "startChar": 98,
+        "endLine": 153,
+        "endChar": 101
+      },
+      "revId": "a8602d68f79295857b37772f7cc3a2918fd58688",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_a9d79022",
+        "filename": "ncmount/impl/src/main/java/ncmount/impl/NcmountDomProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-07-14T14:50:39Z",
+      "side": 1,
+      "message": "this log should contain some message and include the entire exception as last argument ... e.toString() or e.getMessage() are unwanted in the logs as you can provide the entire exception there",
+      "range": {
+        "startLine": 155,
+        "startChar": 16,
+        "endLine": 155,
+        "endChar": 20
+      },
+      "revId": "a8602d68f79295857b37772f7cc3a2918fd58688",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_e91588e5",
+        "filename": "ncmount/impl/src/main/java/ncmount/impl/NcmountDomProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-07-14T14:50:39Z",
+      "side": 1,
+      "message": "trailing whitespaces ... IDEs can auto remove those",
+      "range": {
+        "startLine": 156,
+        "startChar": 73,
+        "endLine": 156,
+        "endChar": 74
+      },
+      "revId": "a8602d68f79295857b37772f7cc3a2918fd58688",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_89909444",
+        "filename": "ncmount/impl/src/main/java/ncmount/impl/NcmountDomProvider.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-07-14T14:50:39Z",
+      "side": 1,
+      "message": "we are expecting mapEntryNode here so the instanceof check is probably not necessary",
+      "range": {
+        "startLine": 165,
+        "startChar": 31,
+        "endLine": 165,
+        "endChar": 43
+      },
+      "revId": "a8602d68f79295857b37772f7cc3a2918fd58688",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
