@@ -7,27 +7,6 @@
  */
 package ntfbenchmark.impl;
 
-import org.junit.Test;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-
-import static org.mockito.Mockito.mock;
 
 public class NtfbenchmarkProviderTest {
-    @Test
-    public void testOnSessionInitiated() {
-        NtfbenchmarkProvider provider = new NtfbenchmarkProvider();
-
-        // ensure no exceptions
-        // currently this method is empty
-        provider.onSessionInitiated(mock(BindingAwareBroker.ProviderContext.class));
-    }
-
-    @Test
-    public void testClose() throws Exception {
-        NtfbenchmarkProvider provider = new NtfbenchmarkProvider();
-
-        // ensure no exceptions
-        // currently this method is empty
-        provider.close();
-    }
 }

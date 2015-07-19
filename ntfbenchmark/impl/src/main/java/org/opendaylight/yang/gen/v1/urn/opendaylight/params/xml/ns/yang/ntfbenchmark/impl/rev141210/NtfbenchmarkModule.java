@@ -25,7 +25,7 @@ public class NtfbenchmarkModule extends org.opendaylight.yang.gen.v1.urn.openday
 
     @Override
     public java.lang.AutoCloseable createInstance() {
-        NtfbenchmarkProvider provider = new NtfbenchmarkProvider();
+        NtfbenchmarkProvider provider = new NtfbenchmarkProvider(getListenServiceDependency(), getPublishServiceDependency());
         getBrokerDependency().registerProvider(provider);
         return provider;
     }
