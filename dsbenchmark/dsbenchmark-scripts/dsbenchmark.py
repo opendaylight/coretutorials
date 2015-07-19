@@ -20,18 +20,23 @@ parser.add_argument("--host", default="localhost", help="the IP of the target ho
 parser.add_argument("--port", type=int, default=8181, help="the port number of target host.")
 
 # Test Parameters
-parser.add_argument("--txtype", choices=["TX-CHAINING", "SIMPLE-TX"], nargs='+', default=["TX-CHAINING", "SIMPLE-TX"], help="list of the transaction types to execute.")
+parser.add_argument("--txtype", choices=["TX-CHAINING", "SIMPLE-TX"], nargs='+', default=["TX-CHAINING", "SIMPLE-TX"],
+                    help="list of the transaction types to execute.")
 parser.add_argument("--total", type=int, default=100000, help="total number of elements to process.")
-parser.add_argument("--inner", type=int, default=[1, 10, 100, 1000, 10000, 100000], help="number of inner elements to process.")
-parser.add_argument("--ops", type=int, default=[1, 10, 100, 1000, 10000, 100000], help="number of operations per transaction.")
+parser.add_argument("--inner", type=int, default=[1, 10, 100, 1000, 10000, 100000],
+                    help="number of inner elements to process.")
+parser.add_argument("--ops", type=int, default=[1, 10, 100, 1000, 10000, 100000],
+                    help="number of operations per transaction.")
 
-parser.add_argument("--optype", choices=["PUT", "MERGE", "DELETE"], nargs='+', default=["PUT", "MERGE", "DELETE"], help="list of the types operations to execute.")
-parser.add_argument("--format", choices=["BINDING-AWARE", "BINDING-INDEPENDENT"], nargs='+', default=["BINDING-AWARE", "BINDING-INDEPENDENT"], help="list of data formats to execute.")
+parser.add_argument("--optype", choices=["PUT", "MERGE", "DELETE"], nargs='+', default=["PUT", "MERGE", "DELETE"],
+                    help="list of the types operations to execute.")
+parser.add_argument("--format", choices=["BINDING-AWARE", "BINDING-INDEPENDENT"], nargs='+',
+                    default=["BINDING-AWARE", "BINDING-INDEPENDENT"], help="list of data formats to execute.")
 
 parser.add_argument("--warmup", type=int, default=10, help="number of warmup runs before official test runs")
-parser.add_argument("--runs", type=int, default=10, help="number of official test runs. Note: Reported results are based on these runs.")
+parser.add_argument("--runs", type=int, default=10,
+                    help="number of official test runs. Note: Reported results are based on these runs.")
 args = parser.parse_args()
-
 
 BASE_URL = "http://%s:%d/restconf/" % (args.host, args.port)
 
@@ -48,7 +53,7 @@ def send_clear_request():
     print r.status_code
 
 
-def send_test_request(tx_type, operation, data_fmt, outer_elem, inner_elem, ops_per_tx):
+def send_test_request(tx_t, operation, data_fmt, outer_elem, inner_elem, ops_per_tx):
     """
     Sends a request to the dsbenchmark app to start a data store benchmark test run.
     The dsbenchmark app will perform the requested benchmark test and return measured
@@ -73,7 +78,7 @@ def send_test_request(tx_type, operation, data_fmt, outer_elem, inner_elem, ops_
             "putsPerTx": %d
         }
     }'''
-    data = test_request_template % (tx_type, operation, data_fmt, outer_elem, inner_elem, ops_per_tx)
+    data = test_request_template % (tx_t, operation, data_fmt, outer_elem, inner_elem, ops_per_tx)
     r = requests.post(url, data, headers=postheaders, stream=False, auth=('admin', 'admin'))
     result = {u'http-status': r.status_code}
     if r.status_code == 200:
@@ -97,7 +102,7 @@ def print_results(run_type, idx, res):
           (run_type, idx, res[u'status'], res[u'listBuildTime'], res[u'execTime'], res[u'txOk'], res[u'txError'])
 
 
-def run_test(warmup_runs, test_runs, tx_type, operation, data_fmt, outer_elem, inner_elem, ops_per_tx):
+def run_test(warmup_runs, test_runs, tx_t, operation, data_fmt, outer_elem, inner_elem, ops_per_tx):
     """
     Execute a benchmark test. Performs the JVM 'wamrup' before the test, runs
     the specified number of dsbenchmark test runs and computes the average time
@@ -116,13 +121,13 @@ def run_test(warmup_runs, test_runs, tx_type, operation, data_fmt, outer_elem, i
     total_exec_time = 0.0
 
     print 'Tx Type: {0:s}, Operation: {1:s}, Data Format: {2:s}, Outer/Inner Elements: {3:d}/{4:d}, PutsPerTx {5:d}' \
-        .format(tx_type, operation, data_fmt, outer_elem, inner_elem, ops_per_tx)
+        .format(tx_t, operation, data_fmt, outer_elem, inner_elem, ops_per_tx)
     for idx in range(warmup_runs):
-        res = send_test_request(tx_type, operation, data_fmt, outer_elem, inner_elem, ops_per_tx)
+        res = send_test_request(tx_t, operation, data_fmt, outer_elem, inner_elem, ops_per_tx)
         print_results('WARMUP', idx, res)
 
     for idx in range(test_runs):
-        res = send_test_request(tx_type, operation, data_fmt, outer_elem, inner_elem, ops_per_tx)
+        res = send_test_request(tx_t, operation, data_fmt, outer_elem, inner_elem, ops_per_tx)
         print_results('TEST', idx, res)
         total_build_time += res['listBuildTime']
         total_exec_time += res['execTime']
@@ -177,7 +182,16 @@ if __name__ == "__main__":
                         avg_build_time, avg_exec_time = \
                             run_test(WARMUP_RUNS, TEST_RUNS, tx_type, oper, fmt, TOTAL_ELEMENTS / elem, elem, 1)
                         e_label = '%d/%d' % (TOTAL_ELEMENTS / elem, elem)
-                        writer.writerow(('', '', '', e_label, avg_build_time, avg_exec_time, (avg_build_time + avg_exec_time)))
+                        total_time = avg_build_time + avg_exec_time
+                        if oper == "DELETE":
+                            exec_time = avg_exec_time
+                        else:
+                            exec_time = total_time
+                        tput = (TOTAL_ELEMENTS * 1000000) / exec_time
+                        tx_per_sec = (TOTAL_ELEMENTS / elem) * 1000000 / exec_time
+                        print 'tput %.2f, tx_per_sec: %.2f' % (tput, tx_per_sec)
+                        writer.writerow(
+                            ('', '', '', e_label, avg_build_time, avg_exec_time, total_time, tput, tx_per_sec))
 
         # Determine the impact of number of writes per transaction on performance.
         # Iterate over all transaction types, data formats, operation types, and
@@ -204,7 +218,15 @@ if __name__ == "__main__":
                     for wtx in OPS_PER_TX:
                         avg_build_time, avg_exec_time = \
                             run_test(WARMUP_RUNS, TEST_RUNS, tx_type, oper, fmt, TOTAL_ELEMENTS, 1, wtx)
-                        writer.writerow(('', '', '', wtx, avg_build_time, avg_exec_time, (avg_build_time + avg_exec_time)))
+                        total_time = avg_build_time + avg_exec_time
+                        if oper == "DELETE":
+                            exec_time = avg_exec_time
+                        else:
+                            exec_time = total_time
+                        tput = (TOTAL_ELEMENTS * 1000000) / exec_time
+                        tx_per_sec = ((TOTAL_ELEMENTS / wtx) * 1000000) / exec_time
+                        print 'tput %.2f, tx_per_sec: %.2f' % (tput, tx_per_sec)
+                        writer.writerow(('', '', '', wtx, avg_build_time, avg_exec_time, total_time, tput, tx_per_sec))
 
     finally:
         f.close()
