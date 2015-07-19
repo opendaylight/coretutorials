@@ -14,11 +14,14 @@ import org.opendaylight.yangtools.yang.data.impl.schema.builder.api.CollectionNo
 
 public final class DomListBuilder {
     // Inner List Qname identifiers for yang model's 'name' and 'value'
-    private static final org.opendaylight.yangtools.yang.common.QName IL_NAME = QName.create(InnerList.QNAME, "name");
-    private static final org.opendaylight.yangtools.yang.common.QName IL_VALUE = QName.create(InnerList.QNAME, "value");
+    private static final org.opendaylight.yangtools.yang.common.QName IL_NAME = 
+    		QName.cachedReference(QName.create(InnerList.QNAME, "name"));
+    private static final org.opendaylight.yangtools.yang.common.QName IL_VALUE = 
+    		QName.cachedReference(QName.create(InnerList.QNAME, "value"));
 
     // Outer List Qname identifier for yang model's 'id'
-    private static final org.opendaylight.yangtools.yang.common.QName OL_ID = QName.create(OuterList.QNAME, "id");
+    private static final org.opendaylight.yangtools.yang.common.QName OL_ID = 
+    		QName.cachedReference(QName.create(OuterList.QNAME, "id"));
     
     static public List<MapEntryNode> buildOuterList(int outerElements, int innerElements) {
         List<MapEntryNode> outerList = new ArrayList<MapEntryNode>(outerElements);
