@@ -58,8 +58,8 @@ public class NtfbenchmarkProvider implements BindingAwareProvider, AutoCloseable
 
     @Override
     public Future<RpcResult<StartTestOutput>> startTest(final StartTestInput input) {
-        final int producerCount = input.getNumProducts().intValue();
-        final int listenerCount = input.getNumListeners().intValue();
+        final int producerCount = input.getProducers().intValue();
+        final int listenerCount = input.getListeners().intValue();
         final int iterations = input.getIterations().intValue();
         final int payloadSize = input.getIterations().intValue();
 
@@ -81,12 +81,12 @@ public class NtfbenchmarkProvider implements BindingAwareProvider, AutoCloseable
         }
 
         try {
-            final ExecutorService executor = Executors.newFixedThreadPool(input.getNumProducts().intValue());
+            final ExecutorService executor = Executors.newFixedThreadPool(input.getProducers().intValue());
 
             LOG.info("Test Started");
             final long startTime = System.nanoTime();
 
-            for (int i = 0; i < input.getNumProducts().intValue(); i++) {
+            for (int i = 0; i < input.getProducers().intValue(); i++) {
                 executor.submit(producers.get(i));
             }
             executor.shutdown();
@@ -99,10 +99,8 @@ public class NtfbenchmarkProvider implements BindingAwareProvider, AutoCloseable
                 LOG.error("Out of time: test did not finish within the {} min deadline ", testTimeout);
             }
 
-            final long endTime = System.nanoTime();
-            LOG.info("Test Done");
-
-            final long elapsedTime = endTime - startTime;
+            final long producerEndTime = System.nanoTime();
+            final long producerElapsedTime = producerEndTime - startTime;
 
             long allListeners = 0;
             long allProducersOk = 0;
@@ -111,6 +109,11 @@ public class NtfbenchmarkProvider implements BindingAwareProvider, AutoCloseable
             for (final ListenerRegistration<NtfbenchTestListener> listenerRegistration : listeners) {
                 allListeners += listenerRegistration.getInstance().getReceived();
             }
+            
+            final long listenerEndTime = System.nanoTime();
+            final long listenerElapsedTime = producerEndTime - startTime;
+           
+            LOG.info("Test Done");
 
             for (final AbstractNtfbenchProducer abstractNtfbenchProducer : producers) {
                 allProducersOk += abstractNtfbenchProducer.getNtfOk();
@@ -119,12 +122,14 @@ public class NtfbenchmarkProvider implements BindingAwareProvider, AutoCloseable
 
             final StartTestOutput output =
                     new StartTestOutputBuilder()
-            				.setExecTime(elapsedTime / 1000000)
+            				.setProducerElapsedTime(producerElapsedTime / 1000000)
+            				.setListenerElapsedTime(listenerElapsedTime / 1000000)
             				.setListenerOk(allListeners)
                             .setProducerOk(allProducersOk)
                             .setProducerError(allProducersError)
-                            .setRate(((allProducersOk + allProducersError) * 1000000000) / elapsedTime)
-                            .build();
+                            .setProducerRate(((allProducersOk + allProducersError) * 1000000000) / producerElapsedTime)
+                            .setListenerRate((allListeners * 1000000000) / listenerElapsedTime)
+                           .build();
             return RpcResultBuilder.success(output).buildFuture();
         } finally {
             for (final ListenerRegistration<NtfbenchTestListener> listenerRegistration : listeners) {

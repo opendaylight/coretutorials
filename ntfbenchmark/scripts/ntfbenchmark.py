@@ -20,7 +20,7 @@ import csv
 global BASE_URL
 
 
-def send_test_request(operation, clients, servers, payload_size, iterations):
+def send_test_request(producer_type, producers, listeners, payload_size, iterations):
     """
     Sends a request to the rpcbenchmark app to start a data store benchmark test run.
     The rpcbenchmark app will perform the requested benchmark test and return measured
@@ -33,19 +33,19 @@ def send_test_request(operation, clients, servers, payload_size, iterations):
     :param iterations: Number of iterations to run
     :return: Result from the test request REST call (json)
     """
-    url = BASE_URL + "operations/rpcbenchmark:start-test"
+    url = BASE_URL + "operations/ntfbenchmark:start-test"
     postheaders = {'content-type': 'application/json', 'Accept': 'application/json'}
 
     test_request_template = '''{
         "input": {
-            "operation": "%s",
-            "num-clients": "%s",
-            "num-servers": "%s",
+            "producer-type": "%s",
+            "producers": "%s",
+            "listeners": "%s",
             "payload-size": "%s",
             "iterations": "%s"
         }
     }'''
-    data = test_request_template % (operation, clients, servers, payload_size, iterations)
+    data = test_request_template % (producer_type, producers, listeners, payload_size, iterations)
     r = requests.post(url, data, headers=postheaders, stream=False, auth=('admin', 'admin'))
     result = {u'http-status': r.status_code}
     if r.status_code == 200:
@@ -65,12 +65,13 @@ def print_results(run_type, idx, res):
                 test run
     :return: None
     """
-    print '%s #%d: Ok: %d, Error: %d, Rate: %d, Exec time: %d' % \
+    print '%s #%d: ProdOk: %d, ProdError: %d, LisOk: %d, ProdRate: %d, LisRate %d, ProdTime: %d, ListTime %d' % \
           (run_type, idx,
-           res[u'global-rtc-client-ok'], res[u'global-rtc-client-error'], res[u'rate'], res[u'exec-time'])
+           res[u'producer-ok'], res[u'producer-error'], res[u'listener-ok'], res[u'producer-rate'],
+           res[u'listener-rate'], res[u'producer-elapsed-time'], res[u'listener-elapsed-time'])
 
 
-def run_test(warmup_runs, test_runs, operation, clients, servers, payload_size, iterations):
+def run_test(warmup_runs, test_runs, producer_type, producers, listeners, payload_size, iterations):
     """
     Execute a benchmark test. Performs the JVM 'wamrup' before the test, runs
     the specified number of dsbenchmark test runs and computes the average time
@@ -86,19 +87,21 @@ def run_test(warmup_runs, test_runs, operation, clients, servers, payload_size, 
     :return: average build time AND average test execution time
     """
     total_exec_time = 0.0
-    total_rate = 0.0
+    total_prate = 0.0
+    total_lrate = 0.0
 
     for idx in range(warmup_runs):
-        res = send_test_request(operation, clients, servers, payload_size, iterations)
+        res = send_test_request(producer_type, producers, listeners, payload_size, iterations)
         print_results('WARM-UP', idx, res)
 
     for idx in range(test_runs):
-        res = send_test_request(operation, clients, servers, payload_size, iterations)
+        res = send_test_request(producer_type, producers, listeners, payload_size, iterations)
         print_results('TEST', idx, res)
-        total_exec_time += res['exec-time']
-        total_rate += res['rate']
+        total_exec_time += res['listener-elapsed-time']
+        total_prate += res['producer-rate']
+        total_lrate += res['listener-rate']
 
-    return total_exec_time / test_runs, total_rate / test_runs
+    return total_exec_time / test_runs, total_prate / test_runs, total_lrate / test_runs
 
 
 if __name__ == "__main__":
@@ -109,48 +112,54 @@ if __name__ == "__main__":
     parser.add_argument("--port", type=int, default=8181, help="The port number of target host.")
 
     # Test Parameters
-    parser.add_argument("--operation", choices=["GLOBAL-RTC", "ROUTED-RTC"], default='GLOBAL-RTC',
-                        help='RPC and client type. RPC can be global or routcan be run-to-completion (RTC).'
-                             '(default: GLOBAL-RTC - Global RPC, Run-to-completion client)')
+    parser.add_argument("--ptype", choices=["DROPPING", "BLOCKING"], nargs='+', default='BLOCKING',
+                        help='Producer type. (default: BLOCKING)')
     parser.add_argument("--warm", type=int, default=10, help='The number of warm-up runs before the measured test runs'
                                                              '(Default 10)')
     parser.add_argument("--run", type=int, default=10,
                         help='The number of measured test runs. Reported results are based on these average of all'
                              " measured runs. (Default 10)")
-    parser.add_argument("--clients", type=int, nargs='+', default=[1, 2, 4, 8, 16, 32, 64],
-                        help='The number of test RPC clients to start. (Default 10)')
-    parser.add_argument("--servers", type=int, nargs='+', default=[1, 2, 4, 8, 16, 32, 64],
-                        help='The number of routed RPC servers to start in the routed RPC test. Ignored in the global '
-                             'RPC test. (Default 10)')
-    parser.add_argument("--iterations", type=int, default=10, help='The number requests that each RPC client issues '
-                                                                   'during the test run. (Default 10)')
+    parser.add_argument("--producers", type=int, nargs='+', default=[1, 2, 4, 8, 16, 32],
+                        help='The number of test producers to start. (Default 10)')
+    parser.add_argument("--listeners", type=int, nargs='+', default=[1, 2, 4, 8, 16, 32],
+                        help='The number of test listeners to start. (Default 10)')
+    parser.add_argument("--iterations", type=int, default=100, help='The number requests that each producer issues '
+                                                                    'during the test run. (Default 10)')
     parser.add_argument("--payload", type=int, default=10, help='Payload size for the RPC - number of elements in a '
                                                                 'simple integer list. (Default 10)')
 
     args = parser.parse_args()
     BASE_URL = "http://%s:%d/restconf/" % (args.host, args.port)
 
-    if args.operation == 'GLOBAL-RTC':
-        servers = [1]
-    else:
-        servers = args.servers
-
     # Run the benchmark tests and collect data in a csv file for import into a graphing software
     f = open('test.csv', 'wt')
     try:
         writer = csv.writer(f)
-        rate_matrix = []
+        lrate_matrix = []
+        prate_matrix = []
+        for prod in args.producers:
+            lrate_row = ['']
+            prate_row = ['']
+            for lis in args.listeners:
+                exec_time, prate, lrate = run_test(args.warm, args.run, args.ptype, prod, lis,
+                                                   args.payload, args.iterations)
+                print 'Producers: %d, Listeners: %d, prate: %d, lrate: %d' %(prod, lis, prate, lrate)
+                lrate_row.append(lrate)
+                prate_row.append(prate)
 
-        for svr in servers:
-            rate_row = ['']
-            for client in args.clients:
-                exec_time, rate = \
-                    run_test(args.warm, args.run, args.operation, client, svr, args.payload, args.iterations)
-                rate_row.append(rate)
-            rate_matrix.append(rate_row)
-        print rate_matrix
+            lrate_matrix.append(lrate_row)
+            prate_matrix.append(prate_row)
 
-        writer.writerow(('RPC Rates:', ''))
-        writer.writerows(rate_matrix)
+        print lrate_matrix
+        print prate_matrix
+
+        # writer.writerow((('%s:' % args.ptype), '', '', ''))
+        # writer.writerow(('', exec_time, prate, lrate))
+
+        writer.writerow(('Listener Rates:', ''))
+        writer.writerows(lrate_matrix)
+        writer.writerow(('Producer Rates:', ''))
+        writer.writerows(prate_matrix)
+
     finally:
         f.close()

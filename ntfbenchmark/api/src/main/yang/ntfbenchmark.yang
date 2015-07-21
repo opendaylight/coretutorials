@@ -25,7 +25,7 @@ module ntfbenchmark {
         		type uint32;
                 default 0;
                 description
-                  "The number of notifications invoked";
+                  "The number of times the notification benchmark test was invoked";
        		
         	}
         }
@@ -33,7 +33,7 @@ module ntfbenchmark {
 
     rpc start-test {
         description
-            "Start a new RPC Benchmark test run";
+            "Start a new RPC Benchmark test";
 
         input {
         	leaf producer-type {
@@ -53,13 +53,13 @@ module ntfbenchmark {
                 description
                     "RPC type and client type to use in the test";
             }
-        	leaf num-products {
+        	leaf producers {
         		type uint32;
                 default 1;
                 description
                   "Number of notification producers (test client threads) to start";    		
         	}
-        	leaf num-listeners {
+        	leaf listeners {
         		type uint32;
                 default 1;
                 description
@@ -100,19 +100,30 @@ module ntfbenchmark {
                 description
                   "Number of errors encoutered during notification generation at all producers";    		
         	}   
-       		leaf exec-time {
+       		leaf producer-elapsed-time {
         		type uint32;
                 default 0;
                 description
-                  "Test execution time, in milliseconds";    		
+                  "The time it took for all producers to finish (i.e. to send their notifications), in milliseconds";    		
         	}        	
-        	leaf rate {
+       		leaf listener-elapsed-time {
+        		type uint32;
+                default 0;
+                description
+                  "The time it took for all listeners to finish (i.e. to receive their notifications), in milliseconds";    		
+        	}        	
+       		leaf producer-rate {
         		type uint32;
                 default 0;
                 description
                   "RPC rate (Number of RPCs/sec)";    		
         	}        	
-        }
+       		leaf listener-rate {
+        		type uint32;
+                default 0;
+                description
+                  "RPC rate (Number of RPCs/sec)";    		
+        	}        	
+       	}
     }
-
 }
