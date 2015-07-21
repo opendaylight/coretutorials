@@ -109,18 +109,19 @@ if __name__ == "__main__":
     parser.add_argument("--port", type=int, default=8181, help="The port number of target host.")
 
     # Test Parameters
-    parser.add_argument("--operation", choices=["GLOBAL-RTC", "ROUTED-RTC"], nargs='+', default='GLOBAL-RTC',
-                        help='RPC and client type. RPC can be global or routed, client can be run-to-completion (RTC).'
+    parser.add_argument("--operation", choices=["GLOBAL-RTC", "ROUTED-RTC"], default='GLOBAL-RTC',
+                        help='RPC and client type. RPC can be global or routcan be run-to-completion (RTC).'
                              '(default: GLOBAL-RTC - Global RPC, Run-to-completion client)')
     parser.add_argument("--warm", type=int, default=10, help='The number of warm-up runs before the measured test runs'
                                                              '(Default 10)')
     parser.add_argument("--run", type=int, default=10,
                         help='The number of measured test runs. Reported results are based on these average of all'
                              " measured runs. (Default 10)")
-    parser.add_argument("--clients", type=int, default=10, help='The number of test RPC clients to start. (Default 10)')
-    parser.add_argument("--servers", type=int, default=10, help='The number of routed RPC servers to start in the '
-                                                                'routed RPC test. Ignored in the global RPC test. '
-                                                                '(Default 10)')
+    parser.add_argument("--clients", type=int, nargs='+', default=[1, 2, 4, 8, 16, 32, 64],
+                        help='The number of test RPC clients to start. (Default 10)')
+    parser.add_argument("--servers", type=int, nargs='+', default=[1, 2, 4, 8, 16, 32, 64],
+                        help='The number of routed RPC servers to start in the routed RPC test. Ignored in the global '
+                             'RPC test. (Default 10)')
     parser.add_argument("--iterations", type=int, default=10, help='The number requests that each RPC client issues '
                                                                    'during the test run. (Default 10)')
     parser.add_argument("--payload", type=int, default=10, help='Payload size for the RPC - number of elements in a '
@@ -129,14 +130,27 @@ if __name__ == "__main__":
     args = parser.parse_args()
     BASE_URL = "http://%s:%d/restconf/" % (args.host, args.port)
 
+    if args.operation == 'GLOBAL-RTC':
+        servers = [1]
+    else:
+        servers = args.servers
+
     # Run the benchmark tests and collect data in a csv file for import into a graphing software
     f = open('test.csv', 'wt')
     try:
         writer = csv.writer(f)
-        writer.writerow((('%s:' % args.operation), '', ''))
-        exec_time, rate = run_test(args.warm, args.run, args.operation, args.clients, args.servers, args.payload,
-                                   args.iterations)
+        rate_matrix = []
 
-        writer.writerow(('', exec_time, rate))
+        for svr in servers:
+            rate_row = ['']
+            for client in args.clients:
+                exec_time, rate = \
+                    run_test(args.warm, args.run, args.operation, client, svr, args.payload, args.iterations)
+                rate_row.append(rate)
+            rate_matrix.append(rate_row)
+        print rate_matrix
+
+        writer.writerow(('RPC Rates:', ''))
+        writer.writerows(rate_matrix)
     finally:
         f.close()
