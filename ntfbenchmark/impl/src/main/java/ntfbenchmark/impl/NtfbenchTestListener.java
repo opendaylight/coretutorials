@@ -1,14 +1,18 @@
 package ntfbenchmark.impl;
 
+import java.util.concurrent.Future;
+
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ntfbench.payload.rev150709.Ntfbench;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ntfbench.payload.rev150709.NtfbenchPayloadListener;
 
-public class NtfBenchTestListener implements NtfbenchPayloadListener {
+import com.google.common.util.concurrent.Futures;
+
+public class NtfbenchTestListener implements NtfbenchPayloadListener {
 
     private final int expectedSize;
     private int received = 0;
 
-    public NtfBenchTestListener(final int expectedSize) {
+    public NtfbenchTestListener(final int expectedSize) {
         this.expectedSize = expectedSize;
     }
 
@@ -22,4 +26,9 @@ public class NtfBenchTestListener implements NtfbenchPayloadListener {
     public int getReceived() {
         return received;
     }
+    
+	public Future<?> getAllDone() {
+		return Futures.immediateFuture(null);
+	}
+
 }

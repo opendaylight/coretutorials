@@ -9,16 +9,19 @@ package ntfbenchmark.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ntfbenchmark.rev150105.NtfbenchmarkService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ntfbenchmark.rev150105.StartTestInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ntfbenchmark.rev150105.StartTestInput.ProducerType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ntfbenchmark.rev150105.StartTestOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ntfbenchmark.rev150105.StartTestOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ntfbenchmark.rev150105.TestStatusOutput;
@@ -31,17 +34,20 @@ import org.slf4j.LoggerFactory;
 public class NtfbenchmarkProvider implements BindingAwareProvider, AutoCloseable, NtfbenchmarkService {
 
     private static final Logger LOG = LoggerFactory.getLogger(NtfbenchmarkProvider.class);
-    private NotificationPublishService publishService;
     private NotificationService listenService;
+    private NotificationPublishService publishService;
     private static final int testTimeout = 5;
 
-    @Override
+    public NtfbenchmarkProvider(NotificationService listenServiceDependency,
+			NotificationPublishService publishServiceDependency) {
+        LOG.info("NtfbenchmarkProvider Constructor");
+        listenService = listenServiceDependency;
+    	publishService = publishServiceDependency;
+	}
+
+	@Override
     public void onSessionInitiated(final ProviderContext session) {
         LOG.info("NtfbenchmarkProvider Session Initiated");
-
-        publishService = session.getSALService(NotificationPublishService.class);
-        listenService = session.getSALService(NotificationService.class);
-
         session.addRpcImplementation(NtfbenchmarkService.class, this);
     }
 
@@ -52,50 +58,62 @@ public class NtfbenchmarkProvider implements BindingAwareProvider, AutoCloseable
 
     @Override
     public Future<RpcResult<StartTestOutput>> startTest(final StartTestInput input) {
-        final int producerCount = input.getNumProducts().intValue();
-        final int listenerCount = input.getNumListeners().intValue();
+        final int producerCount = input.getProducers().intValue();
+        final int listenerCount = input.getListeners().intValue();
         final int iterations = input.getIterations().intValue();
         final int payloadSize = input.getIterations().intValue();
 
         final List<AbstractNtfbenchProducer> producers = new ArrayList<>(producerCount);
-        final List<ListenerRegistration<NtfBenchTestListener>> listeners = new ArrayList<>(listenerCount);
+        final List<ListenerRegistration<NtfbenchTestListener>> listeners = new ArrayList<>(listenerCount);
         for (int i = 0; i < producerCount; i++) {
             producers.add(new NtfbenchBlockingProducer(publishService, iterations, payloadSize));
         }
-
+        int expectedCntPerListener = producerCount * iterations;
+        
         for (int i = 0; i < listenerCount; i++) {
-            final NtfBenchTestListener listener = new NtfBenchTestListener(payloadSize);
+            final NtfbenchTestListener listener;
+            if (input.getProducerType() == ProducerType.BLOCKING) {
+            	listener = new NtfbenchWTCListener(payloadSize, expectedCntPerListener);
+            } else {
+            	listener = new NtfbenchTestListener(payloadSize);
+            }
             listeners.add(listenService.registerNotificationListener(listener));
         }
 
         try {
-            final ExecutorService executor = Executors.newFixedThreadPool(input.getNumProducts().intValue());
+            final ExecutorService executor = Executors.newFixedThreadPool(input.getProducers().intValue());
 
             LOG.info("Test Started");
             final long startTime = System.nanoTime();
 
-            for (int i = 0; i < input.getNumProducts().intValue(); i++) {
+            for (int i = 0; i < input.getProducers().intValue(); i++) {
                 executor.submit(producers.get(i));
             }
             executor.shutdown();
             try {
                 executor.awaitTermination(testTimeout, TimeUnit.MINUTES);
-            } catch (final InterruptedException e) {
+                for (ListenerRegistration<NtfbenchTestListener> listenerRegistration : listeners) {
+                	listenerRegistration.getInstance().getAllDone().get();
+				}
+            } catch (final InterruptedException | ExecutionException e) {
                 LOG.error("Out of time: test did not finish within the {} min deadline ", testTimeout);
             }
 
-            final long endTime = System.nanoTime();
-            LOG.info("Test Done");
-
-            final long elapsedTime = endTime - startTime;
+            final long producerEndTime = System.nanoTime();
+            final long producerElapsedTime = producerEndTime - startTime;
 
             long allListeners = 0;
             long allProducersOk = 0;
             long allProducersError = 0;
 
-            for (final ListenerRegistration<NtfBenchTestListener> listenerRegistration : listeners) {
+            for (final ListenerRegistration<NtfbenchTestListener> listenerRegistration : listeners) {
                 allListeners += listenerRegistration.getInstance().getReceived();
             }
+            
+            final long listenerEndTime = System.nanoTime();
+            final long listenerElapsedTime = producerEndTime - startTime;
+           
+            LOG.info("Test Done");
 
             for (final AbstractNtfbenchProducer abstractNtfbenchProducer : producers) {
                 allProducersOk += abstractNtfbenchProducer.getNtfOk();
@@ -103,11 +121,18 @@ public class NtfbenchmarkProvider implements BindingAwareProvider, AutoCloseable
             }
 
             final StartTestOutput output =
-                    new StartTestOutputBuilder().setExecTime(elapsedTime).setListenerOk(allListeners)
-                            .setProducerOk(allProducersOk).setProducerError(allProducersError).build();
+                    new StartTestOutputBuilder()
+            				.setProducerElapsedTime(producerElapsedTime / 1000000)
+            				.setListenerElapsedTime(listenerElapsedTime / 1000000)
+            				.setListenerOk(allListeners)
+                            .setProducerOk(allProducersOk)
+                            .setProducerError(allProducersError)
+                            .setProducerRate(((allProducersOk + allProducersError) * 1000000000) / producerElapsedTime)
+                            .setListenerRate((allListeners * 1000000000) / listenerElapsedTime)
+                           .build();
             return RpcResultBuilder.success(output).buildFuture();
         } finally {
-            for (final ListenerRegistration<NtfBenchTestListener> listenerRegistration : listeners) {
+            for (final ListenerRegistration<NtfbenchTestListener> listenerRegistration : listeners) {
                 listenerRegistration.close();
             }
         }

@@ -5,6 +5,7 @@ module ntfbenchmark-impl {
 
     import config { prefix config; revision-date 2013-04-05; }
     import opendaylight-md-sal-binding { prefix md-sal-binding; revision-date 2013-10-28;}
+    import opendaylight-sal-binding-broker-impl {prefix binding-impl; revision-date 2013-10-28;}
 
     description
         "Service definition for ntfbenchmark project";
@@ -30,6 +31,23 @@ module ntfbenchmark-impl {
                     }
                 }
             }
+            container publish-service {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity binding-impl:binding-new-notification-publish-service;
+                    }
+                }
+            }
+            container listen-service {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity binding-impl:binding-new-notification-service;
+                    }
+                }
+            }
+
         }
     }
 }
