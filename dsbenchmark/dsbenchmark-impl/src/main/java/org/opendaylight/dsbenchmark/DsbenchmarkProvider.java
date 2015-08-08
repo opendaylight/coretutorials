@@ -5,6 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
+
 package org.opendaylight.dsbenchmark;
 
 import java.util.Collections;
@@ -60,8 +61,8 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
     private long testsCompleted = 0;
 
     public DsbenchmarkProvider(DOMDataBroker domDataBroker, DataBroker bindingDataBroker) {
-        // We have to get the DOMDataBroker via the constructor, 
-        // since we can't get it from the session 
+        // We have to get the DOMDataBroker via the constructor,
+        // since we can't get it from the session
         this.domDataBroker = domDataBroker;
         this.bindingDataBroker = bindingDataBroker;
     }
@@ -102,12 +103,12 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
 
         // Cleanup data that may be left over from a previous test run
         cleanupTestStore();
-        
+
         // Get the appropriate writer based on operation type and data format
         DatastoreAbstractWriter dsWriter = getDatastoreWriter(input);
 
         long startTime, endTime, listCreateTime, execTime;
-        
+
         startTime = System.nanoTime();
         dsWriter.createList();
         endTime = System.nanoTime();
@@ -183,7 +184,7 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
     private DatastoreAbstractWriter getDatastoreWriter(StartTestInput input) {
 
         final DatastoreAbstractWriter retVal;
-        
+
         StartTestInput.TransactionType txType = input.getTransactionType();
         StartTestInput.Operation oper = input.getOperation();
         StartTestInput.DataFormat dataFormat = input.getDataFormat();
@@ -196,7 +197,7 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
                 if (dataFormat == StartTestInput.DataFormat.BINDINGAWARE) {
                     if (StartTestInput.Operation.DELETE == oper) {
                         retVal = new SimpletxBaDelete(this.dataBroker, outerListElem,
-                                innerListElem,writesPerTx); 
+                                innerListElem,writesPerTx);
                     } else {
                         retVal = new SimpletxBaWrite(this.dataBroker, oper, outerListElem,
                                 innerListElem,writesPerTx);
@@ -204,17 +205,17 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
                 } else {
                     if (StartTestInput.Operation.DELETE == oper) {
                         retVal = new SimpletxDomDelete(this.domDataBroker, outerListElem,
-                                innerListElem, writesPerTx); 
+                                innerListElem, writesPerTx);
                     } else {
                         retVal = new SimpletxDomWrite(this.domDataBroker, oper, outerListElem,
                             innerListElem,writesPerTx);
                     }
-                } 
+                }
             } else {
                 if (dataFormat == StartTestInput.DataFormat.BINDINGAWARE) {
                     if (StartTestInput.Operation.DELETE == oper) {
                         retVal = new TxchainBaDelete(this.bindingDataBroker,outerListElem,
-                                innerListElem,writesPerTx); 
+                                innerListElem,writesPerTx);
                     } else {
                         retVal = new TxchainBaWrite(this.bindingDataBroker, oper, outerListElem,
                                 innerListElem,writesPerTx);
@@ -222,7 +223,7 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
                 } else {
                     if (StartTestInput.Operation.DELETE == oper) {
                         retVal = new TxchainDomDelete(this.domDataBroker, outerListElem,
-                                innerListElem, writesPerTx); 
+                                innerListElem, writesPerTx);
                     } else {
                         retVal = new TxchainDomWrite(this.domDataBroker, oper, outerListElem,
                             innerListElem,writesPerTx);

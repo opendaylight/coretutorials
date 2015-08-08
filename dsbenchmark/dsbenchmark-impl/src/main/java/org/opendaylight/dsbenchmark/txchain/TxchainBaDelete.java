@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2015 Cisco Systems and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
 package org.opendaylight.dsbenchmark.txchain;
 
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
@@ -33,13 +41,13 @@ public class TxchainBaDelete extends DatastoreAbstractWriter implements Transact
     @Override
     public void createList() {
         LOG.info("TxchainBaDelete: creating data in the data store");
-        
+
         // Dump the whole list into the data store in a single transaction
         // with <outerListElem> PUTs on the transaction
         TxchainBaWrite dd = new TxchainBaWrite(bindingDataBroker,
                                                StartTestInput.Operation.PUT,
-                                               outerListElem, 
-                                               innerListElem, 
+                                               outerListElem,
+                                               innerListElem,
                                                outerListElem);
         dd.createList();
         dd.writeList();

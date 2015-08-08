@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2015 Cisco Systems and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
 package org.opendaylight.dsbenchmark.simpletx;
 
 import java.util.HashMap;
@@ -36,8 +44,8 @@ public class SimpletxDomDelete extends DatastoreAbstractWriter {
         // with <outerListElem> PUTs on the transaction
         SimpletxDomWrite dd = new SimpletxDomWrite(domDataBroker,
                                                    StartTestInput.Operation.PUT,
-                                                   outerListElem, 
-                                                   innerListElem, 
+                                                   outerListElem,
+                                                   innerListElem,
                                                    outerListElem);
         dd.createList();
         dd.writeList();

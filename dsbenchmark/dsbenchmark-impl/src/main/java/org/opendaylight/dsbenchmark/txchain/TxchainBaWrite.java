@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2015 Cisco Systems and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
 package org.opendaylight.dsbenchmark.txchain;
 
 import java.util.List;
@@ -28,7 +36,7 @@ public class TxchainBaWrite extends DatastoreAbstractWriter implements Transacti
     private final DataBroker bindingDataBroker;
     private List<OuterList> list;
 
-    public TxchainBaWrite(DataBroker bindingDataBroker, Operation oper, 
+    public TxchainBaWrite(DataBroker bindingDataBroker, Operation oper,
                           int outerListElem, int innerListElem, long writesPerTx) {
         super(oper, outerListElem, innerListElem, writesPerTx);
         this.bindingDataBroker = bindingDataBroker;
@@ -37,7 +45,7 @@ public class TxchainBaWrite extends DatastoreAbstractWriter implements Transacti
 
     @Override
     public void createList() {
-        list = BaListBuilder.buildOuterList(this.outerListElem, this.innerListElem); 
+        list = BaListBuilder.buildOuterList(this.outerListElem, this.innerListElem);
     }
 
     @Override
@@ -54,7 +62,7 @@ public class TxchainBaWrite extends DatastoreAbstractWriter implements Transacti
             if (oper == StartTestInput.Operation.PUT) {
                 tx.put(LogicalDatastoreType.CONFIGURATION, iid, element);
             } else {
-                tx.merge(LogicalDatastoreType.CONFIGURATION, iid, element);                
+                tx.merge(LogicalDatastoreType.CONFIGURATION, iid, element);
             }
 
             writeCnt++;

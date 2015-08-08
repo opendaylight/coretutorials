@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2015 Cisco Systems and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
 package org.opendaylight.dsbenchmark;
 
 import java.util.ArrayList;
@@ -19,14 +27,14 @@ public final class DomListBuilder {
 
     // Outer List Qname identifier for yang model's 'id'
     private static final org.opendaylight.yangtools.yang.common.QName OL_ID = QName.create(OuterList.QNAME, "id");
-    
+
     static public List<MapEntryNode> buildOuterList(int outerElements, int innerElements) {
         List<MapEntryNode> outerList = new ArrayList<MapEntryNode>(outerElements);
         for (int j = 0; j < outerElements; j++) {
             outerList.add(ImmutableNodes.mapEntryBuilder()
                                 .withNodeIdentifier(new NodeIdentifierWithPredicates(OuterList.QNAME, OL_ID, j))
                                 .withChild(ImmutableNodes.leafNode(OL_ID, j))
-                                .withChild(buildInnerList(j, innerElements)) 
+                                .withChild(buildInnerList(j, innerElements))
                                 .build());
         }
 

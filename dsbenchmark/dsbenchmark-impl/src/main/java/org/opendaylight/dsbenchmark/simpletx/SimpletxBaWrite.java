@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2015 Cisco Systems and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
 package org.opendaylight.dsbenchmark.simpletx;
 
 import java.util.List;
@@ -29,7 +37,7 @@ public class SimpletxBaWrite extends DatastoreAbstractWriter {
 
      @Override
      public void createList() {
-         list = BaListBuilder.buildOuterList(this.outerListElem, this.innerListElem); 
+         list = BaListBuilder.buildOuterList(this.outerListElem, this.innerListElem);
      }
 
     @Override
@@ -43,7 +51,7 @@ public class SimpletxBaWrite extends DatastoreAbstractWriter {
             if (oper == StartTestInput.Operation.PUT) {
                 tx.put(LogicalDatastoreType.CONFIGURATION, iid, element);
             } else {
-                tx.merge(LogicalDatastoreType.CONFIGURATION, iid, element);                
+                tx.merge(LogicalDatastoreType.CONFIGURATION, iid, element);
             }
 
             writeCnt++;
