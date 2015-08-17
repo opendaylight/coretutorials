@@ -50,7 +50,7 @@ public class TxchainDomWrite extends DatastoreAbstractWriter implements Transact
     }
 
     @Override
-    public void writeList() {
+    public void executeList() {
         int txSubmitted = 0;
         int writeCnt = 0;
 

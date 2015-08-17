@@ -43,11 +43,11 @@ public class SimpletxBaDelete extends DatastoreAbstractWriter {
                                                  innerListElem,
                                                  outerListElem);
         dd.createList();
-        dd.writeList();
+        dd.executeList();
     }
 
     @Override
-    public void writeList() {
+    public void executeList() {
             WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
             long putCnt = 0;
 

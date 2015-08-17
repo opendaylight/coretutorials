@@ -87,6 +87,11 @@ module dsbenchmark {
                         description
                             "Delete items from a list sotred in the data store";
                     }
+                    enum "READ" {
+                        value 4;
+                        description
+                        "The read operation";
+                    }
                 }
                 description
                     "Type of the transaction operation to benchmark";
