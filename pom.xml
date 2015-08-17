@@ -29,7 +29,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
     <module>ncmount</module>
     <module>ietfsyslog</module>
     <module>openconfig</module>
-    <module>hweventsource</module>
+    <!--<module>hweventsource</module>-->
     <module>xmpp-agent</module>
   </modules>
 

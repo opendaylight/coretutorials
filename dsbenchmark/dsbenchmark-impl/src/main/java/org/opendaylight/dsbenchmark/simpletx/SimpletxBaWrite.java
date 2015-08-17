@@ -41,7 +41,7 @@ public class SimpletxBaWrite extends DatastoreAbstractWriter {
      }
 
     @Override
-    public void writeList() {
+    public void executeList() {
         WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
         long writeCnt = 0;
 

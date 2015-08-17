@@ -51,11 +51,11 @@ public class TxchainDomDelete extends DatastoreAbstractWriter implements Transac
                                                  innerListElem,
                                                  outerListElem);
         dd.createList();
-        dd.writeList();
+        dd.executeList();
     }
 
     @Override
-    public void writeList() {
+    public void executeList() {
         int txSubmitted = 0;
         int writeCnt = 0;
 

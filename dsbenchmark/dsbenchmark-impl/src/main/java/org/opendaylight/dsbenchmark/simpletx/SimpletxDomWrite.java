@@ -43,7 +43,7 @@ public class SimpletxDomWrite extends DatastoreAbstractWriter {
     }
 
     @Override
-    public void writeList() {
+    public void executeList() {
         DOMDataWriteTransaction tx = domDataBroker.newWriteOnlyTransaction();
         long writeCnt = 0;
 
