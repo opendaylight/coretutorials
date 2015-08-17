@@ -8,6 +8,7 @@ import argparse
 import requests
 import json
 import csv
+import time
 
 parser = argparse.ArgumentParser(description='Datastore Benchmarking'
                                              ''
@@ -25,7 +26,7 @@ parser.add_argument("--total", type=int, default=100000, help="total number of e
 parser.add_argument("--inner", type=int, default=[1, 10, 100, 1000, 10000, 100000], help="number of inner elements to process.")
 parser.add_argument("--ops", type=int, default=[1, 10, 100, 1000, 10000, 100000], help="number of operations per transaction.")
 
-parser.add_argument("--optype", choices=["PUT", "MERGE", "DELETE"], nargs='+', default=["PUT", "MERGE", "DELETE"], help="list of the types operations to execute.")
+parser.add_argument("--optype", choices=["PUT", "MERGE", "DELETE", "READ"], nargs='+', default=["PUT", "MERGE", "DELETE", "READ"], help="list of the types operations to execute.")
 parser.add_argument("--format", choices=["BINDING-AWARE", "BINDING-INDEPENDENT"], nargs='+', default=["BINDING-AWARE", "BINDING-INDEPENDENT"], help="list of data formats to execute.")
 
 parser.add_argument("--warmup", type=int, default=10, help="number of warmup runs before official test runs")
@@ -53,7 +54,7 @@ def send_test_request(tx_type, operation, data_fmt, outer_elem, inner_elem, ops_
     Sends a request to the dsbenchmark app to start a data store benchmark test run.
     The dsbenchmark app will perform the requested benchmark test and return measured
     transaction times
-    :param operation: PUT, MERGE or DELETE
+    :param operation: PUT, MERGE, DELETE or READ
     :param data_fmt: BINDING-AWARE or BINDING-INDEPENDENT
     :param outer_elem: Number of elements in the outer list
     :param inner_elem: Number of elements in the inner list
@@ -149,6 +150,9 @@ if __name__ == "__main__":
     # Run the benchmark tests and collect data in a csv file for import into a graphing software
     f = open('test.csv', 'wt')
     try:
+        start_time = time.time()
+        print "Start time: %f " %  start_time
+
         writer = csv.writer(f)
 
         # Determine the impact of transaction type, data format and data structure on performance.
@@ -206,5 +210,10 @@ if __name__ == "__main__":
                             run_test(WARMUP_RUNS, TEST_RUNS, tx_type, oper, fmt, TOTAL_ELEMENTS, 1, wtx)
                         writer.writerow(('', '', '', wtx, avg_build_time, avg_exec_time, (avg_build_time + avg_exec_time)))
 
+        end_time = time.time()
+        print "End time: %f " %  end_time
+        print "Total execution time: %f" % (end_time - start_time)
+
     finally:
         f.close()
+

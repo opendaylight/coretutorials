@@ -50,11 +50,11 @@ public class TxchainBaDelete extends DatastoreAbstractWriter implements Transact
                                                innerListElem,
                                                outerListElem);
         dd.createList();
-        dd.writeList();
+        dd.executeList();
     }
 
     @Override
-    public void writeList() {
+    public void executeList() {
         int txSubmitted = 0;
         int writeCnt = 0;
 

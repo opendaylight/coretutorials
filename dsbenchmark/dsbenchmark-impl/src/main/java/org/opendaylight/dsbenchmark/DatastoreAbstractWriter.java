@@ -29,7 +29,7 @@ public abstract class DatastoreAbstractWriter {
     }
 
     public abstract void createList();
-    public abstract void writeList();
+    public abstract void executeList();
 
     public int getTxError() {
         return txError;

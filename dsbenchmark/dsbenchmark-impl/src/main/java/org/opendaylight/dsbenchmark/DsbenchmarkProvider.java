@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.dsbenchmark;
 
 import java.util.Collections;
@@ -21,12 +20,16 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderCo
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RpcRegistration;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.dsbenchmark.simpletx.SimpletxBaDelete;
+import org.opendaylight.dsbenchmark.simpletx.SimpletxBaRead;
 import org.opendaylight.dsbenchmark.simpletx.SimpletxBaWrite;
 import org.opendaylight.dsbenchmark.simpletx.SimpletxDomDelete;
+import org.opendaylight.dsbenchmark.simpletx.SimpletxDomRead;
 import org.opendaylight.dsbenchmark.simpletx.SimpletxDomWrite;
 import org.opendaylight.dsbenchmark.txchain.TxchainBaDelete;
+import org.opendaylight.dsbenchmark.txchain.TxchainBaRead;
 import org.opendaylight.dsbenchmark.txchain.TxchainBaWrite;
 import org.opendaylight.dsbenchmark.txchain.TxchainDomDelete;
+import org.opendaylight.dsbenchmark.txchain.TxchainDomRead;
 import org.opendaylight.dsbenchmark.txchain.TxchainDomWrite;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.DsbenchmarkService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.StartTestInput;
@@ -97,8 +100,8 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
         if ( execStatus.compareAndSet(ExecStatus.Idle, ExecStatus.Executing) == false ) {
             LOG.info("Test in progress");
             return RpcResultBuilder.success(new StartTestOutputBuilder()
-                                                    .setStatus(StartTestOutput.Status.TESTINPROGRESS)
-                                                    .build()).buildFuture();
+                    .setStatus(StartTestOutput.Status.TESTINPROGRESS)
+                    .build()).buildFuture();
         }
 
         // Cleanup data that may be left over from a previous test run
@@ -117,7 +120,7 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
         // Run the test and measure the execution time
         try {
             startTime = System.nanoTime();
-            dsWriter.writeList();
+            dsWriter.executeList();
             endTime = System.nanoTime();
             execTime = (endTime - startTime) / 1000000;
 
@@ -127,8 +130,8 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
             LOG.error( "Test error: {}", e.toString());
             execStatus.set( ExecStatus.Idle );
             return RpcResultBuilder.success(new StartTestOutputBuilder()
-                                                    .setStatus(StartTestOutput.Status.FAILED)
-                                                    .build()).buildFuture();
+                    .setStatus(StartTestOutput.Status.FAILED)
+                    .build()).buildFuture();
         }
 
         LOG.info("Test finished");
@@ -136,21 +139,21 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
         execStatus.set(ExecStatus.Idle);
 
         StartTestOutput output = new StartTestOutputBuilder()
-                                        .setStatus(StartTestOutput.Status.OK)
-                                        .setListBuildTime(listCreateTime)
-                                        .setExecTime(execTime)
-                                        .setTxOk((long)dsWriter.getTxOk())
-                                        .setTxError((long)dsWriter.getTxError())
-                                        .build();
+                .setStatus(StartTestOutput.Status.OK)
+                .setListBuildTime(listCreateTime)
+                .setExecTime(execTime)
+                .setTxOk((long)dsWriter.getTxOk())
+                .setTxError((long)dsWriter.getTxError())
+                .build();
 
         return RpcResultBuilder.success(output).buildFuture();
     }
 
     private void setTestOperData( ExecStatus sts, long tstCompl ) {
         TestStatus status = new TestStatusBuilder()
-                                        .setExecStatus(sts)
-                                        .setTestsCompleted(tstCompl)
-                                        .build();
+                .setExecStatus(sts)
+                .setTestsCompleted(tstCompl)
+                .build();
 
         WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
         tx.put(LogicalDatastoreType.OPERATIONAL, TEST_STATUS_IID, status);
@@ -166,8 +169,8 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
 
     private void cleanupTestStore() {
         TestExec data = new TestExecBuilder()
-                                .setOuterList(Collections.<OuterList>emptyList())
-                                .build();
+                .setOuterList(Collections.<OuterList>emptyList())
+                .build();
 
         WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
         tx.put(LogicalDatastoreType.CONFIGURATION, TEST_EXEC_IID, data);
@@ -198,6 +201,9 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
                     if (StartTestInput.Operation.DELETE == oper) {
                         retVal = new SimpletxBaDelete(this.dataBroker, outerListElem,
                                 innerListElem,writesPerTx);
+                    } else if (StartTestInput.Operation.READ == oper) {
+                        retVal = new SimpletxBaRead(this.dataBroker, outerListElem,
+                                innerListElem,writesPerTx);
                     } else {
                         retVal = new SimpletxBaWrite(this.dataBroker, oper, outerListElem,
                                 innerListElem,writesPerTx);
@@ -206,15 +212,21 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
                     if (StartTestInput.Operation.DELETE == oper) {
                         retVal = new SimpletxDomDelete(this.domDataBroker, outerListElem,
                                 innerListElem, writesPerTx);
+                    } else if (StartTestInput.Operation.READ == oper) {
+                        retVal = new SimpletxDomRead(this.domDataBroker, outerListElem,
+                                innerListElem, writesPerTx);
                     } else {
                         retVal = new SimpletxDomWrite(this.domDataBroker, oper, outerListElem,
-                            innerListElem,writesPerTx);
+                                innerListElem,writesPerTx);
                     }
                 }
             } else {
                 if (dataFormat == StartTestInput.DataFormat.BINDINGAWARE) {
                     if (StartTestInput.Operation.DELETE == oper) {
-                        retVal = new TxchainBaDelete(this.bindingDataBroker,outerListElem,
+                        retVal = new TxchainBaDelete(this.bindingDataBroker, outerListElem,
+                                innerListElem, writesPerTx);
+                    } else if (StartTestInput.Operation.READ == oper) {
+                        retVal = new TxchainBaRead(this.bindingDataBroker,outerListElem,
                                 innerListElem,writesPerTx);
                     } else {
                         retVal = new TxchainBaWrite(this.bindingDataBroker, oper, outerListElem,
@@ -224,9 +236,13 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
                     if (StartTestInput.Operation.DELETE == oper) {
                         retVal = new TxchainDomDelete(this.domDataBroker, outerListElem,
                                 innerListElem, writesPerTx);
+                    } else if (StartTestInput.Operation.READ == oper) {
+                        retVal = new TxchainDomRead(this.domDataBroker, outerListElem,
+                                innerListElem, writesPerTx);
+
                     } else {
                         retVal = new TxchainDomWrite(this.domDataBroker, oper, outerListElem,
-                            innerListElem,writesPerTx);
+                                innerListElem,writesPerTx);
                     }
                 }
             }
