@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_c61239b4",
+        "filename": "pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 2759
+      },
+      "writtenOn": "2015-08-18T13:43:08Z",
+      "side": 1,
+      "message": "This breaks out ability to build coretutorials. This patch\u0027s title is \"Added read support for DSBenchmark\" so why is this module removed?",
+      "revId": "6c076d21274bf42260418e57e37dad54cd66f71d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
