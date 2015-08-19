@@ -34,6 +34,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <feature version="${mdsal.version}">odl-restconf-all</feature>
   </feature>
   <feature name='odl-xmpp-agent-ui' version='${project.version}' description='OpenDaylight :: xmpp-agent :: UI'>
+    <feature version="${mdsal.version}">odl-message-bus</feature>
     <feature version="${project.version}">odl-xmpp-agent-rest</feature>
     <feature version="${mdsal.version}">odl-mdsal-apidocs</feature>
   </feature>
