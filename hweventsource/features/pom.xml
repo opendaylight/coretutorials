@@ -36,6 +36,13 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <dependency>
+        <groupId>org.opendaylight.controller</groupId>
+        <artifactId>netconf-artifacts</artifactId>
+        <version>${netconf.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <dependencies>
