@@ -1,0 +1,66 @@
+module dscrudbenchmark {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:dscrudbenchmark";
+    prefix "dscrudbenchmark";
+
+    revision "2015-01-05" {
+        description "Initial revision of dscrudbenchmark model";
+    }
+
+    rpc rpc-crud-test {
+        description
+          "Start a new performance test run";
+
+        input {
+            leaf numResources {
+                type uint32;
+                default 100000;
+                description "Number of resources to test";
+            }
+            leaf numThreads {
+                type uint32;
+                default 32;
+                description "Number of threads to use";
+            }
+        }
+        output {
+            leaf status {
+                mandatory true;
+                type enumeration {
+                    enum "OK" {
+                        value 1;
+                    }
+                    enum "FAILED" {
+                        value 2;
+                    }
+                }
+                description
+                    "Indicates whether the test finished successfully";
+            }
+            leaf createsPerSec {
+                type uint32;
+                default 1;
+                description
+                  "creates/second";
+            }
+            leaf retrievesPerSec {
+                type uint32;
+                default 1;
+                description
+                  "retrieves/second";
+            }
+            leaf deletesPerSec {
+                type uint32;
+                default 1;
+                description
+                  "deletes/second";
+            }
+            leaf crudsPerSec {
+                type uint32;
+                default 1;
+                description
+                  "cruds/second";
+            }
+        }
+    }
+}
