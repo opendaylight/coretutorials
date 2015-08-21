@@ -1,0 +1,121 @@
+module dhcp-impl {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:dhcp:impl";
+    prefix "dhcp-impl";
+
+    import config { prefix config; revision-date 2013-04-05; }
+    import opendaylight-md-sal-binding { prefix md-sal-binding; revision-date 2013-10-28;}
+
+    description
+        "Service definition for dhcp project";
+
+    revision "2014-12-10" {
+        description
+            "Initial revision";
+    }
+
+    identity dhcp-lease-manager {
+        base "config:service-type";
+        config:java-class "org.apache.directory.server.dhcp.service.manager.LeaseManager";
+    }
+
+    identity example-lease-manager {
+        base config:module-type;
+        config:provided-service dhcp-lease-manager;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case example-lease-manager {
+            when "/config:modules/config:module/config:type = 'example-lease-manager'";
+
+            leaf ip {
+                type string;
+                description "Ip to lease to every client";
+            }
+
+        }
+    }
+
+    identity dhcp {
+        base config:module-type;
+        config:java-name-prefix Dhcp;
+    }
+    
+    typedef message-type {
+        type enumeration {
+            enum "DHCPOFFER" {
+                value 2;
+                description "DHCP Offer";
+            }
+            enum "DHCPACK" {
+                value 5;
+                description "DHCP Acknowledge";
+             }
+             enum "DHCPNAK" {
+                 value 6;
+                 description "DHCP Not Acknowledge";
+             }
+         }
+     }
+
+     typedef value-type {
+         type enumeration {
+             enum "string" {
+                 value 1;
+             }
+             enum "address" {
+                 value 2;
+             }
+             enum "integer" {
+                 value 3;
+             }
+             enum "address-list" {
+                 value 5;
+                 description "addresses to be separated by space";
+             }
+         }
+     }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case dhcp {
+            when "/config:modules/config:module/config:type = 'dhcp'";
+
+            leaf port {
+                type uint16;
+                description "port to bind the DHCP server to";
+                default 67;
+                // TODO change the type to port from ietf tpyes
+            }
+            
+            leaf-list network-interfaces {
+                type string;
+             }
+            
+            list option {
+                key "id scope";
+                leaf id {
+                    type uint16;
+                }
+                leaf value {
+                    type string;
+                }
+                leaf value-type {
+                    type value-type;
+                }
+                leaf scope {
+                    type message-type;
+                }
+             }
+             
+            container lease-manager {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity dhcp-lease-manager;
+                    }
+                }
+            }
+
+        }
+    }
+}
