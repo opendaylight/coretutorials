@@ -1,0 +1,139 @@
+module dscrud {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:dscrud";
+    prefix "dsbenchmark";
+
+    revision "2015-01-05" {
+        description "Initial revision of dsbenchmark model";
+    }
+
+    container test-exec {
+        config false;
+
+        list outer-list {
+            key id;
+            leaf id {
+                type string;
+            }
+
+           list inner-list {
+                key id;
+                leaf id {
+                    type string;
+                }
+                leaf value {
+                    type string;
+                }
+                leaf value2 {
+                    type string;
+                }
+                leaf value3 {
+                    type string;
+                }
+            }
+        }
+    }
+
+    rpc do-crud {
+        description
+          "Perform a crud test";
+
+        input {
+            leaf operation {
+                mandatory true;
+                type enumeration {
+                    enum "CREATE" {
+                        value 1;
+                        description
+                          "The create operation";
+                    }
+                    enum "READ" {
+                        value 2;
+                        description
+                          "The read operation";
+                    }
+                    enum "DELETE" {
+                        value 3;
+                        description
+                            "The deelte operation";
+                    }
+                }
+                description
+                    "Type of the transaction operation to perform";
+            }
+
+            leaf transaction-type {
+                mandatory true;
+                type enumeration {
+                    enum "SIMPLE-TX" {
+                        value 1;
+                    }
+                    enum "TX-CHAINING" {
+                        value 2;
+                    }
+                }
+                description
+                    "Data format:-binding-aware or binding-independent";
+            }
+
+            leaf outerElementId {
+                type uint32;
+                description
+                  "id of the outer element";
+             }
+
+            leaf innerElements {
+                type uint32;
+                default 1;
+                description
+                  "Number of elements in the InnerList";
+             }
+        }
+        output {
+            leaf status {
+                mandatory true;
+                type enumeration {
+                    enum "OK" {
+                        value 1;
+                    }
+                    enum "FAILED" {
+                        value 2;
+                    }
+                }
+                description
+                    "Indicates whether the test finished successfuly";
+               }
+
+            leaf txOk {
+                type uint32;
+                default 1;
+                description
+                  "The number of successful transactions";
+              }
+            leaf txError {
+                type uint32;
+                default 1;
+                description
+                  "The number of failed transactions";
+              }
+            leaf verifyError {
+                type uint32;
+                default 1;
+                description
+                  "The number of failed verifications";
+              }
+            leaf verifyOk {
+                type uint32;
+                default 1;
+                description
+                  "The number of successful verifications";
+              }
+        }
+    }
+
+
+    rpc cleanup-store {
+        description
+          "clean data store";
+    }
+}
