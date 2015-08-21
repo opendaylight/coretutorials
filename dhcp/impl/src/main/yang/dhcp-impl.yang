@@ -1,0 +1,71 @@
+module dhcp-impl {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:dhcp:impl";
+    prefix "dhcp-impl";
+
+    import config { prefix config; revision-date 2013-04-05; }
+    import opendaylight-md-sal-binding { prefix md-sal-binding; revision-date 2013-10-28;}
+
+    description
+        "Service definition for dhcp project";
+
+    revision "2014-12-10" {
+        description
+            "Initial revision";
+    }
+
+    identity dhcp-lease-manager {
+        base "config:service-type";
+        config:java-class "org.apache.directory.server.dhcp.service.manager.LeaseManager";
+    }
+
+    identity example-lease-manager {
+        base config:module-type;
+        config:provided-service dhcp-lease-manager;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case example-lease-manager {
+            when "/config:modules/config:module/config:type = 'example-lease-manager'";
+
+            leaf ip {
+                type string;
+                description "Ip to lease to every client";
+            }
+
+        }
+    }
+
+    identity dhcp {
+        base config:module-type;
+        config:java-name-prefix Dhcp;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case dhcp {
+            when "/config:modules/config:module/config:type = 'dhcp'";
+
+            leaf port {
+                type uint16;
+                description "port to bind the DHCP server to";
+                default 67;
+                // TODO change the type to port from ietf tpyes
+            }
+            
+            leaf-list network-interfaces {
+                type string;
+                mandatory true;
+            }
+
+            container lease-manager {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity dhcp-lease-manager;
+                    }
+                }
+            }
+
+        }
+    }
+}

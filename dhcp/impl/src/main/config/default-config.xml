@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vi: set et smarttab sw=4 tabstop=4: -->
+<!--
+Copyright (c) 2015 Cisco Systems and others.  All rights reserved.
+
+This program and the accompanying materials are made available under the
+terms of the Eclipse Public License v1.0 which accompanies this distribution,
+and is available at http://www.eclipse.org/legal/epl-v10.html
+-->
+<snapshot>
+  <required-capabilities>
+      <capability>urn:opendaylight:params:xml:ns:yang:dhcp:impl?module=dhcp-impl&amp;revision=2014-12-10</capability>
+      <capability>urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding?module=opendaylight-md-sal-binding&amp;revision=2013-10-28</capability>
+  </required-capabilities>
+  <configuration>
+
+    <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+      <modules xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+
+        <module>
+          <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:dhcp:impl">prefix:example-lease-manager</type>
+          <name>example-lease-manager</name>
+          <ip>9.9.9.9</ip>
+        </module>
+
+        <module>
+          <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:dhcp:impl">prefix:dhcp</type>
+          <name>dhcp-server</name>
+          <port>67</port>
+          <network-interface>lo</network-interface>
+          <lease-manager>
+            <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:dhcp:impl">prefix:dhcp-lease-manager</type>
+            <name>example-lease-manager</name>
+          </lease-manager>
+        </module>
+
+      </modules>
+
+      <services xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+        <service>
+          <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:dhcp:impl">prefix:dhcp-lease-manager</type>
+          <instance>
+            <name>example-lease-manager</name>
+            <provider>/modules/module[type='example-lease-manager'][name='example-lease-manager']</provider>
+          </instance>
+        </service>
+      </services>
+
+    </data>
+  </configuration>
+</snapshot>
