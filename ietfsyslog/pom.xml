@@ -10,13 +10,13 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   <parent>
     <groupId>org.opendaylight.odlparent</groupId>
     <artifactId>odlparent</artifactId>
-    <version>1.5.1-Lithium-SR1</version>
+    <version>1.5.2-SNAPSHOT</version>
     <relativePath/>
   </parent>
 
   <groupId>org.opendaylight.coretutorials</groupId>
   <artifactId>ietfsyslog-aggregator</artifactId>
-  <version>1.0.1-Lithium-SR1</version>
+  <version>1.0.2-SNAPSHOT</version>
   <name>ietfsyslog</name>
   <packaging>pom</packaging>
   <modelVersion>4.0.0</modelVersion>

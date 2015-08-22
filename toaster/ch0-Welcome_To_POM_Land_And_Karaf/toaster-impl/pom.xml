@@ -8,7 +8,7 @@
         <groupId>org.opendaylight.toaster</groupId>
         <artifactId>toaster-parent</artifactId>
         <relativePath>../parent</relativePath>
-        <version>0.0.2-Lithium-SR1</version>
+        <version>0.0.3-SNAPSHOT</version>
     </parent>
 
     <!-- This pom.xml is providing the hook to the toaster implementation  -->
