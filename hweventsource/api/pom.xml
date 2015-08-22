@@ -10,14 +10,14 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <parent>
     <groupId>org.opendaylight.yangtools</groupId>
     <artifactId>binding-parent</artifactId>
-    <version>0.7.1-SNAPSHOT</version>
+    <version>0.7.1-Lithium-SR1</version>
     <relativePath/>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opendaylight.coretutorials</groupId>
   <artifactId>hweventsource-api</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.1-Lithium-SR1</version>
   <packaging>bundle</packaging>
 
 </project>

@@ -9,13 +9,13 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   <parent>
     <groupId>org.opendaylight.odlparent</groupId>
     <artifactId>odlparent</artifactId>
-    <version>1.5.1-SNAPSHOT</version>
+    <version>1.5.1-Lithium-SR1</version>
     <relativePath/>
   </parent> 
 
   <groupId>org.opendaylight.coretutorials</groupId>
   <artifactId>coretutorials-aggregator</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.1-Lithium-SR1</version>
   <name>coretutorials</name> <!-- Used by Sonar to set project name -->
   <packaging>pom</packaging>
   <modelVersion>4.0.0</modelVersion>
