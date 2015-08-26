@@ -26,8 +26,8 @@ public class NcmountModule extends org.opendaylight.yang.gen.v1.urn.opendaylight
 
     @Override
     public java.lang.AutoCloseable createInstance() {
-        final NcmountProvider provider = new NcmountProvider();
-        getBrokerDependency().registerProvider(provider);
+//        final NcmountProvider provider = new NcmountProvider();
+//        getBrokerDependency().registerProvider(provider);
 
         final NcmountDomProvider domProvider = new NcmountDomProvider();
         getDomBrokerDependency().registerProvider(domProvider);
@@ -36,7 +36,7 @@ public class NcmountModule extends org.opendaylight.yang.gen.v1.urn.opendaylight
         return new AutoCloseable() {
             @Override
             public void close() throws Exception {
-                provider.close();
+                //provider.close();
                 domProvider.close();
             }
         };
