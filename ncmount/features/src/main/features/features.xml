@@ -12,8 +12,8 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
   <repository>mvn:org.opendaylight.yangtools/features-yangtools/${yangtools.version}/xml/features</repository>
   <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
-  <repository>mvn:org.opendaylight.controller/features-restconf/${mdsal.version}/xml/features</repository>
-  <repository>mvn:org.opendaylight.controller/features-netconf-connector/${mdsal.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.netconf/features-restconf/${restconf.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.netconf/features-netconf-connector/${netconf.version}/xml/features</repository>
   <repository>mvn:org.opendaylight.dlux/features-dlux/${dlux.version}/xml/features</repository>
 
   <feature name='odl-ncmount-api' version='${project.version}' description='OpenDaylight :: ncmount :: api'>
@@ -26,7 +26,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   </feature>
   <feature name='odl-ncmount' version='${project.version}' description='OpenDaylight :: ncmount'>
     <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
-    <feature version='${mdsal.version}'>odl-netconf-connector-all</feature>
+    <feature version='${netconf.version}'>odl-netconf-connector-all</feature>
     <feature version='${mdsal.version}'>odl-netconf-mdsal</feature>
     <feature version='${project.version}'>odl-ncmount-api</feature>
     <feature version='${project.version}'>odl-ncmount-xrmodels</feature>
@@ -36,7 +36,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   </feature>
   <feature name='odl-ncmount-rest' version='${project.version}' description='OpenDaylight :: ncmount :: REST'>
     <feature version="${project.version}">odl-ncmount</feature>
-    <feature version="${mdsal.version}">odl-restconf</feature>
+    <feature version="${restconf.version}">odl-restconf</feature>
   </feature>
   <feature name='odl-ncmount-ui' version='${project.version}' description='OpenDaylight :: ncmount :: UI'>
     <feature version="${project.version}">odl-ncmount-rest</feature>

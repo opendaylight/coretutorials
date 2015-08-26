@@ -12,8 +12,8 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
   <repository>mvn:org.opendaylight.yangtools/features-yangtools/${yangtools.version}/xml/features</repository>
   <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
-  <repository>mvn:org.opendaylight.controller/features-restconf/${mdsal.version}/xml/features</repository>
-  <repository>mvn:org.opendaylight.controller/features-netconf-connector/${mdsal.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.netconf/features-restconf/${restconf.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.netconf/features-netconf-connector/${netconf.version}/xml/features</repository>
   <repository>mvn:org.opendaylight.dlux/features-dlux/${dlux.version}/xml/features</repository>
 
   <feature name='odl-ietfsyslog-api' version='${project.version}' description='OpenDaylight :: ietfsyslog :: api'>
@@ -23,14 +23,14 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   </feature>
   <feature name='odl-ietfsyslog' version='${project.version}' description='OpenDaylight :: ietfsyslog'>
     <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
-    <feature version='${mdsal.version}'>odl-netconf-connector-ssh</feature>
+    <feature version='${netconf.version}'>odl-netconf-connector-ssh</feature>
     <feature version='${project.version}'>odl-ietfsyslog-api</feature>
     <bundle>mvn:org.opendaylight.coretutorials/ietfsyslog-impl/${project.version}</bundle>
     <configfile finalname="${configfile.directory}/ietfsyslog.xml">mvn:org.opendaylight.coretutorials/ietfsyslog-impl/${project.version}/xml/config</configfile>
   </feature>
   <feature name='odl-ietfsyslog-rest' version='${project.version}' description='OpenDaylight :: ietfsyslog :: REST'>
     <feature version="${project.version}">odl-ietfsyslog</feature>
-    <feature version="${mdsal.version}">odl-restconf</feature>
+    <feature version="${restconf.version}">odl-restconf</feature>
   </feature>
   <feature name='odl-ietfsyslog-ui' version='${project.version}' description='OpenDaylight :: ietfsyslog :: UI'>
     <feature version="${project.version}">odl-ietfsyslog-rest</feature>
