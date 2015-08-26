@@ -22,16 +22,25 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   </prerequisites>
   <properties>
     <mdsal.version>1.3.0-SNAPSHOT</mdsal.version>
+    <netconf.version>1.0.0-SNAPSHOT</netconf.version>
+    <restconf.version>1.3.0-SNAPSHOT</restconf.version>
     <yangtools.version>0.8.0-SNAPSHOT</yangtools.version>
     <configfile.directory>etc/opendaylight/karaf</configfile.directory>
   </properties>
   <dependencyManagement>
     <dependencies>
       <!-- project specific dependencies -->
+      <!--<dependency>-->
+        <!--<groupId>org.opendaylight.controller</groupId>-->
+        <!--<artifactId>mdsal-artifacts</artifactId>-->
+        <!--<version>${mdsal.version}</version>-->
+        <!--<type>pom</type>-->
+        <!--<scope>import</scope>-->
+      <!--</dependency>-->
       <dependency>
-        <groupId>org.opendaylight.controller</groupId>
-        <artifactId>mdsal-artifacts</artifactId>
-        <version>${mdsal.version}</version>
+        <groupId>org.opendaylight.netconf</groupId>
+        <artifactId>netconf-artifacts</artifactId>
+        <version>${netconf.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -55,18 +64,18 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.controller</groupId>
+      <groupId>org.opendaylight.netconf</groupId>
       <artifactId>features-restconf</artifactId>
       <classifier>features</classifier>
-      <version>${mdsal.version}</version>
+      <version>${restconf.version}</version>
       <type>xml</type>
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.controller</groupId>
+      <groupId>org.opendaylight.netconf</groupId>
       <artifactId>features-netconf-connector</artifactId>
       <classifier>features</classifier>
-      <version>${mdsal.version}</version>
+      <version>${netconf.version}</version>
       <type>xml</type>
       <scope>runtime</scope>
     </dependency>
@@ -86,6 +95,12 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
       <groupId>${project.groupId}</groupId>
       <artifactId>xmpp-agent-api</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.netconf</groupId>
+      <artifactId>messagebus-netconf</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+      <scope>runtime</scope>
     </dependency>
   </dependencies>
 </project>
