@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_345f77e7",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 7
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 2759
+      },
+      "writtenOn": "2015-08-26T14:03:12Z",
+      "side": 1,
+      "message": "A proper commit message should start with a shorty summary in the first line describing your change. Followed by a blank line and then a detailed description of your change. The writing style should be in present tense, imperative style.\n\nSee reference for examples: \n\n    https://wiki.openstack.org/wiki/GitCommitMessages",
+      "revId": "f9fb7f30781604800cbcd01390e6a00ae705efbc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
