@@ -10,29 +10,30 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
 <features name="odl-dsbenchmark-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
-  <repository>mvn:org.opendaylight.yangtools/features-yangtools/${yangtools.version}/xml/features</repository>
-  <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
-  <repository>mvn:org.opendaylight.controller/features-restconf/${mdsal.version}/xml/features</repository>
-  <repository>mvn:org.opendaylight.dlux/features-dlux/${dlux.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.yangtools/features-yangtools/{{VERSION}}/xml/features</repository>
+  <repository>mvn:org.opendaylight.controller/features-mdsal/{{VERSION}}/xml/features</repository>
+  <repository>mvn:org.opendaylight.controller/features-restconf/{{VERSION}}/xml/features</repository>
+  <repository>mvn:org.opendaylight.dlux/features-dlux/{{VERSION}}/xml/features</repository>
+  <repository>mvn:org.opendaylight.mdsal.model/features-mdsal-model/{{VERSION}}/xml/features</repository>
 
     <feature name='odl-dsbenchmark-api' version='${project.version}' description='OpenDaylight :: dsbenchmark :: api '>
-    <feature version='${yangtools.version}'>odl-yangtools-models</feature>
-    <bundle>mvn:org.opendaylight.coretutorials/dsbenchmark-api/${project.version}</bundle>
+    <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>
+    <bundle>mvn:org.opendaylight.coretutorials/dsbenchmark-api/{{VERSION}}</bundle>
   </feature>
   <feature name='odl-dsbenchmark-impl' version='${project.version}' description='OpenDaylight :: dsbenchmark :: impl '>
-    <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
+    <feature version='${controller.mdsal.version}'>odl-mdsal-broker</feature>
     <feature version='${project.version}'>odl-dsbenchmark-api</feature>
-    <bundle>mvn:org.opendaylight.coretutorials/dsbenchmark-impl/${project.version}</bundle>
-    <configfile finalname="dsbenchmark-impl-default-config.xml">mvn:org.opendaylight.coretutorials/dsbenchmark-impl/${project.version}/xml/config</configfile>
+    <bundle>mvn:org.opendaylight.coretutorials/dsbenchmark-impl/{{VERSION}}</bundle>
+    <configfile finalname="dsbenchmark-impl-default-config.xml">mvn:org.opendaylight.coretutorials/dsbenchmark-impl/{{VERSION}}/xml/config</configfile>
   </feature>
   <feature name='odl-dsbenchmark-impl-rest' version='${project.version}' description='OpenDaylight :: dsbenchmark :: impl :: REST '>
     <feature version="${project.version}">odl-dsbenchmark-impl</feature>
-    <feature version="${mdsal.version}">odl-restconf</feature>
+    <feature version="${controller.mdsal.version}">odl-restconf</feature>
   </feature>
   <feature name='odl-dsbenchmark-impl-ui' version='${project.version}' description='OpenDaylight :: dsbenchmark :: impl :: UI'>
     <feature version="${project.version}">odl-dsbenchmark-impl-rest</feature>
-    <feature version="${mdsal.version}">odl-mdsal-apidocs</feature>
-    <feature version="${mdsal.version}">odl-mdsal-xsql</feature>
+    <feature version="${controller.mdsal.version}">odl-mdsal-apidocs</feature>
+    <feature version="${controller.mdsal.version}">odl-mdsal-xsql</feature>
     <feature version="${dlux.version}">odl-dlux-all</feature>
 
   </feature>

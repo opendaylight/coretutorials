@@ -10,29 +10,30 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
 <features name="odl-dscrud-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
-  <repository>mvn:org.opendaylight.yangtools/features-yangtools/${yangtools.version}/xml/features</repository>
-  <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
-  <repository>mvn:org.opendaylight.controller/features-restconf/${mdsal.version}/xml/features</repository>
-  <repository>mvn:org.opendaylight.dlux/features-dlux/${dlux.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.yangtools/features-yangtools/{{VERSION}}/xml/features</repository>
+  <repository>mvn:org.opendaylight.controller/features-mdsal/{{VERSION}}/xml/features</repository>
+  <repository>mvn:org.opendaylight.controller/features-restconf/{{VERSION}}/xml/features</repository>
+  <repository>mvn:org.opendaylight.dlux/features-dlux/{{VERSION}}/xml/features</repository>
+  <repository>mvn:org.opendaylight.mdsal.model/features-mdsal-model/{{VERSION}}/xml/features</repository>
 
   <feature name='odl-dscrud-api' version='${project.version}' description='OpenDaylight :: dscrud :: api'>
-    <feature version='${yangtools.version}'>odl-yangtools-models</feature>
-    <bundle>mvn:org.opendaylight.coretutorials/dscrud-api/${project.version}</bundle>
+    <feature version='${yangtools.version}'>odl-mdsal-models</feature>
+    <bundle>mvn:org.opendaylight.coretutorials/dscrud-api/{{VERSION}}</bundle>
   </feature>
   <feature name='odl-dscrud' version='${project.version}' description='OpenDaylight :: dscrud'>
-    <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
+    <feature version='${controller.mdsal.version}'>odl-mdsal-broker</feature>
     <feature version='${project.version}'>odl-dscrud-api</feature>
-    <bundle>mvn:org.opendaylight.coretutorials/dscrud-impl/${project.version}</bundle>
-    <configfile finalname="${configfile.directory}/dscrud.xml">mvn:org.opendaylight.coretutorials/dscrud-impl/${project.version}/xml/config</configfile>
+    <bundle>mvn:org.opendaylight.coretutorials/dscrud-impl/{{VERSION}}</bundle>
+    <configfile finalname="${configfile.directory}/dscrud.xml">mvn:org.opendaylight.coretutorials/dscrud-impl/{{VERSION}}/xml/config</configfile>
   </feature>
   <feature name='odl-dscrud-rest' version='${project.version}' description='OpenDaylight :: dscrud :: REST'>
     <feature version="${project.version}">odl-dscrud</feature>
-    <feature version="${mdsal.version}">odl-restconf</feature>
+    <feature version="${controller.mdsal.version}">odl-restconf</feature>
   </feature>
   <feature name='odl-dscrud-ui' version='${project.version}' description='OpenDaylight :: dscrud :: UI'>
     <feature version="${project.version}">odl-dscrud-rest</feature>
-    <feature version="${mdsal.version}">odl-mdsal-apidocs</feature>
-    <feature version="${mdsal.version}">odl-mdsal-xsql</feature>
+    <feature version="${controller.mdsal.version}">odl-mdsal-apidocs</feature>
+    <feature version="${controller.mdsal.version}">odl-mdsal-xsql</feature>
     <feature version="${dlux.version}">odl-dlux-all</feature>
   </feature>
 
