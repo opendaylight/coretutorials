@@ -17,7 +17,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <repository>mvn:org.opendaylight.dlux/features-dlux/${dlux.version}/xml/features</repository>
 
   <feature name='odl-openconfig-api' version='${project.version}' description='OpenDaylight :: openconfig :: api'>
-    <feature version='${yangtools.version}'>odl-yangtools-models</feature>
+    <feature version='${yangtools.version}'>odl-mdsal-models</feature>
     <bundle>mvn:org.opendaylight.coretutorials/openconfig-api/${project.version}</bundle>
     <bundle>mvn:org.opendaylight.coretutorials/openconfig-bgp/${project.version}</bundle>
   </feature>

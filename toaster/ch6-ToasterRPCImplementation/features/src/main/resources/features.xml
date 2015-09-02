@@ -15,7 +15,7 @@
 
     <feature name='odl-toaster-api' version='${project.version}' description='OpenDaylight :: toaster :: API'>
         <feature version='${yangtools.version}'>odl-yangtools-common</feature>
-        <feature version='${yangtools.version}'>odl-yangtools-binding</feature>
+        <feature version='${yangtools.version}'>odl-mdsal-binding-base</feature>
         <feature version='${controller.restconf.version}'>odl-restconf</feature>
         <bundle>mvn:org.opendaylight.toaster/toaster-api/${project.version}</bundle>
     </feature>

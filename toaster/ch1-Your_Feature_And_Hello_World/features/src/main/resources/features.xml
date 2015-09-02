@@ -15,7 +15,7 @@
 
     <feature name='odl-toaster-api' version='${project.version}' description='OpenDaylight :: toaster :: API'>
         <feature version='${yangtools.version}'>odl-yangtools-common</feature>
-        <feature version='${yangtools.version}'>odl-yangtools-binding</feature>
+        <feature version='${yangtools.version}'>odl-mdsal-binding-base</feature>
         <!--<feature version='${controller.mdsal.version}'>odl-mdsal-broker</feature>-->
         <!--<feature version='${restconf.version}'>odl-restconf</feature>-->
         <bundle>mvn:org.opendaylight.toaster/toaster-api/${project.version}</bundle>
@@ -23,7 +23,7 @@
 
     <feature name='odl-toaster-impl' version='${project.version}' description='OpenDaylight :: toaster :: Impl'>
         <!--<feature version='${yangtools.version}'>odl-yangtools-common</feature>-->
-        <!--<feature version='${yangtools.version}'>odl-yangtools-binding</feature>-->
+        <!--<feature version='${yangtools.version}'>odl-mdsal-binding-base</feature>-->
         <feature version='${controller.mdsal.version}'>odl-mdsal-broker</feature>
         <feature version='${project.version}'>odl-toaster-api</feature>
         <!--<feature version='${restconf.version}'>odl-restconf</feature>-->
@@ -33,7 +33,7 @@
 
     <feature name='odl-toaster-consumer' version='${project.version}' description='OpenDaylight :: toaster :: Consumer'>
         <!--<feature version='${yangtools.version}'>odl-yangtools-common</feature>-->
-        <!--<feature version='${yangtools.version}'>odl-yangtools-binding</feature>-->
+        <!--<feature version='${yangtools.version}'>odl-mdsal-binding-base</feature>-->
         <feature version='${controller.mdsal.version}'>odl-mdsal-broker</feature>
         <feature version='${project.version}'>odl-toaster-api</feature>
         <!--<feature version='${restconf.version}'>odl-restconf</feature>-->

@@ -16,7 +16,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <repository>mvn:org.opendaylight.dlux/features-dlux/${dlux.version}/xml/features</repository>
 
   <feature name='odl-dscrud-api' version='${project.version}' description='OpenDaylight :: dscrud :: api'>
-    <feature version='${yangtools.version}'>odl-yangtools-models</feature>
+    <feature version='${yangtools.version}'>odl-mdsal-models</feature>
     <bundle>mvn:org.opendaylight.coretutorials/dscrud-api/${project.version}</bundle>
   </feature>
   <feature name='odl-dscrud' version='${project.version}' description='OpenDaylight :: dscrud'>

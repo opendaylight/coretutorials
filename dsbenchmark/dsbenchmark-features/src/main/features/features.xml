@@ -16,7 +16,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <repository>mvn:org.opendaylight.dlux/features-dlux/${dlux.version}/xml/features</repository>
 
     <feature name='odl-dsbenchmark-api' version='${project.version}' description='OpenDaylight :: dsbenchmark :: api '>
-    <feature version='${yangtools.version}'>odl-yangtools-models</feature>
+    <feature version='${yangtools.version}'>odl-mdsal-models</feature>
     <bundle>mvn:org.opendaylight.coretutorials/dsbenchmark-api/${project.version}</bundle>
   </feature>
   <feature name='odl-dsbenchmark-impl' version='${project.version}' description='OpenDaylight :: dsbenchmark :: impl '>
