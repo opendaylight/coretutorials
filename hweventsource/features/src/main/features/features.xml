@@ -12,41 +12,41 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
 
-  <repository>mvn:org.opendaylight.yangtools/features-yangtools/${yangtools.version}/xml/features</repository>
-  <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
-  <repository>mvn:org.opendaylight.netconf/features-restconf/${restconf.version}/xml/features</repository>
-  <repository>mvn:org.opendaylight.netconf/features-netconf-connector/${netconf.version}/xml/features</repository>
-  
+  <repository>mvn:org.opendaylight.yangtools/features-yangtools/{{VERSION}}/xml/features</repository>
+  <repository>mvn:org.opendaylight.mdsal.model/features-mdsal-model/{{VERSION}}/xml/features</repository>
+  <repository>mvn:org.opendaylight.controller/features-mdsal/{{VERSION}}/xml/features</repository>
+  <repository>mvn:org.opendaylight.netconf/features-restconf/{{VERSION}}/xml/features</repository>
+  <repository>mvn:org.opendaylight.netconf/features-netconf-connector/{{VERSION}}/xml/features</repository>
+
   <feature name='odl-hweventsource-api' version='${project.version}' description='OpenDaylight :: hweventsource :: api'>
-    <feature version='${yangtools.version}'>odl-yangtools-models</feature>
-    <bundle>mvn:org.opendaylight.coretutorials/hweventsource-api/${project.version}</bundle>
+    <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>
+    <bundle>mvn:org.opendaylight.coretutorials/hweventsource-api/{{VERSION}}</bundle>
   </feature>
- 
+
   <feature name='odl-hweventsource' version='${project.version}' description='OpenDaylight :: hweventsource'>
-    <feature version="${mdsal.version}">odl-message-bus</feature>  
-    <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
+    <feature version="${controller.mdsal.version}">odl-message-bus</feature>
+    <feature version='${controller.mdsal.version}'>odl-mdsal-broker</feature>
     <feature version='${project.version}'>odl-hweventsource-api</feature>
-    <bundle>mvn:org.opendaylight.coretutorials/hweventsource-impl/${project.version}</bundle>
-    <configfile finalname="${configfile.directory}/01-hweventsource-config.xml">mvn:org.opendaylight.coretutorials/hweventsource-impl/${project.version}/xml/config</configfile>
+    <bundle>mvn:org.opendaylight.coretutorials/hweventsource-impl/{{VERSION}}</bundle>
+    <configfile finalname="${configfile.directory}/01-hweventsource-config.xml">mvn:org.opendaylight.coretutorials/hweventsource-impl/{{VERSION}}/xml/config</configfile>
   </feature>
-  
+
   <feature name='odl-hweventsource-rest' version='${project.version}' description='OpenDaylight :: hweventsource :: REST'>
     <feature version="${project.version}">odl-hweventsource</feature>
     <feature version="${restconf.version}">odl-restconf</feature>
   </feature>
-  
+
   <feature name='odl-hweventsource-ui' version='${project.version}' description='OpenDaylight :: hweventsource :: UI'>
     <feature version="${project.version}">odl-hweventsource-rest</feature>
     <feature version="${project.version}">odl-hweventsource-uagent</feature>
-    <feature version="${mdsal.version}">odl-mdsal-apidocs</feature>
-    <feature version="${mdsal.version}">odl-mdsal-xsql</feature>
-  </feature> 
+    <feature version="${restconf.version}">odl-mdsal-apidocs</feature>
+  </feature>
 
   <feature name='odl-hweventsource-uagent' version='${project.version}' description='OpenDaylight :: hweventsource :: UserAgent'>
-    <feature version="${mdsal.version}">odl-message-bus</feature>  
-    <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
+    <feature version="${controller.mdsal.version}">odl-message-bus</feature>
+    <feature version='${controller.mdsal.version}'>odl-mdsal-broker</feature>
     <feature version='${project.version}'>odl-hweventsource-api</feature>
-    <bundle>mvn:org.opendaylight.coretutorials/hweventsource-uagent/${project.version}</bundle>
-    <configfile finalname="${configfile.directory}/02-hweventsource-config-uagent.xml">mvn:org.opendaylight.coretutorials/hweventsource-uagent/${project.version}/xml/config</configfile>
+    <bundle>mvn:org.opendaylight.coretutorials/hweventsource-uagent/{{VERSION}}</bundle>
+    <configfile finalname="${configfile.directory}/02-hweventsource-config-uagent.xml">mvn:org.opendaylight.coretutorials/hweventsource-uagent/{{VERSION}}/xml/config</configfile>
   </feature>
 </features>
