@@ -1,0 +1,337 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_22a64011",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/dhcp/impl/rev141210/DhcpModule.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-07T12:08:47Z",
+      "side": 1,
+      "message": "main should be removed from the commit ... eventually",
+      "range": {
+        "startLine": 29,
+        "startChar": 20,
+        "endLine": 29,
+        "endChar": 24
+      },
+      "revId": "624648a111af12c92438833e0e720bb7ac551aae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_026464e3",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/dhcp/impl/rev141210/DhcpModule.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-07T12:08:47Z",
+      "side": 1,
+      "message": "the exception should be added as the last argument of LOG.error(...",
+      "revId": "624648a111af12c92438833e0e720bb7ac551aae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_829f14b4",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/dhcp/impl/rev141210/DhcpModule.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-07T12:08:47Z",
+      "side": 1,
+      "message": "trailing whitespaces. IDE can take care of trailing whitespaces for you",
+      "range": {
+        "startLine": 81,
+        "startChar": 0,
+        "endLine": 81,
+        "endChar": 8
+      },
+      "revId": "624648a111af12c92438833e0e720bb7ac551aae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_c25d0c17",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/dhcp/impl/rev141210/DhcpModule.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-07T12:08:47Z",
+      "side": 1,
+      "message": "watch your whitespace ... we are using only spaces instead of tabs",
+      "range": {
+        "startLine": 84,
+        "startChar": 0,
+        "endLine": 84,
+        "endChar": 1
+      },
+      "revId": "624648a111af12c92438833e0e720bb7ac551aae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_a26250d6",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/dhcp/impl/rev141210/DhcpModule.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-07T12:08:47Z",
+      "side": 1,
+      "message": "the exception should be added as the last argument of LOG.error(...",
+      "revId": "624648a111af12c92438833e0e720bb7ac551aae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_02ab04d7",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/dhcp/impl/rev141210/DhcpModuleLeaseManagerDhcpService.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-07T12:08:47Z",
+      "side": 1,
+      "message": "name contains DHCP twice",
+      "range": {
+        "startLine": 22,
+        "startChar": 13,
+        "endLine": 22,
+        "endChar": 46
+      },
+      "revId": "624648a111af12c92438833e0e720bb7ac551aae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_a2b9f02f",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/dhcp/impl/rev141210/DhcpModuleLeaseManagerDhcpService.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-07T12:08:47Z",
+      "side": 1,
+      "message": "whitespaces",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 23,
+        "endChar": 1
+      },
+      "revId": "624648a111af12c92438833e0e720bb7ac551aae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_c2b42c37",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/dhcp/impl/rev141210/DhcpModuleLeaseManagerDhcpService.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-07T12:08:47Z",
+      "side": 1,
+      "message": "LOG class should be the class we are in",
+      "range": {
+        "startLine": 24,
+        "startChar": 59,
+        "endLine": 24,
+        "endChar": 69
+      },
+      "revId": "624648a111af12c92438833e0e720bb7ac551aae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_6283d856",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/dhcp/impl/rev141210/DhcpModuleLeaseManagerDhcpService.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-07T12:08:47Z",
+      "side": 1,
+      "message": "fields should be private and final whenever possible",
+      "range": {
+        "startLine": 26,
+        "startChar": 14,
+        "endLine": 26,
+        "endChar": 34
+      },
+      "revId": "624648a111af12c92438833e0e720bb7ac551aae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_42725cae",
+        "filename": "dhcp/impl/src/main/yang/dhcp-impl.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-07T12:08:47Z",
+      "side": 1,
+      "message": "we need to watch the whitespaces",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 43,
+        "endChar": 4
+      },
+      "revId": "624648a111af12c92438833e0e720bb7ac551aae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_82787490",
+        "filename": "dhcp/impl/src/main/yang/dhcp-impl.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-07T12:08:47Z",
+      "side": 1,
+      "message": "another enum value \"all\" might be useful.",
+      "range": {
+        "startLine": 45,
+        "startChar": 13,
+        "endLine": 45,
+        "endChar": 24
+      },
+      "revId": "624648a111af12c92438833e0e720bb7ac551aae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_a2901096",
+        "filename": "dhcp/impl/src/main/yang/dhcp-impl.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-07T12:08:47Z",
+      "side": 1,
+      "message": "this value-type construct is not a good pattern when modeling with yang.\n\ntypes integer, string are built in for yang. address is provided by the ietf-inet-types and address list can be a simple leaf-list of the same address type.\n\nId suggest removing the value types altogether and allowing users only hex representation of binary data. Or using a \"choice\" construct inside the \"option\" list so that user can choose the type of content without explicitly specifying it. HOWEVER config subsystem does not fully support choices, so we should go with the hex encoded binary values only.\n\n+ This way users cannot provide binary data.",
+      "range": {
+        "startLine": 61,
+        "startChar": 19,
+        "endLine": 61,
+        "endChar": 23
+      },
+      "revId": "624648a111af12c92438833e0e720bb7ac551aae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_e26848bc",
+        "filename": "dhcp/impl/src/main/yang/dhcp-impl.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-07T12:08:47Z",
+      "side": 1,
+      "message": "please address the TODO",
+      "range": {
+        "startLine": 87,
+        "startChar": 19,
+        "endLine": 87,
+        "endChar": 23
+      },
+      "revId": "624648a111af12c92438833e0e720bb7ac551aae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_62751897",
+        "filename": "dhcp/impl/src/main/yang/dhcp-impl.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-07T12:08:47Z",
+      "side": 1,
+      "message": "this needs description on what network-interfaces mean.\n\n+ inconsistent naming, interfaces are in plural, option is singular",
+      "range": {
+        "startLine": 90,
+        "startChar": 22,
+        "endLine": 90,
+        "endChar": 29
+      },
+      "revId": "624648a111af12c92438833e0e720bb7ac551aae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_a24b3058",
+        "filename": "dhcp/impl/src/main/yang/dhcp-impl.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-07T12:08:47Z",
+      "side": 1,
+      "message": "this needs better name e.g. default-option or something similar\n\n+ description with more specific information needed",
+      "range": {
+        "startLine": 94,
+        "startChar": 17,
+        "endLine": 94,
+        "endChar": 23
+      },
+      "revId": "624648a111af12c92438833e0e720bb7ac551aae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
