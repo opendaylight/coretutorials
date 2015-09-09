@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_6ea3be4f",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/dhcp/impl/rev141210/CustomisableLeaseManagerDhcpService.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-09T07:54:28Z",
+      "side": 1,
+      "message": "missing file header",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 7
+      },
+      "revId": "1000a0c73cf779b9b5933bf52778beb3eb754dc5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_0e8a4abf",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/dhcp/impl/rev141210/CustomisableLeaseManagerDhcpService.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-09T07:54:28Z",
+      "side": 1,
+      "message": "missing javadoc with base description for class",
+      "range": {
+        "startLine": 17,
+        "startChar": 13,
+        "endLine": 17,
+        "endChar": 48
+      },
+      "revId": "1000a0c73cf779b9b5933bf52778beb3eb754dc5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_2e85c6ac",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/dhcp/impl/rev141210/CustomisableLeaseManagerDhcpService.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-09T07:54:28Z",
+      "side": 1,
+      "message": "make all fields final if possible",
+      "range": {
+        "startLine": 21,
+        "startChar": 12,
+        "endLine": 21,
+        "endChar": 24
+      },
+      "revId": "1000a0c73cf779b9b5933bf52778beb3eb754dc5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_ce93f2f8",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/dhcp/impl/rev141210/CustomisableLeaseManagerDhcpService.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-09T07:54:28Z",
+      "side": 1,
+      "message": "switch statement would be better here",
+      "range": {
+        "startLine": 69,
+        "startChar": 12,
+        "endLine": 69,
+        "endChar": 14
+      },
+      "revId": "1000a0c73cf779b9b5933bf52778beb3eb754dc5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_8e965aef",
+        "filename": "dhcp/impl/src/main/yang/dhcp-impl.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-09T07:54:28Z",
+      "side": 1,
+      "message": "update the revision please to today",
+      "range": {
+        "startLine": 14,
+        "startChar": 14,
+        "endLine": 14,
+        "endChar": 18
+      },
+      "revId": "1000a0c73cf779b9b5933bf52778beb3eb754dc5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_4ea04243",
+        "filename": "dhcp/impl/src/main/yang/dhcp-impl.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-09T07:54:28Z",
+      "side": 1,
+      "message": "we need to put a description here for what we expect the string to be ... or better yet, define a special string-based type with a regex not allowing anything else except hex string.",
+      "range": {
+        "startLine": 112,
+        "startChar": 25,
+        "endLine": 112,
+        "endChar": 31
+      },
+      "revId": "1000a0c73cf779b9b5933bf52778beb3eb754dc5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
