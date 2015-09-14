@@ -23,7 +23,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   </feature>
  
   <feature name='odl-hweventsource' version='${project.version}' description='OpenDaylight :: hweventsource'>
-    <feature version="${mdsal.version}">odl-message-bus</feature>  
+    <feature version="${mdsal.version}">odl-message-bus-collector</feature>  
     <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
     <feature version='${project.version}'>odl-hweventsource-api</feature>
     <bundle>mvn:org.opendaylight.coretutorials/hweventsource-impl/${project.version}</bundle>
@@ -43,7 +43,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   </feature> 
 
   <feature name='odl-hweventsource-uagent' version='${project.version}' description='OpenDaylight :: hweventsource :: UserAgent'>
-    <feature version="${mdsal.version}">odl-message-bus</feature>  
+    <feature version="${mdsal.version}">odl-message-bus-collector</feature>  
     <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
     <feature version='${project.version}'>odl-hweventsource-api</feature>
     <bundle>mvn:org.opendaylight.coretutorials/hweventsource-uagent/${project.version}</bundle>
