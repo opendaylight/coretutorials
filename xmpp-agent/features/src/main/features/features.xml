@@ -20,7 +20,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   </feature>
   <feature name='odl-xmpp-agent' version='${project.version}' description='OpenDaylight :: xmpp-agent'>
     <feature version='${project.version}'>odl-xmpp-agent-api</feature>
-    <feature version='${netconf.version}'>odl-message-bus</feature>
+    <feature version='${netconf.version}'>odl-message-bus-collector</feature>
     <feature version='${netconf.version}'>odl-netconf-connector-all</feature>
     <bundle>mvn:org.opendaylight.coretutorials/xmpp-agent-impl/${project.version}</bundle>
     <bundle>mvn:org.igniterealtime.smack/smack-core/4.0.2</bundle>
