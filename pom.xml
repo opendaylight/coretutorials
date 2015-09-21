@@ -11,7 +11,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
     <artifactId>odlparent</artifactId>
     <version>1.5.2-SNAPSHOT</version>
     <relativePath/>
-  </parent> 
+  </parent>
 
   <groupId>org.opendaylight.coretutorials</groupId>
   <artifactId>coretutorials-aggregator</artifactId>
@@ -32,6 +32,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
     <module>hweventsource</module>
     <module>rpcbenchmark</module>
     <module>ntfbenchmark</module>
+    <module>dhcp</module>
   </modules>
 
 </project>
