@@ -1,0 +1,57 @@
+module dhcpv6-impl {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:dhcp:impl:v6";
+    prefix "dhcp-impl";
+
+    import config { prefix config; revision-date 2013-04-05; }
+    import ietf-inet-types { prefix inet; }
+    import opendaylight-md-sal-binding { prefix md-sal-binding; revision-date 2013-10-28; }
+    import netty { prefix netty; }
+
+    description
+        "Service definition for dhcpv6 project";
+
+    revision "2015-10-18" {
+        description
+            "Initial revision";
+    }
+
+    identity dhcpv6-lease-manager {
+        base "config:service-type";
+        config:java-class "org.anarres.dhcp.v6.service.Dhcp6LeaseManager";
+    }
+
+    identity example-v6lease-manager {
+        base config:module-type;
+        config:provided-service dhcpv6-lease-manager;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case example-v6lease-manager {
+            when "/config:modules/config:module/config:type = 'example-v6lease-manager'";
+
+            leaf ip {
+                type string;
+                description "Ip to lease to every client";
+            }
+        }
+    }
+
+    identity dhcpv6 {
+        base config:module-type;
+        config:java-name-prefix Dhcpv6;
+    }
+
+     augment "/config:modules/config:module/config:configuration" {
+            case dhcpv6 {
+                when "/config:modules/config:module/config:type = 'dhcpv6'";
+
+                leaf port {
+                    type inet:port-number;
+                    description "port to bind the DHCPv6 server to";
+                    default 547;
+                }
+            }
+    }
+
+}
