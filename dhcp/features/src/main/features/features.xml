@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vi: set et smarttab sw=4 tabstop=4: -->
+<!--
+Copyright (c) 2015 Cisco Systems
+
+This program and the accompanying materials are made available under the
+terms of the Eclipse Public License v1.0 which accompanies this distribution,
+and is available at http://www.eclipse.org/legal/epl-v10.html
+-->
+<features name="odl-dhcp-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
+  <repository>mvn:org.opendaylight.mdsal/features-mdsal/${mdsal.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.netconf/features-restconf/${restconf.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.controller/features-config-netty/${config.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.dlux/features-dlux/${dlux.version}/xml/features</repository>
+
+  <feature name='odl-dhcp-api' version='${project.version}' description='OpenDaylight :: dhcp :: api'>
+    <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>
+  </feature>
+
+  <feature name='odl-dhcp' version='${project.version}' description='OpenDaylight :: dhcp'>
+    <feature version='${project.version}'>odl-dhcp-api</feature>
+    <feature version='${controller.mdsal.version}'>odl-mdsal-broker</feature>
+    <feature version='${config.version}'>odl-config-netty</feature>
+    <bundle>mvn:org.opendaylight.coretutorials/dhcp-impl/${project.version}</bundle>
+  </feature>
+
+  <feature name='odl-dhcp-example' version='${project.version}' description='OpenDaylight :: dhcp :: Example DHCP server'>
+    <feature version='${project.version}'>odl-dhcp</feature>
+    <configfile finalname="${configfile.directory}/dhcp.xml">mvn:org.opendaylight.coretutorials/dhcp-impl/${project.version}/xml/config</configfile>
+  </feature>
+
+  <feature name='odl-dhcp-example-v6' version='${project.version}' description='OpenDaylight :: dhcp :: Example DHCPv6 server'>
+    <feature version='${project.version}'>odl-dhcp</feature>
+    <configfile finalname="${configfile.directory}/dhcpv6.xml">mvn:org.opendaylight.coretutorials/dhcp-impl/${project.version}/xml/v6config</configfile>
+  </feature>
+
+  <feature name='odl-dhcp-rest' version='${project.version}' description='OpenDaylight :: dhcp :: REST'>
+    <feature version="${project.version}">odl-dhcp</feature>
+    <feature version="${restconf.version}">odl-restconf</feature>
+  </feature>
+
+  <feature name='odl-dhcp-ui' version='${project.version}' description='OpenDaylight :: dhcp :: UI'>
+    <feature version="${project.version}">odl-dhcp-rest</feature>
+    <feature version="${controller.mdsal.version}">odl-mdsal-apidocs</feature>
+    <feature version="${dlux.version}">odl-dlux-all</feature>
+    <feature version="${controller.mdsal.version}">odl-mdsal-xsql</feature>
+  </feature>
+
+</features>
