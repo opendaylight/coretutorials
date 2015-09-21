@@ -1,0 +1,114 @@
+module dhcp-impl {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:dhcp:impl";
+    prefix "dhcp-impl";
+
+    import config { prefix config; revision-date 2013-04-05; }
+    import ietf-inet-types { prefix inet; }
+    import opendaylight-md-sal-binding { prefix md-sal-binding; revision-date 2013-10-28; }
+    import netty { prefix netty; }
+
+    description
+        "Service definition for dhcp project";
+
+    revision "2015-10-18" {
+        description
+            "Initial revision";
+    }
+
+    identity dhcp-lease-manager {
+        base "config:service-type";
+        config:java-class "org.apache.directory.server.dhcp.service.manager.LeaseManager";
+    }
+
+    identity example-lease-manager {
+        base config:module-type;
+        config:provided-service dhcp-lease-manager;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case example-lease-manager {
+            when "/config:modules/config:module/config:type = 'example-lease-manager'";
+
+            leaf ip {
+                type string;
+                description "Ip to lease to every client";
+            }
+        }
+    }
+
+    typedef message-type {
+        type enumeration {
+            enum "DHCPOFFER" {
+                value 2;
+                description "DHCP Offer";
+            }
+            enum "DHCPACK" {
+                value 5;
+                description "DHCP Acknowledge";
+             }
+             enum "DHCPNAK" {
+                 value 6;
+                 description "DHCP Not Acknowledge";
+             }
+             enum "ALL" {
+                 value 9;
+                 description "all DHCP messages";
+             }
+         }
+     }
+
+    identity dhcp {
+        base config:module-type;
+        config:java-name-prefix Dhcp;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case dhcp {
+            when "/config:modules/config:module/config:type = 'dhcp'";
+
+            container worker-thread-group {
+                uses config:service-ref {
+                    refine type {
+                        config:required-identity netty:netty-threadgroup;
+                    }
+                }
+            }
+
+            leaf port {
+                type inet:port-number;
+                description "port to bind the DHCP server to";
+                default 67;
+            }
+
+            // TODO default (no interface specified) should be treated as ALL
+            leaf-list network-interface {
+                description "network interfaces upon the dhcp server should listen to";
+                type string;
+             }
+
+            list default-option {
+                description "options which will be included in the chosen outcoming DHCP message";
+                key "id scope";
+                leaf id {
+                    type uint16;
+                }
+                leaf value {
+                    type string;
+                }
+                leaf scope {
+                    type message-type;
+                }
+             }
+
+            container lease-manager {
+                uses config:service-ref {
+                    refine type {
+                        config:required-identity dhcp-lease-manager;
+                    }
+                }
+            }
+
+        }
+    }
+}
