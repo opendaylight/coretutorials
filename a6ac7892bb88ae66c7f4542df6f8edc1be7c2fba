@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_86268fb9",
+        "filename": "ncmount/impl/src/main/java/ncmount/impl/NcmountDomProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-24T09:01:03Z",
+      "side": 1,
+      "message": "I believe the resources are being closed so TODO can be removed",
+      "range": {
+        "startLine": 129,
+        "startChar": 11,
+        "endLine": 129,
+        "endChar": 15
+      },
+      "revId": "a6ac7892bb88ae66c7f4542df6f8edc1be7c2fba",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_a62b8b81",
+        "filename": "ncmount/impl/src/main/java/ncmount/impl/NcmountDomProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-24T09:01:03Z",
+      "side": 1,
+      "message": "Maybe throwing UnsupportedOperationException with message would be better + leaving the TODO as a comment so its easier to see in IDE.",
+      "range": {
+        "startLine": 175,
+        "startChar": 8,
+        "endLine": 175,
+        "endChar": 57
+      },
+      "revId": "a6ac7892bb88ae66c7f4542df6f8edc1be7c2fba",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_063a7fcd",
+        "filename": "ncmount/impl/src/main/java/ncmount/impl/NcmountDomProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-24T09:01:03Z",
+      "side": 1,
+      "message": "Looks like theres something missing in the message",
+      "range": {
+        "startLine": 195,
+        "startChar": 18,
+        "endLine": 195,
+        "endChar": 19
+      },
+      "revId": "a6ac7892bb88ae66c7f4542df6f8edc1be7c2fba",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_662573aa",
+        "filename": "ncmount/impl/src/main/java/ncmount/impl/NcmountDomProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-24T09:01:03Z",
+      "side": 1,
+      "message": "These might be constants",
+      "range": {
+        "startLine": 197,
+        "startChar": 8,
+        "endLine": 199,
+        "endChar": 94
+      },
+      "revId": "a6ac7892bb88ae66c7f4542df6f8edc1be7c2fba",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_26377be5",
+        "filename": "ncmount/impl/src/main/java/ncmount/impl/NcmountDomProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 318,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-24T09:01:03Z",
+      "side": 1,
+      "message": "Same as above",
+      "range": {
+        "startLine": 318,
+        "startChar": 8,
+        "endLine": 318,
+        "endChar": 57
+      },
+      "revId": "a6ac7892bb88ae66c7f4542df6f8edc1be7c2fba",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_a604eb15",
+        "filename": "ncmount/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/ncmount/impl/rev141210/NcmountModule.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-24T09:01:03Z",
+      "side": 1,
+      "message": "I think we should keep the BA version as default in the tutorial",
+      "range": {
+        "startLine": 31,
+        "startChar": 41,
+        "endLine": 31,
+        "endChar": 43
+      },
+      "revId": "a6ac7892bb88ae66c7f4542df6f8edc1be7c2fba",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_660ed336",
+        "filename": "ncmount/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/ncmount/impl/rev141210/NcmountModule.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-24T09:01:03Z",
+      "side": 1,
+      "message": "This comment is a bit inaccurate, could you remove it ? \nTheres always just a single provider to close at a time. So we should put a comment into the close method \"Following code closes the BA....\"",
+      "range": {
+        "startLine": 41,
+        "startChar": 11,
+        "endLine": 41,
+        "endChar": 43
+      },
+      "revId": "a6ac7892bb88ae66c7f4542df6f8edc1be7c2fba",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_e619837a",
+        "filename": "ncmount/impl/src/main/yang/ncmount-impl.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-24T09:01:03Z",
+      "side": 1,
+      "message": "We should comment here that only one broker is required at a time... depending on the provider implementation BA or BI, thats created inside the Module.\n\nJust a note: This would be a great case for using choice + 2 case nodes. However, config subsystem does not support choices yet.",
+      "range": {
+        "startLine": 35,
+        "startChar": 12,
+        "endLine": 35,
+        "endChar": 55
+      },
+      "revId": "a6ac7892bb88ae66c7f4542df6f8edc1be7c2fba",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
