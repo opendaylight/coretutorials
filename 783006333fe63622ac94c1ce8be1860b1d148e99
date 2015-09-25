@@ -1,0 +1,136 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_ee54f5cb",
+        "filename": "dhcp/impl/src/main/config/default-config-v6.xml",
+        "patchSetId": 18
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-25T14:44:15Z",
+      "side": 1,
+      "message": "The configuration is missing to plug in the example lease manager",
+      "revId": "783006333fe63622ac94c1ce8be1860b1d148e99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_0e5291dd",
+        "filename": "dhcp/impl/src/main/config/maven-metadata-local.xml",
+        "patchSetId": 18
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-25T14:44:15Z",
+      "side": 1,
+      "message": "this should not be committed",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 11
+      },
+      "revId": "783006333fe63622ac94c1ce8be1860b1d148e99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_ae5efde7",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/dhcp/server/ExampleLeaseManager.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-25T14:44:15Z",
+      "side": 1,
+      "message": "this line can now be removed... its been fixed in the 1.0.9 version of dhcp",
+      "range": {
+        "startLine": 78,
+        "startChar": 0,
+        "endLine": 78,
+        "endChar": 100
+      },
+      "revId": "783006333fe63622ac94c1ce8be1860b1d148e99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_ce6339b0",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/dhcp/impl/v6/rev151018/Dhcpv6Module.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-25T14:44:15Z",
+      "side": 1,
+      "message": "comments should be removed",
+      "range": {
+        "startLine": 50,
+        "startChar": 0,
+        "endLine": 54,
+        "endChar": 75
+      },
+      "revId": "783006333fe63622ac94c1ce8be1860b1d148e99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_6e58e5fa",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/dhcp/impl/v6/rev151018/ExampleV6leaseManagerModule.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-25T14:44:15Z",
+      "side": 1,
+      "message": "Unimplemented",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 60
+      },
+      "revId": "783006333fe63622ac94c1ce8be1860b1d148e99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_8e5d41ec",
+        "filename": "dhcp/impl/src/main/yang/dhcpv6-impl.yang",
+        "patchSetId": 18
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-25T14:44:15Z",
+      "side": 1,
+      "message": "trailing whitespaces in this file",
+      "range": {
+        "startLine": 70,
+        "startChar": 0,
+        "endLine": 70,
+        "endChar": 16
+      },
+      "revId": "783006333fe63622ac94c1ce8be1860b1d148e99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
