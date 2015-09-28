@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_ae2b582f",
+        "filename": "ncmount/impl/src/main/java/ncmount/impl/NcmountDomProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-28T13:18:58Z",
+      "side": 1,
+      "message": "I think we should add some notes how DOM compares to BA here.",
+      "range": {
+        "startLine": 73,
+        "startChar": 13,
+        "endLine": 73,
+        "endChar": 31
+      },
+      "revId": "fa7f3c088be74d231cd55861994b43f37d246746",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_4e208449",
+        "filename": "ncmount/impl/src/main/java/ncmount/impl/NcmountDomProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-28T13:18:58Z",
+      "side": 1,
+      "message": "The body of this method is a bit too long. We should extract some helper methods to make this more readable.",
+      "range": {
+        "startLine": 191,
+        "startChar": 57,
+        "endLine": 191,
+        "endChar": 66
+      },
+      "revId": "fa7f3c088be74d231cd55861994b43f37d246746",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
