@@ -65,6 +65,69 @@
     },
     {
       "key": {
+        "uuid": "1a76adc5_ae7278e3",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/dhcpv6/server/Dhcpv6Server.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-28T15:16:39Z",
+      "side": 1,
+      "message": "the class should be final if we do not expect/want somebody to extend it",
+      "revId": "783006333fe63622ac94c1ce8be1860b1d148e99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_0e812c8f",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/dhcpv6/server/Dhcpv6Server.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-28T15:16:39Z",
+      "side": 1,
+      "message": "this cannot be hardcoded",
+      "range": {
+        "startLine": 40,
+        "startChar": 0,
+        "endLine": 40,
+        "endChar": 62
+      },
+      "revId": "783006333fe63622ac94c1ce8be1860b1d148e99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_8e445c75",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/dhcpv6/server/Dhcpv6Server.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-28T15:16:39Z",
+      "side": 1,
+      "message": "Check if the bind method does not take an interface in one of its overloads. If so, then addInterfaces should be merged with start. And we will only bind to specific interfaces not all and then join multicast groups.",
+      "range": {
+        "startLine": 59,
+        "startChar": 41,
+        "endLine": 59,
+        "endChar": 45
+      },
+      "revId": "783006333fe63622ac94c1ce8be1860b1d148e99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a76adc5_ce9574e5",
         "filename": "dhcp/impl/src/main/java/org/opendaylight/dhcpv6/server/Dhcpv6Server.java",
         "patchSetId": 18
@@ -134,6 +197,52 @@
     },
     {
       "key": {
+        "uuid": "1a76adc5_ae49188d",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/dhcpv6/server/Dhcpv6Server.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-28T15:16:39Z",
+      "side": 1,
+      "message": "Magic IPs should be moved to constants",
+      "range": {
+        "startLine": 71,
+        "startChar": 75,
+        "endLine": 71,
+        "endChar": 84
+      },
+      "revId": "783006333fe63622ac94c1ce8be1860b1d148e99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_2e7e68af",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/dhcpv6/server/Dhcpv6Server.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-28T15:16:39Z",
+      "side": 1,
+      "message": "Loop cannot be shutdown here. We havent created it, we cannot close it.",
+      "range": {
+        "startLine": 81,
+        "startChar": 8,
+        "endLine": 81,
+        "endChar": 34
+      },
+      "revId": "783006333fe63622ac94c1ce8be1860b1d148e99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a76adc5_ce6339b0",
         "filename": "dhcp/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/dhcp/impl/v6/rev151018/Dhcpv6Module.java",
         "patchSetId": 18
@@ -150,6 +259,144 @@
         "startChar": 0,
         "endLine": 54,
         "endChar": 75
+      },
+      "revId": "783006333fe63622ac94c1ce8be1860b1d148e99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_8e9f7c03",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/dhcp/impl/v6/rev151018/Dhcpv6Module.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-28T15:16:39Z",
+      "side": 1,
+      "message": "Catching \"Exception\" is a bad practice. More specific exception type should be caught here... at least RuntimeException (since there is no checked exception declared). Dhcpv6Server is declaring to throw IllegalArgumentException (even if its never thrown at this point) so probably thats the most specific type.",
+      "range": {
+        "startLine": 58,
+        "startChar": 17,
+        "endLine": 58,
+        "endChar": 26
+      },
+      "revId": "783006333fe63622ac94c1ce8be1860b1d148e99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_6e86a0bb",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/dhcp/impl/v6/rev151018/Dhcpv6Module.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-28T15:16:39Z",
+      "side": 1,
+      "message": "This catch block reacts to a failure that might occur while parsing the default options from configuration. It should not be performed inside the constructor of Dhcpv6Server (the service should be injected for easier testing etc.) ... and if the parsing fails, the options should be thrown away, WARN log emitted and the process should continue. This should not be an exception that brings down the entire system",
+      "range": {
+        "startLine": 59,
+        "startChar": 16,
+        "endLine": 59,
+        "endChar": 21
+      },
+      "revId": "783006333fe63622ac94c1ce8be1860b1d148e99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_ce633419",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/dhcp/impl/v6/rev151018/Dhcpv6Module.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-28T15:16:39Z",
+      "side": 1,
+      "message": "Exception should be logged as last argument to the LOG.error() call with NO placeholder in the message. Check other logs as well",
+      "range": {
+        "startLine": 59,
+        "startChar": 93,
+        "endLine": 59,
+        "endChar": 105
+      },
+      "revId": "783006333fe63622ac94c1ce8be1860b1d148e99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_4e8964c9",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/dhcp/impl/v6/rev151018/Dhcpv6Module.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-28T15:16:39Z",
+      "side": 1,
+      "message": "Rethrowing unchecked exception is unnecessary here, especially if the IllegalStateException does not add any information... This applies to all catch blocks here",
+      "range": {
+        "startLine": 60,
+        "startChar": 22,
+        "endLine": 60,
+        "endChar": 43
+      },
+      "revId": "783006333fe63622ac94c1ce8be1860b1d148e99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_2ea74851",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/dhcp/impl/v6/rev151018/Dhcpv6Module.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-28T15:16:39Z",
+      "side": 1,
+      "message": "The exception must be logged with the message",
+      "range": {
+        "startLine": 84,
+        "startChar": 63,
+        "endLine": 84,
+        "endChar": 64
+      },
+      "revId": "783006333fe63622ac94c1ce8be1860b1d148e99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_0eaa8c19",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/dhcp/impl/v6/rev151018/Dhcpv6Module.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-28T15:16:39Z",
+      "side": 1,
+      "message": "Stopping the server unsuccessfully should not be a system breaking error. WARN log should be emitted to notify users and the exception swallowed.",
+      "range": {
+        "startLine": 84,
+        "startChar": 12,
+        "endLine": 85,
+        "endChar": 47
       },
       "revId": "783006333fe63622ac94c1ce8be1860b1d148e99",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
