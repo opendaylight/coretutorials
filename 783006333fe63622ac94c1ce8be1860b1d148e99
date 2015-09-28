@@ -65,6 +65,75 @@
     },
     {
       "key": {
+        "uuid": "1a76adc5_ce9574e5",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/dhcpv6/server/Dhcpv6Server.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-28T15:02:15Z",
+      "side": 1,
+      "message": "This needs to be a Set since we are calling contains() on the collection. Calling contains() on a list is a bad practice due to its complexity:\nhttps://github.com/benblack86/java-snippets/blob/master/resources/java_collections.pdf",
+      "range": {
+        "startLine": 62,
+        "startChar": 30,
+        "endLine": 62,
+        "endChar": 34
+      },
+      "revId": "783006333fe63622ac94c1ce8be1860b1d148e99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_0efccc3d",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/dhcpv6/server/Dhcpv6Server.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-28T15:02:15Z",
+      "side": 1,
+      "message": "if its empty then check ?",
+      "range": {
+        "startLine": 68,
+        "startChar": 16,
+        "endLine": 68,
+        "endChar": 95
+      },
+      "revId": "783006333fe63622ac94c1ce8be1860b1d148e99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_6eff8035",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/dhcpv6/server/Dhcpv6Server.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-28T15:02:15Z",
+      "side": 1,
+      "message": "calling joinGroup on channel before assigning it results to NPE (Module class calls this in that order)",
+      "range": {
+        "startLine": 71,
+        "startChar": 12,
+        "endLine": 71,
+        "endChar": 19
+      },
+      "revId": "783006333fe63622ac94c1ce8be1860b1d148e99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a76adc5_ce6339b0",
         "filename": "dhcp/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/dhcp/impl/v6/rev151018/Dhcpv6Module.java",
         "patchSetId": 18
