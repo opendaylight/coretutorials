@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "1a76adc5_c74d5774",
+        "filename": "dhcp/impl/pom.xml",
+        "patchSetId": 18
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-29T07:37:13Z",
+      "side": 1,
+      "message": "these packages need to be exported, not private since it also contains our SPI",
+      "range": {
+        "startLine": 122,
+        "startChar": 0,
+        "endLine": 125,
+        "endChar": 35
+      },
+      "revId": "783006333fe63622ac94c1ce8be1860b1d148e99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a76adc5_ee54f5cb",
         "filename": "dhcp/impl/src/main/config/default-config-v6.xml",
         "patchSetId": 18
@@ -98,6 +121,29 @@
         "startChar": 0,
         "endLine": 40,
         "endChar": 62
+      },
+      "revId": "783006333fe63622ac94c1ce8be1860b1d148e99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_a7737bb0",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/dhcpv6/server/Dhcpv6Server.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-09-29T07:37:13Z",
+      "side": 1,
+      "message": "Passing null",
+      "range": {
+        "startLine": 58,
+        "startChar": 35,
+        "endLine": 58,
+        "endChar": 42
       },
       "revId": "783006333fe63622ac94c1ce8be1860b1d148e99",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
