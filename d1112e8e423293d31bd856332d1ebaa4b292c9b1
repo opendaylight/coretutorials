@@ -1,0 +1,382 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_a0791c31",
+        "filename": "dhcp/impl/pom.xml",
+        "patchSetId": 19
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-10-01T08:21:45Z",
+      "side": 1,
+      "message": "needs to be removed",
+      "range": {
+        "startLine": 75,
+        "startChar": 0,
+        "endLine": 79,
+        "endChar": 17
+      },
+      "revId": "d1112e8e423293d31bd856332d1ebaa4b292c9b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_c099b86f",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/dhcp/server/CustomisableLeaseManagerDhcpService.java",
+        "patchSetId": 19
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-10-01T08:21:45Z",
+      "side": 1,
+      "message": "Add \"Ignoring\" so users know the option is skipped",
+      "revId": "d1112e8e423293d31bd856332d1ebaa4b292c9b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_20950c33",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/dhcp/server/CustomisableLeaseManagerDhcpService.java",
+        "patchSetId": 19
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-10-01T08:21:45Z",
+      "side": 1,
+      "message": "This should not be at level info. DEBUG at most",
+      "range": {
+        "startLine": 97,
+        "startChar": 20,
+        "endLine": 97,
+        "endChar": 24
+      },
+      "revId": "d1112e8e423293d31bd856332d1ebaa4b292c9b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_e09e3456",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/dhcp/server/DhcpServer.java",
+        "patchSetId": 19
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-10-01T08:21:45Z",
+      "side": 1,
+      "message": "if(channel !\u003d null) should be checked here",
+      "range": {
+        "startLine": 50,
+        "startChar": 8,
+        "endLine": 51,
+        "endChar": 23
+      },
+      "revId": "d1112e8e423293d31bd856332d1ebaa4b292c9b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_80a3c09d",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/dhcp/server/ExampleLeaseManager.java",
+        "patchSetId": 19
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-10-01T08:21:45Z",
+      "side": 1,
+      "message": "final",
+      "revId": "d1112e8e423293d31bd856332d1ebaa4b292c9b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_a0a03c91",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/dhcpv6/server/CustomDhcpv6Option.java",
+        "patchSetId": 19
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-10-01T08:21:45Z",
+      "side": 1,
+      "message": "trailing whitespace",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 4
+      },
+      "revId": "d1112e8e423293d31bd856332d1ebaa4b292c9b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_40ada887",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/dhcpv6/server/CustomisableLeaseManagerDhcpv6Service.java",
+        "patchSetId": 19
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-10-01T08:21:45Z",
+      "side": 1,
+      "message": "final",
+      "revId": "d1112e8e423293d31bd856332d1ebaa4b292c9b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_60aa2472",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/dhcpv6/server/CustomisableLeaseManagerDhcpv6Service.java",
+        "patchSetId": 19
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-10-01T08:21:45Z",
+      "side": 1,
+      "message": "final",
+      "revId": "d1112e8e423293d31bd856332d1ebaa4b292c9b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_20bc2cbb",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/dhcpv6/server/CustomisableLeaseManagerDhcpv6Service.java",
+        "patchSetId": 19
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-10-01T08:21:45Z",
+      "side": 1,
+      "message": "Add Ignore",
+      "revId": "d1112e8e423293d31bd856332d1ebaa4b292c9b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_c0b0d8df",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/dhcpv6/server/CustomisableLeaseManagerDhcpv6Service.java",
+        "patchSetId": 19
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-10-01T08:21:45Z",
+      "side": 1,
+      "message": "debug at most",
+      "range": {
+        "startLine": 78,
+        "startChar": 20,
+        "endLine": 78,
+        "endChar": 24
+      },
+      "revId": "d1112e8e423293d31bd856332d1ebaa4b292c9b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_a0c7dc44",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/dhcpv6/server/Dhcpv6Server.java",
+        "patchSetId": 19
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-10-01T08:21:45Z",
+      "side": 1,
+      "message": "these two should be final and can be public",
+      "range": {
+        "startLine": 31,
+        "startChar": 4,
+        "endLine": 32,
+        "endChar": 66
+      },
+      "revId": "d1112e8e423293d31bd856332d1ebaa4b292c9b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_40c4c83f",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/dhcpv6/server/Dhcpv6Server.java",
+        "patchSetId": 19
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-10-01T08:21:45Z",
+      "side": 1,
+      "message": "move the initializer block to the constants",
+      "range": {
+        "startLine": 41,
+        "startChar": 0,
+        "endLine": 49,
+        "endChar": 5
+      },
+      "revId": "d1112e8e423293d31bd856332d1ebaa4b292c9b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_80cae04d",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/dhcpv6/server/Dhcpv6Server.java",
+        "patchSetId": 19
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-10-01T08:21:45Z",
+      "side": 1,
+      "message": "Shorts.toByteArray()",
+      "range": {
+        "startLine": 53,
+        "startChar": 8,
+        "endLine": 55,
+        "endChar": 56
+      },
+      "revId": "d1112e8e423293d31bd856332d1ebaa4b292c9b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_00ded011",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/dhcpv6/server/Dhcpv6Server.java",
+        "patchSetId": 19
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-10-01T08:21:45Z",
+      "side": 1,
+      "message": "whats the point of using an array here ? why not directly reference the constants in start ?",
+      "range": {
+        "startLine": 68,
+        "startChar": 0,
+        "endLine": 70,
+        "endChar": 99
+      },
+      "revId": "d1112e8e423293d31bd856332d1ebaa4b292c9b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_60c1c42d",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/dhcpv6/server/Dhcpv6Server.java",
+        "patchSetId": 19
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-10-01T08:21:45Z",
+      "side": 1,
+      "message": "check not null",
+      "range": {
+        "startLine": 89,
+        "startChar": 8,
+        "endLine": 90,
+        "endChar": 23
+      },
+      "revId": "d1112e8e423293d31bd856332d1ebaa4b292c9b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_e0ecf4c9",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/dhcpv6/server/Examplev6LeaseManager.java",
+        "patchSetId": 19
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-10-01T08:21:45Z",
+      "side": 1,
+      "message": "final",
+      "revId": "d1112e8e423293d31bd856332d1ebaa4b292c9b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_80d180fd",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/dhcp/impl/rev151018/DhcpModule.java",
+        "patchSetId": 19
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-10-01T08:21:45Z",
+      "side": 1,
+      "message": "trailing whitespace",
+      "range": {
+        "startLine": 56,
+        "startChar": 0,
+        "endLine": 56,
+        "endChar": 8
+      },
+      "revId": "d1112e8e423293d31bd856332d1ebaa4b292c9b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_a0cefc58",
+        "filename": "dhcp/impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/dhcp/impl/v6/rev151018/Dhcpv6Module.java",
+        "patchSetId": 19
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-10-01T08:21:45Z",
+      "side": 1,
+      "message": "Shorts...",
+      "range": {
+        "startLine": 54,
+        "startChar": 9,
+        "endLine": 56,
+        "endChar": 50
+      },
+      "revId": "d1112e8e423293d31bd856332d1ebaa4b292c9b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
