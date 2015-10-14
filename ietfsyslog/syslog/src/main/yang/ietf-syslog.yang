@@ -4,6 +4,7 @@ module ietf-syslog {
 
   import ietf-inet-types {
     prefix inet;
+    revision-date 2013-07-15;
   }
 
   import ietf-interfaces {
