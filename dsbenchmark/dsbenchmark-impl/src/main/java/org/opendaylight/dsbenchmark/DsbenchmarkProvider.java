@@ -115,14 +115,14 @@ public class DsbenchmarkProvider implements BindingAwareProvider, DsbenchmarkSer
         startTime = System.nanoTime();
         dsWriter.createList();
         endTime = System.nanoTime();
-        listCreateTime = (endTime - startTime) / 1000000;
+        listCreateTime = (endTime - startTime) / 1000;
 
         // Run the test and measure the execution time
         try {
             startTime = System.nanoTime();
             dsWriter.executeList();
             endTime = System.nanoTime();
-            execTime = (endTime - startTime) / 1000000;
+            execTime = (endTime - startTime) / 1000;
 
             this.testsCompleted++;
 
