@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fad0f9df_9d88f6e8",
+        "filename": "ncmount/impl/src/main/java/ncmount/impl/NcmountDomProvider.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 380,
+      "author": {
+        "id": 84
+      },
+      "writtenOn": "2015-10-23T22:41:18Z",
+      "side": 1,
+      "message": "trailing whitespaces",
+      "range": {
+        "startLine": 380,
+        "startChar": 63,
+        "endLine": 380,
+        "endChar": 64
+      },
+      "revId": "8731de6b322f3b428eed4749f757507b57e406cc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
