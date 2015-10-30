@@ -22,7 +22,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <packaging>bundle</packaging>
 
   <properties>
-    <dhcp-server.version>1.0.9-SNAPSHOT</dhcp-server.version>
+    <dhcp-server.version>1.0.9</dhcp-server.version>
   </properties>
 
   <dependencies>
