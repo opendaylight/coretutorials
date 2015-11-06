@@ -1,5 +1,5 @@
 *.class
-**/target
+target/
 bin/
 dist
 **/logs
@@ -28,6 +28,6 @@ maven-eclipse.xml
 .DS_STORE
 .metadata
 .hg
-/target
 node_modules/
 coverage/
+maven-metadata-local.xml
