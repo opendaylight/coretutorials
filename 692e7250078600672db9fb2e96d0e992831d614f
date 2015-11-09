@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1acb0d3e_6b7ec1e6",
+        "filename": "dhcp/impl/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2015-11-09T10:45:06Z",
+      "side": 1,
+      "message": "Inline this property into the dependency",
+      "revId": "692e7250078600672db9fb2e96d0e992831d614f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
