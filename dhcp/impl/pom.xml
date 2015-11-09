@@ -21,15 +21,11 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <version>0.1.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
-  <properties>
-    <dhcp-server.version>1.0.9-SNAPSHOT</dhcp-server.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.anarres.dhcp</groupId>
       <artifactId>dhcp-server-netty</artifactId>
-      <version>${dhcp-server.version}</version>
+      <version>1.0.9</version>
       <exclusions>
         <!-- Exclude netty and use the version from ODL-->
         <exclusion>
