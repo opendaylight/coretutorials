@@ -123,16 +123,4 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
      </plugin>
     </plugins>
   </build>
-
-  <repositories>
-    <repository>
-      <id>oss-sonatype</id>
-      <name>oss-sonatype</name>
-      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
 </project>
