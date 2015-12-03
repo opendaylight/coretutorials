@@ -12,7 +12,7 @@
         <groupId>org.opendaylight.toaster</groupId>
         <artifactId>toaster-parent</artifactId>
         <relativePath>../parent</relativePath>
-        <version>0.0.4-SNAPSHOT</version>
+        <version>0.0.4-Lithium-SR3</version>
     </parent>
 
 
@@ -40,7 +40,7 @@
                 <dependency>
                     <groupId>org.opendaylight.openflowplugin</groupId>
                     <artifactId>features-openflowplugin</artifactId>
-                    <version>0.0.6-SNAPSHOT</version>
+                    <version>0.0.6-Lithium-SR3</version>
                     <classifier>features</classifier>
                     <type>xml</type>
                 </dependency>
@@ -103,7 +103,7 @@
     <dependency>
       <groupId>org.opendaylight.odlparent</groupId>
       <artifactId>features-test</artifactId>
-      <version>1.5.3-SNAPSHOT</version>
+      <version>1.5.3-Lithium-SR3</version>
       <scope>test</scope>
     </dependency>
     <!-- dependency for opendaylight-karaf-empty for use by testing -->
