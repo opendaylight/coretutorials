@@ -5,7 +5,7 @@
         <groupId>org.opendaylight.toaster</groupId>
         <artifactId>toaster-parent</artifactId>
         <relativePath>../parent</relativePath>
-        <version>0.0.4-Lithium-SR3</version>
+        <version>0.0.5-SNAPSHOT</version>
     </parent>
   <artifactId>sample-toaster-it</artifactId>
 

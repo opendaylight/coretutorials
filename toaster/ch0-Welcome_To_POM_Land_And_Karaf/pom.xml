@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.opendaylight.toaster</groupId>
         <artifactId>toaster-parent</artifactId>
-        <version>0.0.4-Lithium-SR3</version>
+        <version>0.0.5-SNAPSHOT</version>
         <relativePath>parent</relativePath>
     </parent>
 
