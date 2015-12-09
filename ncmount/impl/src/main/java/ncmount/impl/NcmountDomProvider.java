@@ -179,63 +179,6 @@ public class NcmountDomProvider implements Provider, AutoCloseable, DOMRpcImplem
         return Futures.immediateFailedCheckedFuture((DOMRpcException)new MethodNotImplemented("method not implemented"));
     }
 
-
-    /**
-     * This method reads the config data-store and return list of nodes
-     * from Netconf topology.
-     *
-     * @return list of nodes in Netconf topology from config data store.
-     */
-    private LeafSetNode<Object> getNCConfigNodes() {
-        DOMDataReadOnlyTransaction rtx = this.globalDomDataBroker.newReadOnlyTransaction();
-        NormalizedNode<?, ?> ncNodes = null;
-        NodeIdentifier nodeid = new NodeIdentifier(Node.QNAME);
-
-        // created the leaf node to represent "leaf-list nc-config-nodes"
-        ListNodeBuilder<Object, LeafSetEntryNode<Object>> leafListBuilder = Builders.leafSetBuilder()
-                .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(NC_CONFIG_NODES));
-
-        // read the config data-store for the available nodes.
-        try {
-            Optional<NormalizedNode<?, ?>> optNCNodes = rtx.read(LogicalDatastoreType.CONFIGURATION, NETCONF_TOPO_IID)
-                                                           .checkedGet();
-
-            // if the nodes are present then only move further
-            // otherwise return the empty leaf list.
-            if (optNCNodes.isPresent()) {
-                ncNodes = optNCNodes.get();
-            } else {
-                return leafListBuilder.build();
-            }
-
-        } catch (ReadFailedException e) {
-            LOG.warn("Failed to read config datastore: {}", e);
-            return leafListBuilder.build();
-        } finally {
-            // close the transaction resource.
-            rtx.close();
-        }
-
-        if (ncNodes instanceof MapEntryNode) {
-            // get all the nodes from the ncNode
-            DataContainerChild<? extends PathArgument, ?> data = ((MapEntryNode) ncNodes).getChild(nodeid).get();
-
-            if (data instanceof MapNode) {
-                for (MapEntryNode node : ((MapNode) data).getValue()) {
-
-                    for(DataContainerChild<? extends PathArgument, ?> nodeChild : node.getValue()) {
-                        if (nodeChild instanceof LeafNode) {
-                            // add the node value to the leaf-list.
-                            leafListBuilder.withChildValue(nodeChild.getValue());
-                        }
-                    }
-                }
-            }
-        }
-
-        return leafListBuilder.build();
-    }
-
     /**
      * This method reads the operational data-store and return list of nodes
      * from Netconf topology. It also logs the capability of 'connected'
@@ -325,23 +268,17 @@ public class NcmountDomProvider implements Provider, AutoCloseable, DOMRpcImplem
     /**
      * This method is the implementation of the 'list-nodes' RESTCONF service,
      * which is one of the external APIs into the ncmount application. The
-     * service provides two example functions:
-     * 1. Lists nodes in the Netconf Topology's configuration data
-     * 2. Lists nodes in the Netconf Topology's operational data
+     * service provides example functionality. Lists nodes in the Netconf
+     * Topology's operational data.
      *
-     * Netconf Topology is populated by the Netconf Connector.  Configuration
-     * data contains the configuration data for each netconf node configured in
-     * the Netconf Connector. Operational data contains status data for each
-     * netconf node configured in the Netconf Connector.
+     * Netconf Topology is populated by the Netconf Connector. Operational data
+     * contains status data for each netconf node configured in the Netconf
+     * Connector.
      *
-     * @return Lists of nodes found in Netconf Topology's configuration and
-     *          operational spaces.
+     * @return Lists of nodes found in Netconf Topology's operational space.
      */
     private CheckedFuture<DOMRpcResult, DOMRpcException> listNodes() {
         LOG.info(" invoked RPC List-Node");
-
-        // created the leaf node to represent "leaf-list nc-config-nodes."
-        LeafSetNode<Object> ncConfigLeafList = getNCConfigNodes();
 
         // created the leaf node to represent "leaf-list nc-oper-nodes"
         LeafSetNode<Object> ncOperLeafList = getNCOperationalNodes();
@@ -350,7 +287,6 @@ public class NcmountDomProvider implements Provider, AutoCloseable, DOMRpcImplem
         // pack the output and return.
         ContainerNode resultNode = ImmutableContainerNodeBuilder.create()
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(RPC_OUTPUT_QNAME))
-                .withChild(ncConfigLeafList)
                 .withChild(ncOperLeafList)
                 .build();
 
