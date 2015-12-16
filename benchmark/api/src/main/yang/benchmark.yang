@@ -1,0 +1,9 @@
+module benchmark {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:benchmark";
+    prefix "benchmark";
+
+    revision "2015-01-05" {
+        description "Initial revision of benchmark model";
+    }
+}
