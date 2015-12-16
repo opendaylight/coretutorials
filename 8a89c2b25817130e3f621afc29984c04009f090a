@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1aa4ed85_7602fa3f",
+        "filename": "benchmark/it/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 2046
+      },
+      "writtenOn": "2015-12-16T18:41:12Z",
+      "side": 1,
+      "message": "This does not look right to me (but I have no idea what it actually does).",
+      "range": {
+        "startLine": 20,
+        "startChar": 28,
+        "endLine": 20,
+        "endChar": 41
+      },
+      "revId": "8a89c2b25817130e3f621afc29984c04009f090a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa4ed85_16f4e659",
+        "filename": "benchmark/scripts/dsbenchmark.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2046
+      },
+      "writtenOn": "2015-12-16T18:41:12Z",
+      "side": 1,
+      "message": "Is this file needed here? There already is a version of this file in integration/test repository.",
+      "revId": "8a89c2b25817130e3f621afc29984c04009f090a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
