@@ -9,24 +9,38 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.opendaylight.toaster</groupId>
-        <artifactId>toaster-parent</artifactId>
-        <relativePath>../parent</relativePath>
-        <version>0.1.0-SNAPSHOT</version>
+        <groupId>org.opendaylight.odlparent</groupId>
+        <artifactId>features-parent</artifactId>
+        <version>1.6.0-SNAPSHOT</version>
+        <relativePath/>
     </parent>
 
-
+    <groupId>org.opendaylight.toaster</groupId>
     <artifactId>features-toaster</artifactId>
     <name>${project.artifactId}</name>
-
-    <!-- Optional TODO: Uncomment version if you are not using a parent pom.xml
-    <version>0.0.1</version>
-    -->
+    <version>0.1.0-SNAPSHOT</version>
    <packaging>jar</packaging>
 
    <properties>
       <features.file>features.xml</features.file>
+       <!-- These are copied from toaster-parent -->
+       <controller.mdsal.version>1.3.0-SNAPSHOT</controller.mdsal.version>
+       <mdsal.version>2.0.0-SNAPSHOT</mdsal.version>
+       <karaf.empty.version>1.6.0-SNAPSHOT</karaf.empty.version>
+       <yangtools.version>0.8.0-SNAPSHOT</yangtools.version>
    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.opendaylight.toaster</groupId>
+                <artifactId>toaster-parent</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
    <dependencies>
        <!-- Necessary TODO: Put dependencies on any feature repos you use in your features.xml file.-->
@@ -168,7 +182,6 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
-            <version>${surefire.version}</version>
             <configuration>
               <systemPropertyVariables>
                 <karaf.distro.groupId>org.opendaylight.controller</karaf.distro.groupId>
