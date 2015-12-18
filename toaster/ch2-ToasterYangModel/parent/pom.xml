@@ -122,20 +122,6 @@
                 <type>pom</type>
             </dependency>
 
-            <!-- Testing Dependencies -->
-            <!-- INTERNAL TODO: Do we need this or can odlparent handle this? This
-                provides support for Unit Tests since this isnt defined as a standard at
-                the ODL parent level -->
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>${logback.version}</version>
-                <scope>test</scope>
-                <!-- This defines this as being within test scope, hence it may appear
-                    that these dependencies are repeated in this pom, but they are for different
-                    scopes -->
-            </dependency>
-
             <!-- YANG tools -->
             <dependency>
                 <!-- INTERNAL TODO: Lets describe this better. YangTools generates all
