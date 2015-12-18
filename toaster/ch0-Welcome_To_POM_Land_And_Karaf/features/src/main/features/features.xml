@@ -9,13 +9,15 @@
     <!-- TODO: for any repo dependencies, add an entry in the features/pom.xml dependency section -->
     <repository>mvn:org.opendaylight.yangtools/features-yangtools/{{VERSION}}/xml/features</repository>
     <repository>mvn:org.opendaylight.controller/features-mdsal/{{VERSION}}/xml/features</repository>
+    <repository>mvn:org.opendaylight.mdsal/features-mdsal/{{VERSION}}/xml/features</repository>
+    <repository>mvn:org.opendaylight.mdsal.model/features-mdsal-model/{{VERSION}}/xml/features</repository>
     <!--<repository>mvn:org.opendaylight.netconf/features-restconf/{{VERSION}}/xml/features</repository>-->
 
     <!-- TODO: for any feature dependencies, add an entry in the features/pom.xml dependency section -->
 
     <feature name='odl-toaster-api' version='${project.version}' description='OpenDaylight :: toaster :: API'>
         <feature version='${yangtools.version}'>odl-yangtools-common</feature>
-        <feature version='${yangtools.version}'>odl-mdsal-binding-base</feature>
+        <feature version='${mdsal.version}'>odl-mdsal-binding-base</feature>
         <!--<feature version='${controller.mdsal.version}'>odl-mdsal-broker</feature>-->
         <!--<feature version='${restconf.version}'>odl-restconf</feature>-->
         <bundle>mvn:org.opendaylight.toaster/toaster-api/{{VERSION}}</bundle>
@@ -28,7 +30,6 @@
         <feature version='${project.version}'>odl-toaster-api</feature>
         <!--<feature version='${restconf.version}'>odl-restconf</feature>-->
         <bundle>mvn:org.opendaylight.toaster/toaster-impl/{{VERSION}}</bundle>
-        <configfile finalname="toaster-impl-config.xml">mvn:org.opendaylight.toaster/toaster-impl/{{VERSION}}/xml/config</configfile>
     </feature>
 
     <feature name='odl-toaster-consumer' version='${project.version}' description='OpenDaylight :: toaster :: Consumer'>

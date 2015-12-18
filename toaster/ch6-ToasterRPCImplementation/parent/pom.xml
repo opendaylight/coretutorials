@@ -101,7 +101,6 @@
         <karaf.resources.version>1.6.0-SNAPSHOT</karaf.resources.version>
         <!-- TODO: what is this ... is this equal to yangtools.version -->
         <feature.test.version>0.8.0-SNAPSHOT</feature.test.version>
-        <karaf.empty.version>1.6.0-SNAPSHOT</karaf.empty.version>
     </properties>
 
     <!-- dependencyManagement is like a "definition" of where you can set up
@@ -120,20 +119,6 @@
                     section of that pom (we are in dependency management here) -->
                 <scope>import</scope>
                 <type>pom</type>
-            </dependency>
-
-            <!-- Testing Dependencies -->
-            <!-- INTERNAL TODO: Do we need this or can odlparent handle this? This
-                provides support for Unit Tests since this isnt defined as a standard at
-                the ODL parent level -->
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>${logback.version}</version>
-                <scope>test</scope>
-                <!-- This defines this as being within test scope, hence it may appear
-                    that these dependencies are repeated in this pom, but they are for different
-                    scopes -->
             </dependency>
 
             <!-- YANG tools -->
