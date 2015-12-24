@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1aa4ed85_6bbaf96f",
+        "filename": "toaster/ch1-Your_Feature_And_Hello_World/toaster-impl/src/main/java/org/opendaylight/toaster/ToasterImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1010
+      },
+      "writtenOn": "2015-12-24T13:50:13Z",
+      "side": 1,
+      "message": "All hail the Checkstyle Police ! :-P",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 3
+      },
+      "revId": "e5c5264fdf7d3219202de4fcdc06905594366112",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
