@@ -15,6 +15,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <repository>mvn:org.opendaylight.controller/features-mdsal/{{VERSION}}/xml/features</repository>
   <repository>mvn:org.opendaylight.netconf/features-restconf/{{VERSION}}/xml/features</repository>
   <repository>mvn:org.opendaylight.netconf/features-netconf-connector/{{VERSION}}/xml/features</repository>
+  <repository>mvn:org.opendaylight.netconf/features-netconf/{{VERSION}}/xml/features</repository>
   <repository>mvn:org.opendaylight.dlux/features-dlux/{{VERSION}}/xml/features</repository>
 
   <feature name='odl-ncmount-api' version='${project.version}' description='OpenDaylight :: ncmount :: api'>
