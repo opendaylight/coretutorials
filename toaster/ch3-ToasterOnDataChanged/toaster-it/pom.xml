@@ -48,7 +48,7 @@
       <version>${exam.version}</version>
     </dependency>
     <dependency>
-      <groupId>equinoxSDK381</groupId>
+      <groupId>org.eclipse.tycho</groupId>
       <artifactId>org.eclipse.osgi</artifactId>
       <scope>test</scope>
     </dependency>
