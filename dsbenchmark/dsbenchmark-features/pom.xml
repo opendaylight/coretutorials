@@ -9,21 +9,21 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   <parent>
     <groupId>org.opendaylight.odlparent</groupId>
     <artifactId>features-parent</artifactId>
-    <version>1.5.4-Lithium-SR4</version>
+    <version>1.5.5-SNAPSHOT</version>
     <relativePath/>
   </parent>
   <groupId>org.opendaylight.coretutorials</groupId>
   <artifactId>dsbenchmark-features</artifactId>
-  <version>1.0.4-Lithium-SR4</version>
+  <version>1.0.5-SNAPSHOT</version>
   <name>${project.artifactId}</name>
   <modelVersion>4.0.0</modelVersion>
   <prerequisites>
     <maven>3.1.1</maven>
   </prerequisites>
   <properties>
-    <mdsal.version>1.2.4-Lithium-SR4</mdsal.version>
-      <dlux.version>0.2.4-Lithium-SR4</dlux.version>
-    <yangtools.version>0.7.4-Lithium-SR4</yangtools.version>
+    <mdsal.version>1.2.5-SNAPSHOT</mdsal.version>
+      <dlux.version>0.2.5-SNAPSHOT</dlux.version>
+    <yangtools.version>0.7.5-SNAPSHOT</yangtools.version>
   </properties>
   <dependencyManagement>
     <dependencies>

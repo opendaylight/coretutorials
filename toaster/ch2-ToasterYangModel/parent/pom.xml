@@ -20,7 +20,7 @@
             working Lithium. INTERNAL TODO: HOW DOES A PROJECT FIND THIS INFORMATION
             OUT ??? Always verify Lithium version by checking the root pom.xml in the
             odlparent project for the release you are working with -->
-        <version>1.5.4-Lithium-SR4</version>
+        <version>1.5.5-SNAPSHOT</version>
         <!-- This is a local file system path, and is used for an override. It
             tells maven not to go to the root pom.xml for this project, which refers
             to this pom.xml. OPTIONAL TODO: May remove this. -->
@@ -30,7 +30,7 @@
     <groupId>org.opendaylight.toaster</groupId>
     <artifactId>toaster-parent</artifactId>
     <name>Toaster parent</name>
-    <version>0.0.5-Lithium-SR4</version> <!-- Note using same version from Root pom.xml -->
+    <version>0.0.6-SNAPSHOT</version> <!-- Note using same version from Root pom.xml -->
     <packaging>pom</packaging> <!-- This line is very important, we aren't making any other side-effects
         than the POM -->
 
@@ -66,7 +66,7 @@
         <maven.source.version>2.2.1</maven.source.version>
 
         <!-- YANG tools artifacts -->
-        <yangtools.version>0.7.4-Lithium-SR4</yangtools.version>
+        <yangtools.version>0.7.5-SNAPSHOT</yangtools.version>
 
         <!-- Controller artifacts -->
         <!-- These need to be at this layer, as opposed to odlparent, as it gives
@@ -74,12 +74,12 @@
             version of the dependencies that are pulled into your project. It's important
             that projects, if they modify these versions, then take responsibility for
             maintaining the versioning. -->
-        <controller.config.version>0.3.4-Lithium-SR4</controller.config.version> <!-- Refers to the config subsystem version -->
+        <controller.config.version>0.3.5-SNAPSHOT</controller.config.version> <!-- Refers to the config subsystem version -->
         <!-- Framework is the protocol framework. INTERNAL TODO: Decide if to leave
             this in but commented or deleted. If we do this, what other options do we
-            need to include here as options <controller.framework.version>0.6.4-Lithium-SR4</controller.framework.version> -->
-        <controller.mdsal.version>1.2.4-Lithium-SR4</controller.mdsal.version>
-        <controller.restconf.version>1.2.4-Lithium-SR4</controller.restconf.version>
+            need to include here as options <controller.framework.version>0.6.5-SNAPSHOT</controller.framework.version> -->
+        <controller.mdsal.version>1.2.5-SNAPSHOT</controller.mdsal.version>
+        <controller.restconf.version>1.2.5-SNAPSHOT</controller.restconf.version>
 
         <!-- Sonar config -->
         <!-- Only required for "external" projects. ie for projects within the
@@ -104,11 +104,11 @@
         <!-- TODO: john karaf related properties moved from the pom.xml in the features directory-->
         <!-- Optional TODO: Move these properties to your parent pom and possibly
       DependencyManagement section of your parent pom -->
-        <branding.version>1.0.4-Lithium-SR4</branding.version>
-        <karaf.resources.version>1.5.4-Lithium-SR4</karaf.resources.version>
+        <branding.version>1.0.5-SNAPSHOT</branding.version>
+        <karaf.resources.version>1.5.5-SNAPSHOT</karaf.resources.version>
         <!-- TODO: what is this ... is this equal to yangtools.version -->
-        <feature.test.version>0.7.4-Lithium-SR4</feature.test.version>
-        <karaf.empty.version>1.4.6-Lithium-SR4</karaf.empty.version>
+        <feature.test.version>0.7.5-SNAPSHOT</feature.test.version>
+        <karaf.empty.version>1.4.7-SNAPSHOT</karaf.empty.version>
         <surefire.version>2.16</surefire.version>
     </properties>
 
