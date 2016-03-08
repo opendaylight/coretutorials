@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Example implementation of a lease manager. It provides IPs to the clients based on an initial IP increasing the IP by one for every new client. <p/>
+ * Example implementation of a lease manager. It provides IPs to the clients based on an initial IP increasing the IP by one for every new client. <p>
  * <b> This is NOT intended for real use. </b>
  */
 public class ExampleLeaseManager extends AbstractDynamicLeaseManager implements AutoCloseable {

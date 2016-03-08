@@ -9,6 +9,7 @@ import javax.management.InstanceNotFoundException;
 import javax.management.ObjectName;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opendaylight.controller.config.api.ConflictingVersionException;
 import org.opendaylight.controller.config.api.ValidationException;
@@ -21,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dhcp.impl.rev151018.DhcpModuleFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dhcp.impl.rev151018.DhcpModuleMXBean;
 
+@Ignore
 public class Dhcpv6ModuleTest extends AbstractConfigTest {
 
     private static final String INSTANCE_NAME = "dhcpv6ModuleTestInstance";
