@@ -17,7 +17,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <repository>mvn:org.opendaylight.mdsal.model/features-mdsal-model/{{VERSION}}/xml/features</repository>
 
   <feature name='odl-dscrud-api' version='${project.version}' description='OpenDaylight :: dscrud :: api'>
-    <feature version='${yangtools.version}'>odl-mdsal-models</feature>
+    <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>
     <bundle>mvn:org.opendaylight.coretutorials/dscrud-api/{{VERSION}}</bundle>
   </feature>
   <feature name='odl-dscrud' version='${project.version}' description='OpenDaylight :: dscrud'>

@@ -18,7 +18,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <repository>mvn:org.opendaylight.coretutorials/dscrud-features/{{VERSION}}/xml/features</repository>
 
   <feature name='odl-dscrudbenchmark-api' version='${project.version}' description='OpenDaylight :: dscrudbenchmark :: api'>
-    <feature version='${yangtools.version}'>odl-mdsal-models</feature>
+    <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>
     <bundle>mvn:org.opendaylight.coretutorials/dscrudbenchmark-api/{{VERSION}}</bundle>
   </feature>
   <feature name='odl-dscrudbenchmark' version='${project.version}' description='OpenDaylight :: dscrudbenchmark'>
