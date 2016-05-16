@@ -17,4 +17,3 @@ minimum necessary code, with limited functionality:
 
 XMPP Event source user agant is based on Opendaylight Karaf Archetype,
 which generated initial skeleton along with custom Karaf distribution creation.
-In order to build  
