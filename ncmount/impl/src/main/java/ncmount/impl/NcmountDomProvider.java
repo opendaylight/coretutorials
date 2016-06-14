@@ -84,26 +84,22 @@ public class NcmountDomProvider implements Provider, AutoCloseable, DOMRpcImplem
 
     private static final Logger LOG = LoggerFactory.getLogger(NcmountDomProvider.class);
 
-    public static final YangInstanceIdentifier NETCONF_TOPO_IID;
-    private static final DOMRpcIdentifier SHOW_NODE_RPC_ID = DOMRpcIdentifier.create(SchemaPath.create(true, QName.create(ShowNodeInput.QNAME, "show-node")));
-    private static final DOMRpcIdentifier LIST_NODES_ID = DOMRpcIdentifier.create(SchemaPath.create(true, QName.create(ListNodesOutput.QNAME, "list-nodes")));
-    private static final DOMRpcIdentifier WRITE_NODES_ID = DOMRpcIdentifier.create(SchemaPath.create(true, QName.create(WriteRoutesInput.QNAME, "write-routes")));
+    private static final DOMRpcIdentifier SHOW_NODE_RPC_ID = DOMRpcIdentifier.create(SchemaPath.create(true, QName.create(ShowNodeInput.QNAME, "show-node").intern()));
+    private static final DOMRpcIdentifier LIST_NODES_ID = DOMRpcIdentifier.create(SchemaPath.create(true, QName.create(ListNodesOutput.QNAME, "list-nodes").intern()));
+    private static final DOMRpcIdentifier WRITE_NODES_ID = DOMRpcIdentifier.create(SchemaPath.create(true, QName.create(WriteRoutesInput.QNAME, "write-routes").intern()));
 
     // Qname used to construct the output for the list-node rpc.
-    static final QName RPC_OUTPUT_QNAME = QName.cachedReference(QName.create(ListNodesOutput.QNAME, "list-nodes"));
-    static final QName NC_CONFIG_NODES = QName.cachedReference(QName.create(ListNodesOutput.QNAME, "nc-config-nodes"));
-    static final QName NC_OPER_NODES = QName.cachedReference(QName.create(ListNodesOutput.QNAME, "nc-oper-nodes"));
+    static final QName RPC_OUTPUT_QNAME = QName.create(ListNodesOutput.QNAME, "list-nodes").intern();
+    static final QName NC_CONFIG_NODES = QName.create(ListNodesOutput.QNAME, "nc-config-nodes").intern();
+    static final QName NC_OPER_NODES = QName.create(ListNodesOutput.QNAME, "nc-oper-nodes").intern();
 
-    static {
-        final org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder builder =
-                org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.builder();
-        builder
-        .node(NetworkTopology.QNAME)
-        .node(Topology.QNAME)
-        .nodeWithKey(Topology.QNAME, QName.create(Topology.QNAME, "topology-id"), TopologyNetconf.QNAME.getLocalName());
+    private static NodeIdentifier TOPO_NODE_ID_PATHARG = new NodeIdentifier(QName.create(Topology.QNAME, "node-id").intern());
 
-        NETCONF_TOPO_IID = builder.build();
-    }
+    public static final YangInstanceIdentifier NETCONF_TOPO_IID = YangInstanceIdentifier.builder()
+            .node(NetworkTopology.QNAME).node(Topology.QNAME)
+            .nodeWithKey(Topology.QNAME, QName.create(Topology.QNAME, "topology-id").intern(), TopologyNetconf.QNAME.getLocalName())
+            .build();
+    public static final YangInstanceIdentifier NETCONF_TOPO_NODE_IID = NETCONF_TOPO_IID.node(Node.QNAME).toOptimized();
 
     private DOMMountPointService mountPointService;
     private DOMDataBroker globalDomDataBroker;
@@ -123,16 +119,11 @@ public class NcmountDomProvider implements Provider, AutoCloseable, DOMRpcImplem
         final DOMRpcProviderService service = providerSession.getService(DOMRpcProviderService.class);
         service.registerRpcImplementation(this, SHOW_NODE_RPC_ID, LIST_NODES_ID, WRITE_NODES_ID);
 
-        final YangInstanceIdentifier nodeIid = YangInstanceIdentifier.builder(NETCONF_TOPO_IID).node(Node.QNAME).build();
-
         LOG.info("NcmountDomProvider is registered");
 
         this.globalDomDataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                nodeIid,
-                this,
-                AsyncDataBroker.DataChangeScope.SUBTREE);
+                NETCONF_TOPO_NODE_IID, this, AsyncDataBroker.DataChangeScope.SUBTREE);
     }
-
 
     @Override
     public Collection<ProviderFunctionality> getProviderFunctionality() {
@@ -286,7 +277,7 @@ public class NcmountDomProvider implements Provider, AutoCloseable, DOMRpcImplem
 
             // pick the leaf node with local name "node-id"
             String nodeId = ((String) operNode
-                    .getChild(new NodeIdentifier(QName.create(Topology.QNAME, "node-id"))).get().getValue());
+                    .getChild(TOPO_NODE_ID_PATHARG).get().getValue());
 
             final Optional<DataContainerChild<? extends PathArgument, ?>> netconfNode = operNode.getChild(
                     // TODO the augmentation identifier could be extracted into a static constant
@@ -369,13 +360,13 @@ public class NcmountDomProvider implements Provider, AutoCloseable, DOMRpcImplem
     private static Collection<QName> toQNames(final QName baseQName, String... localNames) {
         return Collections2.transform(Arrays.asList(localNames), new Function<String, QName>() {
             @Override public QName apply(final String input) {
-                return QName.cachedReference(QName.create(baseQName, input));
+                return QName.create(baseQName, input).intern();
             }
         });
     }
 
     private static QName toQName(final QName baseQName, String localName) {
-        return QName.cachedReference(QName.create(baseQName, localName));
+        return QName.create(baseQName, localName).intern();
     }
 
     /**
