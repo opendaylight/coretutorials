@@ -94,13 +94,13 @@ public class HelloWorldEventSource implements EventSource {
 
     private static final Logger LOG = LoggerFactory.getLogger(HelloWorldEventSource.class);
 
-    public static final QName sample_notification_QNAME = org.opendaylight.yangtools.yang.common.QName.cachedReference(org.opendaylight.yangtools.yang.common.QName.create("urn:cisco:params:xml:ns:yang:messagebus:sample","2015-03-16","sample-notification"));
+    public static final QName sample_notification_QNAME = QName.create("urn:cisco:params:xml:ns:yang:messagebus:sample","2015-03-16","sample-notification").intern();
     public static final String XMLNS_ATTRIBUTE_KEY = "xmlns";
     public static final String XMLNS_URI = "http://www.w3.org/2000/xmlns/";
     private static final NodeIdentifier TOPIC_NOTIFICATION_ARG = new NodeIdentifier(TopicNotification.QNAME);
-    private static final NodeIdentifier EVENT_SOURCE_ARG = new NodeIdentifier(QName.create(TopicNotification.QNAME, "node-id"));
-    private static final NodeIdentifier TOPIC_ID_ARG = new NodeIdentifier(QName.create(TopicNotification.QNAME, "topic-id"));
-    private static final NodeIdentifier PAYLOAD_ARG = new NodeIdentifier(QName.create(TopicNotification.QNAME, "payload"));
+    private static final NodeIdentifier EVENT_SOURCE_ARG = new NodeIdentifier(QName.create(TopicNotification.QNAME, "node-id").intern());
+    private static final NodeIdentifier TOPIC_ID_ARG = new NodeIdentifier(QName.create(TopicNotification.QNAME, "topic-id").intern());
+    private static final NodeIdentifier PAYLOAD_ARG = new NodeIdentifier(QName.create(TopicNotification.QNAME, "payload").intern());
 
     private final Short messageGeneratePeriod;
     private final Node sourceNode;
