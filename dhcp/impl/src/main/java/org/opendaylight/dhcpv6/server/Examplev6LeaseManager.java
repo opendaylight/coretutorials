@@ -8,10 +8,10 @@
 
 package org.opendaylight.dhcpv6.server;
 
-import com.google.common.base.Charsets;
 import com.google.common.net.InetAddresses;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.charset.StandardCharsets;
 import javax.annotation.Nonnull;
 import org.anarres.dhcp.v6.Dhcp6Exception;
 import org.anarres.dhcp.v6.io.Dhcp6RequestContext;
@@ -71,7 +71,7 @@ public class Examplev6LeaseManager extends AbstractDhcp6LeaseManager implements 
     private class VendorSpecificSuboption extends Dhcp6Option {
 
         public VendorSpecificSuboption(final String example) {
-            setData(example.getBytes(Charsets.UTF_8));
+            setData(example.getBytes(StandardCharsets.UTF_8));
         }
 
         @Override public short getTag() {
