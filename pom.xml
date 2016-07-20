@@ -33,6 +33,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
     <module>xmpp-agent</module>
     <module>dhcp</module>
     <module>benchmark</module>
+    <module>mdsal-singleton-samples</module>
   </modules>
 
 </project>
