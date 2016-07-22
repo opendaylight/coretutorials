@@ -13,9 +13,9 @@ import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
-import org.opendaylight.mdsal.singleton.dom.api.DOMClusterSingletonServiceProvider;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev130712.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev130712.TopologyId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev130712.network.topology.Topology;
@@ -43,7 +43,7 @@ public class RoutedClusterSingletonRpc implements RpcService, ClusterSingletonSe
     private RoutedRpcRegistration<RoutedClusterSingletonRpc> rpcRegistration;
 
     RoutedClusterSingletonRpc(final RpcProviderRegistry rpcProviderRegistry,
-            final DOMClusterSingletonServiceProvider provider) {
+            final ClusterSingletonServiceProvider provider) {
 
         this.rpcProviderRegistry = rpcProviderRegistry;
         registration = provider.registerClusterSingletonService(this);

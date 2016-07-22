@@ -10,8 +10,8 @@ package org.opendaylight.mdsal.singleton.samples;
 
 import com.google.common.base.Preconditions;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
-import org.opendaylight.mdsal.singleton.dom.api.DOMClusterSingletonServiceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +32,7 @@ public class RpcSingletonApplicationSample implements AutoCloseable {
      * @param provider
      */
     public RpcSingletonApplicationSample(final RpcProviderRegistry rpcProviderRegistry,
-            final DOMClusterSingletonServiceProvider provider) {
+            final ClusterSingletonServiceProvider provider) {
         LOG.info("RpcSingAppSample started from OSGi call.");
         Preconditions.checkArgument(rpcProviderRegistry != null, "RpcProvider registry can not be null!");
         Preconditions.checkArgument(provider != null, "ClusterSingletonProvider can not be null !");

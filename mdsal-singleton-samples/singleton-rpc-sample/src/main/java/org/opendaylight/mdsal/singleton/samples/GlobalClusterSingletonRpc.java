@@ -13,9 +13,9 @@ import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RpcRegistration;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
-import org.opendaylight.mdsal.singleton.dom.api.DOMClusterSingletonServiceProvider;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +34,7 @@ public class GlobalClusterSingletonRpc implements RpcService, ClusterSingletonSe
 
 
     GlobalClusterSingletonRpc(final RpcProviderRegistry rpcProviderRegistry,
-            final DOMClusterSingletonServiceProvider provider) {
+            final ClusterSingletonServiceProvider provider) {
         this.rpcProviderRegistry = rpcProviderRegistry;
         registration = provider.registerClusterSingletonService(this);
         LOG.info("GlobalClusterSingetonRpc instance is creating amd registred in ClusterSingletonServiceProvider");
