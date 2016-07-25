@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_daf07469",
+        "filename": "clustering/impl/src/main/java/clustering/impl/ClusteringProvider.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 3675
+      },
+      "writtenOn": "2016-07-25T20:28:31Z",
+      "side": 1,
+      "message": "I think you don\u0027t even need this class, as the registration of the RpcService can be done using blueprint.\nsee https://wiki.opendaylight.org/view/Using_Blueprint#Global_RPCs for more details",
+      "revId": "5886014aed2f07b5e817c57b7fbbb1010748d9ad",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_1ae78cad",
+        "filename": "clustering/it/src/test/java/clustering/it/ClusteringIT.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 3675
+      },
+      "writtenOn": "2016-07-25T20:28:31Z",
+      "side": 1,
+      "message": "Oops - those aren\u0027t needed anymore as you\u0027re using blueprint. I will update the archetype to reflect that.",
+      "range": {
+        "startLine": 32,
+        "startChar": 0,
+        "endLine": 40,
+        "endChar": 5
+      },
+      "revId": "5886014aed2f07b5e817c57b7fbbb1010748d9ad",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
