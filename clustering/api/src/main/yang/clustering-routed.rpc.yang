@@ -1,0 +1,27 @@
+module clustering-routed-rpc {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:clustering:routed:rpc";
+    prefix "rrpc";
+
+    import clustering { prefix clst; }
+
+    revision "2016-07-22" {
+        description "Initial revision of global-rpc example model";
+    }
+
+    rpc routed-rpc {
+        description
+            "Definition of a 'routed' RPC. There is only a single
+            RPC service instance for the whole cluster registered
+            with MD-SAL, and requests are routed to this service
+            instance from any node in the cluster.";
+
+        input {
+            uses clst:rpc-input;
+        }
+
+        output {
+            uses clst:rpc-output;
+        }
+    }
+}
