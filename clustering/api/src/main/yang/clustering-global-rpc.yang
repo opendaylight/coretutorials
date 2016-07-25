@@ -1,0 +1,31 @@
+module clustering-global-rpc {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:clustering:global:rpc";
+    prefix "grpc";
+
+    import clustering { prefix clst; }
+
+    revision "2016-07-22" {
+        description "Initial revision of global-rpc example model";
+    }
+
+    rpc global-rpc {
+        description
+            "Definition of an example global RPC in the clustering Singleton
+            Project. The Clustering Singleton Service determines a Leader node
+            for the service and a global RPC service instance is instantiated
+            on the Leader. The is a single instance of the global RPC service
+            running on the Leader. When the Leader moves to a different node,
+            the current instance is shut down and a new instance is created on
+            the new Leader. Invocation of this service on a Follower node will
+            fail";
+
+        input {
+            uses clst:rpc-input;
+        }
+
+        output {
+            uses clst:rpc-output;
+        }
+    }
+}
