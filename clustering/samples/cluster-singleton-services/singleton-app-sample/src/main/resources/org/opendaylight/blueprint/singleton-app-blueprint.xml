@@ -26,7 +26,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
 
 
   <bean id="provider"
-    class="clustering.impl.ClusteringProvider"
+    class="org.opendaylight.coretutorials.clustering.SingletonAppSampleProvider"
     init-method="init" destroy-method="close">
     <argument ref="dataBroker" />
     <argument ref="rpcRegistry" />

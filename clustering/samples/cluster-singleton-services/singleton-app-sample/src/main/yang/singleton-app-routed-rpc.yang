@@ -1,0 +1,31 @@
+// Contents of "singleton-app-routed-rpc"
+module singleton-app-routed-rpc {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:coretutorials:singleton-app-routed-rpc";
+    prefix "singleton-app-rpc";
+
+    import clustering-rpc-common { prefix rpc-common; revision-date 2016-07-22; }
+
+    revision "2016-07-22" {
+        description "Initial revision of global-rpc example model";
+    }
+
+    rpc routed-singleton-app-rpc {
+        description
+            "Definition of an example routed RPC in the clustering Singleton
+            Project. The Clustering Singleton Service determines a Leader node
+            for the service and a routed RPC service instance is instantiated
+            on the Leader. The is a single instance of the routed RPC service
+            running on the Leader. When the Leader moves to a different node,
+            the current instance is shut down and a new instance is created on
+            the new Leader.";
+
+        input {
+            uses rpc-common:routed-rpc-input;
+        }
+
+        output {
+            uses rpc-common:rpc-output;
+        }
+    }
+}

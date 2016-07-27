@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package clustering.impl;
+package org.opendaylight.coretutorials.clustering.commons;
 
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
