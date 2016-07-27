@@ -33,13 +33,17 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   </scm>
 
   <modules>
-    <module>api</module>
-    <module>impl</module>
+    <!-- karaf infra presentation project -->
     <module>karaf</module>
+    <!-- clustering sample projects features -->
     <module>features</module>
-    <module>artifacts</module>
-    <module>cli</module>
-    <!-- <module>it</module> -->
+    <!-- project commons modules -->
+    <module>samples/commons/artifacts</module>
+    <module>samples/commons/cli</module>
+    <!-- project model modules -->
+    <module>samples/model/model-rpc</module>
+    <!-- cluster-singleton-service samples -->
+    <module>samples/cluster-singleton-services/singleton-app-sample</module>
   </modules>
 
   <!-- DO NOT install or deploy the repo root pom as it's only needed to initiate a build -->
