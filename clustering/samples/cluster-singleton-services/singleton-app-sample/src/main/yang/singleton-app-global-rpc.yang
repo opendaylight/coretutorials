@@ -1,15 +1,16 @@
-module clustering-global-rpc {
+// Contents of "singleton-app-global-rpc"
+module singleton-app-global-rpc {
     yang-version 1;
-    namespace "urn:opendaylight:params:xml:ns:yang:clustering:global:rpc";
-    prefix "grpc";
+    namespace "urn:opendaylight:params:xml:ns:yang:coretutorials:singleton-app-global-rpc";
+    prefix "singleton-app-global-rpc";
 
-    import clustering { prefix clst; }
+    import clustering-rpc-common { prefix rpc-common; revision-date 2016-07-22; }
 
     revision "2016-07-22" {
         description "Initial revision of global-rpc example model";
     }
 
-    rpc global-rpc {
+    rpc global-singleton-app-rpc {
         description
             "Definition of an example global RPC in the clustering Singleton
             Project. The Clustering Singleton Service determines a Leader node
@@ -21,11 +22,11 @@ module clustering-global-rpc {
             fail";
 
         input {
-            uses clst:rpc-input;
+            uses rpc-common:rpc-input;
         }
 
         output {
-            uses clst:rpc-output;
+            uses rpc-common:rpc-output;
         }
     }
 }

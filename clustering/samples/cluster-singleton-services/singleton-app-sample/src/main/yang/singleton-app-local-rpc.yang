@@ -1,26 +1,27 @@
-module clustering-local-rpc {
+// Contents of "singleton-app-local-rpc"
+module singleton-app-local-rpc {
     yang-version 1;
-    namespace "urn:opendaylight:params:xml:ns:yang:clustering:local:rpc";
-    prefix "clst";
+    namespace "urn:opendaylight:params:xml:ns:yang:coretutorials:singleton-app-local-rpc";
+    prefix "singleton-app-local-rpc";
 
-    import clustering { prefix lclst; }
+    import clustering-rpc-common { prefix rpc-common; revision-date 2016-07-22; }
 
     revision "2016-07-22" {
         description "Initial revision of global-rpc example model";
     }
 
-    rpc local-rpc {
+    rpc local-singleton-app-rpc {
         description
             "Definition of a 'node-local' RPC. There is one Local RPC
             instance registered with MD-SAL for each node in the cluster.
             RPC calls are always routed to the local instance.";
 
         input {
-            uses lclst:rpc-input;
+            uses rpc-common:rpc-input;
         }
 
         output {
-            uses lclst:rpc-output;
+            uses rpc-common:rpc-output;
         }
     }
 }
