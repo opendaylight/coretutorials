@@ -1,0 +1,45 @@
+// Contents of "singleton-app-confsubsyst"
+module singleton-app-confsubsyst {
+    namespace "urn:opendaylight:params:xml:ns:yang:coretutorials:singleton-app-confsubsyst";
+    prefix "singleton-app-confsubsyst";
+
+    import config { prefix config; revision-date 2013-04-05; }
+    import cluster-singleton-service-spi { prefix css-spi; revision-date 2016-07-18; }
+    import opendaylight-md-sal-binding { prefix mdsal; revision-date 2013-10-28; }
+
+    description "MD-SAL ClusterSingletonService application sample";
+
+    revision 2016-07-27 {
+        description "Initial revision";
+    }
+
+    identity config-subsystem-application-sample {
+        base config:module-type;
+        config:java-name-prefix ConfigSubsystemApplication;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case config-subsystem-application-sample {
+            when "/config:modules/config:module/config:type = 'config-subsystem-application-sample'";
+
+            container cluster-singleton-service-provider {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity css-spi:cluster-singleton-service;
+                    }
+                }
+            }
+
+            container rpc-registry {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity mdsal:binding-rpc-registry;
+                    }
+                }
+            }
+        }
+    }
+
+}
