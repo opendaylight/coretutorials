@@ -1,0 +1,25 @@
+// Contents of "singleton-app-css-local-rpc"
+module singleton-app-css-local-rpc {
+    namespace "urn:opendaylight:params:xml:ns:yang:coretutorials:singleton-app-css-local-rpc";
+    prefix "singleton-rpc-local-rpc";
+
+    import clustering-rpc-common { prefix rpc-common; revision-date 2016-07-22; }
+
+    revision 2016-07-27 {
+        description "Initial revision";
+    }
+
+    rpc local-singleton-app-css-rpc {
+        description
+            "Definition of a 'node-local' RPC. There is one RPC instance
+            registered with MD-SAL for each node in the cluster.";
+
+        input {
+            uses rpc-common:rpc-input;
+        }
+
+        output {
+            uses rpc-common:rpc-output;
+        }
+    }
+}

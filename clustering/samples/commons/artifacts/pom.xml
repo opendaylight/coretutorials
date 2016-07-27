@@ -36,6 +36,11 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>singleton-app-sample-confsubsyst</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>singleton-rpc-sample</artifactId>
         <version>${project.version}</version>
       </dependency>

@@ -1,0 +1,26 @@
+// Contents of "singleton-app-css-global-rpc"
+module singleton-app-css-global-rpc {
+    namespace "urn:opendaylight:params:xml:ns:yang:coretutorials:singleton-app-css-global-rpc";
+    prefix "singleton-app-css-global-rpc";
+
+    import clustering-rpc-common { prefix rpc-common; revision-date 2016-07-22; }
+
+    revision 2016-07-27 {
+        description "Initial revision";
+    }
+
+    rpc global-singleton-app-css-rpc {
+        description
+            "Definition of a 'global' RPC. There is only a single
+            RPC service instance for the whole cluster registered
+            with MD-SAL.";
+
+        input {
+            uses rpc-common:rpc-input;
+        }
+
+        output {
+            uses rpc-common:rpc-output;
+        }
+    }
+}

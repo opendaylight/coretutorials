@@ -25,6 +25,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <feature version='${project.version}'>odl-clustering-api</feature>
     <bundle>mvn:org.opendaylight.coretutorials/singleton-app-sample/{{VERSION}}</bundle>
     <bundle>mvn:org.opendaylight.coretutorials/singleton-rpc-sample/{{VERSION}}</bundle>
+    <bundle>mvn:org.opendaylight.coretutorials/singleton-app-sample-confsubsyst/{{VERSION}}</bundle>
   </feature>
   <feature name='odl-clustering-rest' version='${project.version}' description='OpenDaylight :: clustering :: REST'>
     <feature version="${project.version}">odl-clustering</feature>
