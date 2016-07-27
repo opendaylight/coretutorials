@@ -1,10 +1,24 @@
-module clustering {
+module clustering-rpc-common {
     yang-version 1;
-    namespace "urn:opendaylight:params:xml:ns:yang:clustering:commons";
+    namespace "urn:opendaylight:params:xml:ns:yang:coretutorials:common:clustering:commons";
     prefix "clst";
+
+    import yang-ext { prefix ext; revision-date 2013-07-09; }
 
     revision "2016-07-22" {
         description "Initial revision of global-rpc example model";
+    }
+
+    identity routed-rpc-context {
+        description "Test Routed RPC Context";
+    }
+
+    list routed-rpc-member {
+        config false;
+        leaf name {
+            type string;
+        }
+        key "name";
     }
 
     grouping rpc-input {
@@ -56,5 +70,13 @@ module clustering {
                 "List of IP addresses on all interfaces of the host
                 where the JVM runs";
         }
+    }
+
+    grouping routed-rpc-input {
+        leaf route {
+            type instance-identifier;
+            ext:context-reference routed-rpc-context;
+        }
+        uses rpc-input;
     }
 }

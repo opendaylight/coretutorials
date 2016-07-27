@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package clustering.impl;
+package org.opendaylight.coretutorials.clustering;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
@@ -16,16 +16,17 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RpcRegistration;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.coretutorials.clustering.commons.HostInformation;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.global.rpc.rev160722.ClusteringGlobalRpcService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.local.rpc.rev160722.ClusteringLocalRpcService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.routed.rpc.rev160722.ClusteringRoutedRpcService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.routed.rpc.rev160722.RoutedRpcContext;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.routed.rpc.rev160722.RpcMember;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.routed.rpc.rev160722.RpcMemberKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.coretutorials.common.clustering.commons.rev160722.RoutedRpcContext;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.coretutorials.common.clustering.commons.rev160722.RoutedRpcMember;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.coretutorials.common.clustering.commons.rev160722.RoutedRpcMemberKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.coretutorials.singleton.app.global.rpc.rev160727.SingletonAppGlobalRpcService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.coretutorials.singleton.app.local.rpc.rev160727.SingletonAppLocalRpcService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.coretutorials.singleton.app.routed.rpc.rev160727.SingletonAppRoutedRpcService;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,11 +35,12 @@ import org.slf4j.LoggerFactory;
  * @author jmedved
  *
  */
-public class ClusteringProvider implements ClusterSingletonService {
+public class SingletonAppSampleProvider implements ClusterSingletonService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ClusteringProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SingletonAppSampleProvider.class);
 
-    private static final ServiceGroupIdentifier IDENT = ServiceGroupIdentifier.create("Brm");
+    private static final ServiceGroupIdentifier IDENT = ServiceGroupIdentifier
+            .create(SingletonAppSampleProvider.class.getName());
 
     // References to MD-SAL Infrastructure services, initialized in the constructor
     private final DataBroker dataBroker;
@@ -48,11 +50,11 @@ public class ClusteringProvider implements ClusterSingletonService {
     private final HostInformation hostInfo = new HostInformation();
 
     // Service registrations, added/deleted at various points of the controller lifecycle
-    private RpcRegistration<ClusteringGlobalRpcService> globalRpcServiceReg;
-    private RoutedRpcRegistration<ClusteringRoutedRpcService> routedRpcServiceReg;
-    private RpcRegistration<ClusteringLocalRpcService> localRpcServiceReg;
+    private RpcRegistration<SingletonAppGlobalRpcService> globalRpcServiceReg;
+    private RoutedRpcRegistration<SingletonAppRoutedRpcService> routedRpcServiceReg;
+    private RpcRegistration<SingletonAppLocalRpcService> localRpcServiceReg;
 
-    private ClusteringLocalRpcService localRpcServiceImpl;
+    private SingletonAppLocalRpcService localRpcServiceImpl;
 
     private ClusterSingletonServiceRegistration cssRegistration;
 
@@ -63,7 +65,7 @@ public class ClusteringProvider implements ClusterSingletonService {
      *                                    register to receive Notifications
      * @param clusterSingletonServiceProvider: reference to MD-SAL Cluster Singleton Service
      */
-    public ClusteringProvider(final DataBroker dataBroker,
+    public SingletonAppSampleProvider(final DataBroker dataBroker,
                               final RpcProviderRegistry rpcProviderRegistry,
             final NotificationPublishService notificationPublishService,
             final ClusterSingletonServiceProvider clusterSingletonServiceProvider) {
@@ -83,8 +85,8 @@ public class ClusteringProvider implements ClusterSingletonService {
 
         localRpcServiceImpl = new LocalRpcServiceImpl(hostInfo);
 
-        localRpcServiceReg =
-                rpcProviderRegistry.addRpcImplementation(ClusteringLocalRpcService.class, localRpcServiceImpl);
+        localRpcServiceReg = rpcProviderRegistry.addRpcImplementation(SingletonAppLocalRpcService.class,
+                localRpcServiceImpl);
     }
 
     /**
@@ -122,11 +124,15 @@ public class ClusteringProvider implements ClusterSingletonService {
                 "Unexpected state: we have active GlobalRpcServiceRegistration");
         Preconditions.checkState(routedRpcServiceReg == null,
                 "Unexpected state: we have active RoutedRpcServiceRegistration");
-        globalRpcServiceReg = rpcProviderRegistry.addRpcImplementation(ClusteringGlobalRpcService.class, new GlobalRpcServiceImpl(hostInfo));
-        routedRpcServiceReg = rpcProviderRegistry.addRoutedRpcImplementation(ClusteringRoutedRpcService.class,
+        globalRpcServiceReg = rpcProviderRegistry.addRpcImplementation(SingletonAppGlobalRpcService.class,
+                new GlobalRpcServiceImpl(hostInfo));
+        routedRpcServiceReg = rpcProviderRegistry.addRoutedRpcImplementation(SingletonAppRoutedRpcService.class,
                 new RoutedRpcServiceImpl(hostInfo));
+        /*
+         * so route param has to contain /clustering-rpc-common:routed-rpc-member[clustering-rpc-common:name="rpc-key"]
+         */
         routedRpcServiceReg.registerPath(RoutedRpcContext.class,
-                InstanceIdentifier.builder(RpcMember.class, new RpcMemberKey("rpc-key")).build());
+                InstanceIdentifier.builder(RoutedRpcMember.class, new RoutedRpcMemberKey("rpc-key")).build());
     }
 
     @Override
@@ -138,7 +144,7 @@ public class ClusteringProvider implements ClusterSingletonService {
         }
         if (routedRpcServiceReg != null) {
             routedRpcServiceReg.unregisterPath(RoutedRpcContext.class,
-                    InstanceIdentifier.builder(RpcMember.class, new RpcMemberKey("rpc-key")).build());
+                    InstanceIdentifier.builder(RoutedRpcMember.class, new RoutedRpcMemberKey("rpc-key")).build());
             routedRpcServiceReg.close();
             routedRpcServiceReg = null;
         }

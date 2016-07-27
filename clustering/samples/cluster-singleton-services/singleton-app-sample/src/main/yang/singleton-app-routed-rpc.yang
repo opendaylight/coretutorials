@@ -1,0 +1,27 @@
+// Contents of "singleton-app-routed-rpc"
+module singleton-app-routed-rpc {
+    namespace "urn:opendaylight:params:xml:ns:yang:coretutorials:singleton-app-routed-rpc";
+    prefix "singleton-app-rpc";
+
+    import clustering-rpc-common { prefix rpc-common; revision-date 2016-07-22; }
+
+    revision 2016-07-27 {
+        description "Initial revision";
+    }
+
+    rpc routed-singleton-app-rpc {
+        description
+            "Definition of a 'routed' RPC. There is only a single
+            RPC service instance for the whole cluster registered
+            with MD-SAL, and requests are routed to this service
+            instance from any node in the cluster.";
+
+        input {
+            uses rpc-common:routed-rpc-input;
+        }
+
+        output {
+            uses rpc-common:rpc-output;
+        }
+    }
+}
