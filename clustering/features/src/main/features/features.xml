@@ -17,13 +17,13 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <repository>mvn:org.opendaylight.dlux/features-dlux/{{VERSION}}/xml/features</repository>
   <feature name='odl-clustering-api' version='${project.version}' description='OpenDaylight :: clustering :: api'>
     <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>
-    <bundle>mvn:org.opendaylight.coretutorials/clustering-api/{{VERSION}}</bundle>
+    <bundle>mvn:org.opendaylight.coretutorials/clustering-model-rpc/{{VERSION}}</bundle>
   </feature>
   <feature name='odl-clustering' version='${project.version}' description='OpenDaylight :: clustering'>
     <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
     <feature version='${mdsal.version}'>odl-mdsal-clustering</feature>
     <feature version='${project.version}'>odl-clustering-api</feature>
-    <bundle>mvn:org.opendaylight.coretutorials/clustering-impl/{{VERSION}}</bundle>
+    <bundle>mvn:org.opendaylight.coretutorials/singleton-app-sample/{{VERSION}}</bundle>
   </feature>
   <feature name='odl-clustering-rest' version='${project.version}' description='OpenDaylight :: clustering :: REST'>
     <feature version="${project.version}">odl-clustering</feature>
