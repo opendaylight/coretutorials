@@ -44,6 +44,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
     <module>samples/model/model-rpc</module>
     <!-- cluster-singleton-service samples -->
     <module>samples/cluster-singleton-services/singleton-app-sample</module>
+    <module>samples/cluster-singleton-services/singleton-rpc-sample</module>
   </modules>
 
   <!-- DO NOT install or deploy the repo root pom as it's only needed to initiate a build -->
