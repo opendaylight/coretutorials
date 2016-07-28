@@ -1,0 +1,28 @@
+// Contents of "sample-topology-discovery-rpc"
+module sample-topology-discovery-rpc {
+    namespace "urn:opendaylight:params:xml:ns:yang:coretutorials:hs:sample-topology-discovery-rpc";
+    prefix "sample-topology-discovery-rpc";
+
+    import yang-ext { prefix ext; revision-date 2013-07-09; }
+    import opendaylight-inventory {prefix inv; revision-date 2013-08-19;}
+
+    revision 2016-07-28 {
+        description "Initial revision";
+    }
+
+    rpc sample-topo-discovery-rpc {
+
+        input {
+            leaf node {
+                ext:context-reference "inv:node-context";
+                type inv:node-ref;
+            }
+        }
+
+        output {
+            leaf report {
+                type boolean;
+            }
+        }
+    }
+}

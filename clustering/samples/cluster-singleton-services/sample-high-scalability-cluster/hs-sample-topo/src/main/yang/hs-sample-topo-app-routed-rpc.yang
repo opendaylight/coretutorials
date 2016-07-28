@@ -1,0 +1,32 @@
+// Contents of "hs-sample-topo-app-routed-rpc"
+module hs-sample-topo-app-routed-rpc {
+    namespace "urn:opendaylight:params:xml:ns:yang:coretutorials:hs-sample-topo-app-routed-rpc";
+    prefix "hs-sample-topo-app-routed-rpc";
+
+    import clustering-rpc-common { prefix rpc-common; revision-date 2016-07-22; }
+    import opendaylight-inventory {prefix inv; revision-date 2013-08-19;}
+
+    revision 2016-07-27 {
+        description "Initial revision";
+    }
+
+    rpc hs-sample-topo-app-rpc {
+        description
+            "Definition of a 'routed' RPC. There is only a single
+            RPC service instance for the whole cluster registered
+            with MD-SAL, and requests are routed to this service
+            instance from any node in the cluster.";
+
+        input {
+            leaf node {
+                ext:context-reference "inv:node-context";
+                type inv:node-ref;
+            }
+            uses rpc-common:rpc-input;
+        }
+
+        output {
+            uses rpc-common:rpc-output;
+        }
+    }
+}
