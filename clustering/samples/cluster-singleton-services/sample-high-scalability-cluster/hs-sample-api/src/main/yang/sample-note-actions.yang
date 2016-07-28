@@ -1,0 +1,44 @@
+// Contents of "sample-note-actions"
+module sample-note-actions {
+    namespace "urn:opendaylight:params:xml:ns:yang:coretutorials:hs:sample-note-actions";
+    prefix "sample-note-actions";
+
+    import yang-ext { prefix ext; revision-date 2013-07-09; }
+    import opendaylight-inventory {prefix inv; revision-date 2013-08-19;}
+    import clustering-sample-node-common { prefix csnc; revision-date 2016-07-22; }
+
+    revision 2016-07-28 {
+        description "Initial revision";
+    }
+
+    rpc add-sample-note {
+        input {
+            leaf node {
+                ext:context-reference "inv:node-context";
+                type inv:node-ref;
+            }
+            uses csnc:sample-sub-item-def;
+        }
+        output {
+            leaf report {
+                type boolean;
+            }
+        }
+    }
+
+    rpc remove-sample-note {
+        input {
+            leaf node {
+                ext:context-reference "inv:node-context";
+                type inv:node-ref;
+            }
+            uses csnc:sample-sub-item-def;
+        }
+        output {
+            leaf report {
+                type boolean;
+            }
+        }
+    }
+
+}

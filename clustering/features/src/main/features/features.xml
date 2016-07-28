@@ -18,6 +18,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <feature name='odl-clustering-api' version='${project.version}' description='OpenDaylight :: clustering :: api'>
     <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>
     <bundle>mvn:org.opendaylight.coretutorials/clustering-model-rpc/{{VERSION}}</bundle>
+    <bundle>mvn:org.opendaylight.coretutorials/clustering-sample-node-model/{{VERSION}}</bundle>
   </feature>
   <feature name='odl-clustering' version='${project.version}' description='OpenDaylight :: clustering'>
     <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
@@ -25,6 +26,10 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <feature version='${project.version}'>odl-clustering-api</feature>
     <bundle>mvn:org.opendaylight.coretutorials/singleton-app-sample/{{VERSION}}</bundle>
     <bundle>mvn:org.opendaylight.coretutorials/singleton-rpc-sample/{{VERSION}}</bundle>
+    <bundle>mvn:org.opendaylight.coretutorials/hs-sample-api/{{VERSION}}</bundle>
+    <bundle>mvn:org.opendaylight.coretutorials/hs-sample-impl/{{VERSION}}</bundle>
+    <bundle>mvn:org.opendaylight.coretutorials/hs-sample-frm/{{VERSION}}</bundle>
+    <bundle>mvn:org.opendaylight.coretutorials/hs-sample-topo/{{VERSION}}</bundle>
   </feature>
   <feature name='odl-clustering-rest' version='${project.version}' description='OpenDaylight :: clustering :: REST'>
     <feature version="${project.version}">odl-clustering</feature>

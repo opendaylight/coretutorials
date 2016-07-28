@@ -1,0 +1,52 @@
+module clustering-sample-node-common {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:coretutorials:common:clustering:sample-node-common";
+    prefix "sample-node-common";
+
+    import opendaylight-inventory {prefix inv; revision-date 2013-08-19;}
+    import ietf-inet-types {prefix inet; revision-date "2013-07-15";}
+    import yang-ext { prefix ext; revision-date 2013-07-09; }
+
+    revision "2016-07-22" {
+        description "Initial revision of sample-node-common example model";
+    }
+
+    grouping sample-sub-item-def {
+      description "Sample sub list item structure of Sample node";
+      list sub-items {
+        leaf note {
+          type string;
+        }
+        leaf noteId {
+          type string;
+        }
+        key "noteId";
+      }
+    }
+
+    grouping sample-node-def {
+      description "Sample node structure = fake_device";
+      leaf manufacturer {
+        type string;
+      }
+      leaf hardware {
+          type string;
+      }
+      leaf software {
+          type string;
+      }
+      leaf serial-number {
+          type string;
+      }
+      leaf description {
+          type string;
+      }
+      uses sample-sub-item-def;
+    }
+
+    augment "/inv:nodes/inv:node" {
+      ext:augment-identifier "sample-node";
+      description "Top attach point of sample node into node inventory tree.";
+      uses sample-node-def;
+    }
+}
