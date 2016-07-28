@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "9a561d44_ba1f806b",
+        "filename": "clustering/impl/src/main/java/clustering/impl/ClusteringProvider.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 27
+      },
+      "writtenOn": "2016-07-28T21:38:39Z",
+      "side": 1,
+      "message": "This class is needed, as you need something that will catch the Blueprint init() and close(). I ant to do the RPC regitration programmatically, not from Blueprint, since this will be changed to use the clusterSingletonService",
+      "parentUuid": "9a561d44_daf07469",
+      "revId": "5886014aed2f07b5e817c57b7fbbb1010748d9ad",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a561d44_1ae78cad",
         "filename": "clustering/it/src/test/java/clustering/it/ClusteringIT.java",
         "patchSetId": 6
