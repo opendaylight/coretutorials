@@ -1,0 +1,26 @@
+module local-rpc {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:clustering:singleton:simple:local:rpc";
+    prefix "clst";
+
+    import commons { prefix cmns; }
+
+    revision "2016-07-22" {
+        description "Initial revision of global-rpc example model";
+    }
+
+    rpc local-rpc {
+        description
+            "Definition of a 'node-local' RPC. There is one Local RPC
+            instance registered with MD-SAL for each node in the cluster.
+            RPC calls are always routed to the local instance.";
+
+        input {
+            uses cmns:rpc-input;
+        }
+
+        output {
+            uses cmns:rpc-output;
+        }
+    }
+}
