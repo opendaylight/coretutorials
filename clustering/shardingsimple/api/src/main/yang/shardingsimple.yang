@@ -1,0 +1,9 @@
+module shardingsimple {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:shardingsimple";
+    prefix "shardingsimple";
+
+    revision "2015-01-05" {
+        description "Initial revision of shardingsimple model";
+    }
+}
