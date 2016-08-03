@@ -1,0 +1,27 @@
+// Contents of "spi-rpc-member-identification"
+module spi-rpc-member-identification {
+    namespace "urn:opendaylight:params:xml:ns:yang:singletonhs:spi:rpc-member-identification";
+    prefix "rpc-member-identification";
+
+    import singletonhs-rpc-member-identification { prefix member-ident; revision-date 2016-07-22; }
+
+    revision 2016-07-27 {
+        description "Initial revision";
+    }
+
+    rpc spi-member-identification-rpc {
+        description
+            "Definition of a 'routed' RPC. There is only a single
+            RPC service instance for the whole cluster registered
+            with MD-SAL, and requests are routed to this service
+            instance from any node in the cluster.";
+
+        input {
+            uses member-ident:routed-rpc-input;
+        }
+
+        output {
+            uses member-ident:rpc-output;
+        }
+    }
+}

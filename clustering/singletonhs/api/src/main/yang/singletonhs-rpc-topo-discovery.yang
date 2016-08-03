@@ -1,0 +1,28 @@
+// Contents of "singletonhs-rpc-topo-discovery"
+module singletonhs-rpc-topo-discovery {
+    namespace "urn:opendaylight:params:xml:ns:yang:singletonhs:rpc-topo-discovery";
+    prefix "rpc-topo-discovery";
+
+    import yang-ext { prefix ext; revision-date 2013-07-09; }
+    import singletonhs-sample-node { prefix ssn; revision-date 2016-07-22; }
+
+    revision 2016-07-28 {
+        description "Initial revision";
+    }
+
+    rpc sample-topo-discovery-rpc {
+
+        input {
+            leaf node {
+                ext:context-reference "ssn:routed-sample-node-context";
+                type ssn:sample-node-ref;
+            }
+        }
+
+        output {
+            leaf report {
+                type boolean;
+            }
+        }
+    }
+}

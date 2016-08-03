@@ -1,0 +1,85 @@
+module singletonhs-sample-node {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:singletonhs:sample-node";
+    prefix "sample-node";
+
+    import network-topology { prefix nt; revision-date 2013-10-21; }
+    import ietf-inet-types {prefix inet; revision-date 2013-07-15;}
+    import yang-ext { prefix ext; revision-date 2013-07-09; }
+
+    revision "2016-07-22" {
+        description "Initial revision of sample-node-common example model";
+    }
+
+    identity routed-sample-node-context {
+        description "Test Routed RPC Context";
+    }
+
+    typedef sample-node-ref {
+        type instance-identifier;
+    }
+    
+    typedef status {
+        type enumeration {
+            enum "CONNECTING";
+            enum "CONNECTED";
+            enum "DISCONNECTING";
+            enum "DISCONNECTED";
+            enum "UNABLE-TO-CONNECT";
+        }
+    }
+
+    grouping topology-sample-type {
+        container topology-sample {
+            presence "Indicates a SampleNode-aware topology";
+        }
+    }
+
+    grouping sample-sub-item-def {
+        description "Sample sub list item structure of Sample node";
+        list sub-items {
+          leaf note {
+            type string;
+          }
+          leaf noteId {
+            type string;
+          }
+          key "noteId";
+        }
+      }
+
+    grouping sample-node-def {
+        description "Data present in a fake Sample device";
+        leaf manufacturer {
+            type string;
+        }
+        leaf hardware {
+            type string;
+        }
+        leaf software {
+            type string;
+        }
+        leaf serial-number {
+            type string;
+        }
+        leaf description {
+            type string;
+        }
+        leaf status {
+            type status;
+            config false;
+        }
+        uses sample-sub-item-def;
+    }
+
+    augment "/nt:network-topology/nt:topology/nt:topology-types" {
+        ext:augment-identifier "topology-types-augmentation";
+        uses topology-sample-type;
+    }
+
+    augment "/nt:network-topology/nt:topology/nt:node" {
+        ext:augment-identifier "sample-node";
+        description "Top attach point of sample node into node topology tree.";
+        uses sample-node-def;
+    }
+}

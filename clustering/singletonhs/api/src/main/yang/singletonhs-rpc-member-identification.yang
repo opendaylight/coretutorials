@@ -1,0 +1,79 @@
+module singletonhs-rpc-member-identification {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:singletonhs:rpc-member-identification";
+    prefix "rpc-member-identification";
+
+    import yang-ext { prefix ext; revision-date 2013-07-09; }
+    import singletonhs-sample-node { prefix ssn; revision-date 2016-07-22; }
+
+    revision "2016-07-22" {
+        description "Initial revision of global-rpc example model";
+    }
+
+    list routed-rpc-member {
+        config false;
+        leaf name {
+            type string;
+        }
+        key "name";
+    }
+
+    grouping rpc-input {
+        description
+            "Common definition for the inputs of all example RPC
+            services.";
+
+        leaf input-param {
+            type string;
+            description
+                "Input parameter (optional)";
+        }
+    }
+
+    grouping rpc-output {
+        description
+            "Common definition for the outputs of all example RPC
+            services.";
+
+        leaf output-param {
+            type string;
+            description
+                "Output parameter (mirros the input parameter entered
+                by the user";
+        }
+
+        leaf invocations {
+            type int32;
+            description
+                "Service invocation counter; incremented each time
+                the service is invoked.";
+        }
+
+        leaf host-name {
+            type string;
+            description
+                "Hostname of the host where the JVM runs";
+        }
+
+        leaf jvm-uptime {
+            type int64;
+            description
+                "The time (in ms) for how long the JVM was up";
+        }
+
+        leaf-list ip-address {
+            type string;
+            description
+                "List of IP addresses on all interfaces of the host
+                where the JVM runs";
+        }
+    }
+
+    grouping routed-rpc-input {
+        leaf node {
+            ext:context-reference "ssn:routed-sample-node-context";
+            type ssn:sample-node-ref;
+        }
+        uses rpc-input;
+    }
+}
