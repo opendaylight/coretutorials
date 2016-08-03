@@ -6,4 +6,5 @@ module singletonhs {
     revision "2015-01-05" {
         description "Initial revision of singletonhs model";
     }
+
 }

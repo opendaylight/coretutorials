@@ -31,7 +31,17 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>singletonhs-impl</artifactId>
+        <artifactId>singletonhs-spi</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>singletonhs-topo</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>singletonhs-data-mng</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
