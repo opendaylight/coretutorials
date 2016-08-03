@@ -19,10 +19,16 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>
     <bundle>mvn:org.opendaylight.coretutorials.clustering/singletonhs-api/{{VERSION}}</bundle>
   </feature>
-  <feature name='odl-singletonhs' version='${project.version}' description='OpenDaylight :: singletonhs'>
+  <feature name='odl-singletonhs-spi' version='${project.version}' description='OpenDaylight :: singletonhs'>
     <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
     <feature version='${project.version}'>odl-singletonhs-api</feature>
-    <bundle>mvn:org.opendaylight.coretutorials.clustering/singletonhs-impl/{{VERSION}}</bundle>
+    <bundle>mvn:org.opendaylight.coretutorials.clustering/singletonhs-spi/{{VERSION}}</bundle>
+  </feature>
+  <feature name='odl-singletonhs' version='${project.version}' description='OpenDaylight :: singletonhs'>
+    <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
+    <feature version='${project.version}'>odl-singletonhs-spi</feature>
+    <bundle>mvn:org.opendaylight.coretutorials.clustering/singletonhs-topo/{{VERSION}}</bundle>
+    <bundle>mvn:org.opendaylight.coretutorials.clustering/singletonhs-data-mng/{{VERSION}}</bundle>
   </feature>
   <feature name='odl-singletonhs-rest' version='${project.version}' description='OpenDaylight :: singletonhs :: REST'>
     <feature version="${project.version}">odl-singletonhs</feature>

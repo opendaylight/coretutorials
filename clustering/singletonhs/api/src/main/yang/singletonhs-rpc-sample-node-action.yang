@@ -1,0 +1,43 @@
+// Contents of "singletonhs-rpc-sample-node-action"
+module singletonhs-rpc-sample-node-action {
+    namespace "urn:opendaylight:params:xml:ns:yang:singletonhs:rpc-sample-node-action";
+    prefix "rpc-sample-node-action";
+
+    import yang-ext { prefix ext; revision-date 2013-07-09; }
+    import singletonhs-sample-node { prefix ssn; revision-date 2016-07-22; }
+
+    revision 2016-07-28 {
+        description "Initial revision";
+    }
+
+    rpc add-sample-note {
+        input {
+            leaf node {
+                ext:context-reference "ssn:routed-sample-node-context";
+            type ssn:sample-node-ref;
+            }
+            uses ssn:sample-sub-item-def;
+        }
+        output {
+            leaf report {
+                type boolean;
+            }
+        }
+    }
+
+    rpc remove-sample-note {
+        input {
+            leaf node {
+                ext:context-reference "ssn:routed-sample-node-context";
+                type ssn:sample-node-ref;
+            }
+            uses ssn:sample-sub-item-def;
+        }
+        output {
+            leaf report {
+                type boolean;
+            }
+        }
+    }
+
+}
