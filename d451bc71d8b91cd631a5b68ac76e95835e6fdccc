@@ -1,0 +1,8 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+1: Vaclav Demcak <vaclav.demcak@pantheon.sk>
+Code-Review+2: Jan Medved <jmedved@cisco.com>
+Submitted-by: Jan Medved <jmedved@cisco.com>
+Submitted-at: Fri, 05 Aug 2016 17:02:20 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/42939
+Project: coretutorials
+Branch: refs/heads/master
