@@ -21,17 +21,20 @@ function usage()
  Usage: $0 <seed_nodes_list>
   - seed_nodes_list: List of seed nodes, separated by comma or space.
 
- The script checks that the controller's actual IP address is in
- the seed_nodes_list.  When running this script on multiple  seed 
- nodes, keep the seed_node_list same on all nodes.
+ The script checks that one (any) of the the controller's active IP
+ addresses is present in the seed_nodes_list. When running this script
+ on multiple  seed nodes, keep the seed_node_list same on all nodes.
 
  Optionally, shards can be configured in a more granular way by
  modifying the file "custom_shard_configs.txt" in the same folder
- as this tool.  Please see that file for more details
+ as this tool.  Please see that file for more details.
+
+This script is currently limited to IPv4 addresses. If you have
+problems running this script, please use 'configure_cluster.sh'.
 
 EOF
 
-    exit -1
+    exit 1
 }
 
 
@@ -114,7 +117,7 @@ function modules_builder
 
 function get_index ()
 {
-    # Determine if the local IP address is in the CONTROLLER_LIST 
+    # Determine if the local IP address is in the CONTROLLER_LIST
     # and its index in the list. Return the index.
 
     local MY_IP=$1
@@ -125,10 +128,10 @@ function get_index ()
     for IP in ${IP_ADDRS[@]} ;
     do
         if [ "$MY_IP" == "$IP" ]; then
-	    echo "$COUNTER"
-	    return
-	fi
-	COUNTER=$[$COUNTER + 1]
+            echo "$COUNTER"
+            return
+        fi
+        COUNTER=$[$COUNTER + 1]
     done
     echo "$COUNTER"
 }
@@ -160,7 +163,7 @@ function get_cli_params
     # Get the local node's IP addresses
     LOCAL_IPS=$(get_local_ip_addresses)
 
-    for CONTROLLER_IP in ${LOCAL_IPS[@]} ; 
+    for CONTROLLER_IP in ${LOCAL_IPS[@]} ;
     do
         INDEX=$(get_index $CONTROLLER_IP ${CONTROLLERIPS[@]})
         if [ ${INDEX} -le ${#CONTROLLERIPS[@]} ] ; then

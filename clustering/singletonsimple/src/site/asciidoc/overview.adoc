@@ -1,0 +1,258 @@
+= Using the Clustering Singleton Service - a Simple Example
+
+The 'singletonsimple' application is a simple example that demonstrates the
+usage and capabilities of the MD-SAL ClusterSingletonService.
+
+The *ClusterSingletonService* is an MD-SAL service introduced in ODL Boron
+release that is intended to simplify creation of highly-available (HA)
+applications. It is intended for applications that need to have a single
+"active" (Leader) application instance and one or more "standby" (Follower)
+application instances in the cluster. *ClusterSingletonService* hides the
+complexity of the Entity Ownership Service (EOS) from applications and provides
+a simple API for an application instance to become Leader, or to transition
+from Follower to Leader or vice-versa. An application instance registers itself
+with the *ClusterSingletonService* as a candidate (EOS) entity, and is notified
+to activate itself if when it is elected a Leader. Similarly, a current Leader
+is notified to when leadership has been moved to a different leader.
+*ClusterSingletonService* ensures that there is only one Leader in the cluster
+ at any given time.
+
+*ClusterSingletonService* works for single applications or for applications
+groups, where multiple apps in a group share the same fate (i.e. the need to
+be failed over together to the same physical cluster node).
+
+==  Overview
+This tutorial contains 3 example RPC services that demonstrate the use
+of *ClusterSingletonService*:
+
+- *Local RPC:* an instance of the service is registered with
+  `RpcRegistrationService` at system startup; requests are always routed
+  to the local service instance. The service implementation is based on
+  MD-SAL Global RPCs (https://wiki.opendaylight.org/view/OpenDaylight_Controller:MD-SAL:RPC_Service_Types#Global_Service).
+
+- *Global RPC:* an instance of the service is registered at system
+  startup with `ClusteringSingletonService`, which notifies the
+  instance when it became the Leader. When the service instance becomes
+  the Leader, it registers itself with `RpcRegistrationService`. When
+  the service instance ceases being a Leader, it closes the RPC
+  registration. Note that there is a bug in Boron that will cause all
+  requests to a "global" RPC service to only be routed to the local
+  instance; if there is no local instance, the request will fail.
+  The service implementation is based on MD-SAL Global RPCs (https://wiki.opendaylight.org/view/OpenDaylight_Controller:MD-SAL:RPC_Service_Types#Global_Service).
+
+- *Routed RPC:* an instance of the service is registered at system
+  startup with `ClusteringSingletonService`, which notifies the instance
+  when it became the Leader. When the service instance becomes the
+  Leader, it registers itself with `RpcRegistrationService`. When the
+  service instance ceases being a Leader, it closes the RPC
+  registration. Note that unlike Global RPCs, service requests are
+  properly routed through the cluster, i.e. the service is accessible
+  from all nodes. The service uses MD-SAL Routed RPC in the
+  implementations. The service implementation is based on MD-SAL Routed RPCs (https://wiki.opendaylight.org/view/OpenDaylight_Controller:MD-SAL:RPC_Service_Types#Routed_Service).
+
+All three example services are designed to be tested through RESTCONF. Each
+service instance returns host information from the local host where it's
+running, so you can immediately see whether it's running on the node where the
+request was issued, or whether the service moved from one node to another.
+
+
+== Components & Building Blocks
+The tutorial is implemented as an ODL application generated from the MD-SAL
+Startup Project Archetype. Archetype version 1.2.0-SNAPSHOT was used to
+generate the app skeleton. The app structure is defined by the archetype, and
+it is as follows:
+
+    singletonsimple
+     |
+     +-- api
+     +-- artifacts
+     +-- cli
+     +-- features
+     +-- impl
+     +-- it
+     +-- karaf
+     +-- target
+     +-- src
+
+Most folders were not modified after they were created by the archetype;
+folders where code was added or modified are as follows:
+
+- `*api:*` Contains yang models defining the example service APIs
+
+- `*impl:*` contains the implementation of the example services, code /
+  configuration for wiring the example application into the system and code
+  that interacts with MD-SAL services (`ClusteringSingletonService` and
+  `RpcRegistrationService`).
+
+- `*src:*` contains this document
+
+- `*coretuorials/scripts:*` this folder is common for all clustering examples
+  and contains scripts for installation and configuration of a cluster test
+  bed.
+
+=== Service Models
+The yang models that contain the service definitions are located in
+`api/src/main/yang/`. There is one yang model that defines the input and
+output parameters for all RPCs (`commons.yang`). There is also a yang model
+that defines each example RPC service: `global-rpc.yang`, `local-rpc.yang`
+and `routed.rpc.yang`, respectively. In the running application, services
+can be invoked using the YangUI or Yangman tools.
+
+=== Service Implementations
+All the tutorial code (except for code generated from yang models) is located
+in `api/src/main/impl/`. This folder contains initialization code, app wiring
+and implementations of the example RPC services.
+
+==== Wiring and Initialization
+The app skeleton generated from the archetype uses ODL Blueprint implementation
+(https://wiki.opendaylight.org/view/Using_Blueprint)  to "wire" the app into
+ODL infrastructure (i.e. to inject ODL MD-SAL service dependencies into the
+app). The auto-generated app skeleton is by default injecting only the
+`DataBroker` service, so we had to extend the dependency injection to include
+the `RpcRegistrationService` and `ClusteringSingletonService` services. The
+`NotificationService` dependency is also included as an example, although
+notifications are not used in the tutorial app.
+
+The `src/main/resources/org/opendaylight/blueprint/impl-blueprint.xml` file
+was modified as follows:
+
+[source,xml]
+    ....
+    <reference id="rpcRegistry"
+        interface="org.opendaylight.controller.sal.binding.api.RpcProviderRegistry"/>
+    <reference id="notificationService"
+        interface="org.opendaylight.controller.md.sal.binding.api.NotificationPublishService"/>
+    <reference id="clusterSingletonService"
+        interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
+    ....
+    <bean id="provider"
+      class="singleton.simple.impl.SingletonSimpleProvider"
+      init-method="init" destroy-method="close">
+      <argument ref="dataBroker" />
+      <argument ref="rpcRegistry" />
+      <argument ref="notificationService" />
+      <argument ref="clusterSingletonService" />
+    </bean>
+----
+
+The constructor if the tutorial app provider (the `SingletonSimpleProvider`
+class) was modified to include the added MD-SAL services:
+
+[source,java]
+    public SingletonSimpleProvider(final DataBroker dataBroker,
+                             final RpcProviderRegistry rpcProviderRegistry,
+                             final NotificationPublishService notificationPublishService,
+                             final ClusterSingletonServiceProvider clusterSingletonServiceProvider) {
+        this.dataBroker = dataBroker;
+        this.rpcProviderRegistry = rpcProviderRegistry;
+        this.notificationPublishService = notificationPublishService;
+        this.clusterSingletonServiceProvider = clusterSingletonServiceProvider;
+    }
+----
+
+The `SingletonSimpleProvider` class (originally generated from the archetype)
+was modified to store references to the added MD-SAL services.
+
+Every application that wishes to use the Cluster Singleton Service must
+register itself with the service. In this example application, this is done
+in the `init()` function:
+
+[source,java]
+    public void init() {
+        ...
+        cssRegistration =
+            clusterSingletonServiceProvider.registerClusterSingletonService(this);
+        ...
+    }
+----
+
+Note that we are registering an instance of `SingletonSimpleProvider` with the
+MD-SAL Cluster Singleton Service (CSS). To interact with the MD-SAL Cluster
+Singleton Service, the auto-generated `SingletonSimpleProvider` class was
+extended to implement the `ClusteringSingletonService` API:
+
+[source,java]
+    public class SingletonSimpleProvider implements ClusterSingletonService {
+    public void instantiateServiceInstance() {
+        ...
+    }
+    public ListenableFuture<Void> closeServiceInstance() {
+        ...
+    }
+----
+
+==== Interacting with the Clustering Singleton Service
+After the initial registration, CSS will call the instance's
+`instantiateServiceInstance()` method to notify the instance that it became
+the Leader and the `closeServiceInstance()` method to notify it that Leader was
+moved to a different instance.
+
+In this example application, we register the local Global and Routed RPC
+service instances with the RPC when the app instance becomes the Leader, and
+close the registrations when Leadership was moved to a different instance, as
+shown in the following code snippet.
+
+[source,java]
+    public class SingletonSimpleProvider implements ClusterSingletonService {
+    ...
+    public void instantiateServiceInstance() {
+        ...
+        globalRpcServiceReg = rpcProviderRegistry.addRpcImplementation(
+            GlobalRpcService.class, new GlobalRpcServiceImpl(hostInfo));
+        ...
+        routedRpcServiceReg = rpcProviderRegistry.addRoutedRpcImplementation(
+            RoutedRpcService.class, new RoutedRpcServiceImpl(hostInfo));
+        routedRpcServiceReg.registerPath
+            (RoutedRpcContext.class, InstanceIdentifier.builder(
+                RpcMember.class, new RpcMemberKey("rpc-key")).build());
+    }
+    ...
+    public ListenableFuture<Void> closeServiceInstance() {
+        if (globalRpcServiceReg != null) {
+            globalRpcServiceReg.close();
+            globalRpcServiceReg = null;
+        }
+        ...
+        if (routedRpcServiceReg != null) {
+            routedRpcServiceReg.unregisterPath(RoutedRpcContext.class,
+                    InstanceIdentifier.builder(RpcMember.class,
+                           new RpcMemberKey("rpc-key")).build());
+            routedRpcServiceReg.close();
+            routedRpcServiceReg = null;
+        }
+    }
+----
+==== Example RPC Service Implementations
+The is an implementation class for every service: `LocalRpcServiceImpl`,
+`GlobalRpcServiceImpl`, and `RoutedRpcServiceImpl`. They all implement
+essentially the same RPC method, which is shown in the following code snippet
+for the `LocalRpcServiceImpl` class:
+[
+source,java]
+    public Future<RpcResult<LocalRpcOutput>> localRpc(LocalRpcInput input) {
+        final String outputString;
+        if (input == null) {
+            outputString = "";
+        } else {
+            outputString = input.getInputParam();
+        }
+        LocalRpcOutput output = new LocalRpcOutputBuilder()
+                                    .setOutputParam(outputString)
+                                    .setInvocations(rpcInvocations.incrementAndGet())
+                                    .setHostName(hostInfo.getHostName())
+                                    .setIpAddress(hostInfo.getIpAddresses())
+                                    .setJvmUptime(hostInfo.getJvmUptime())
+                                    .build();
+        return RpcResultBuilder.success(output).buildFuture();
+    }
+----
+
+In the method, a string entered by a user is copied from the input parameter
+to the output parameter; Also, local host info is added to the output
+parameter.
+
+== Testing the Example Services
+=== Installing and Configuring a 3-Node Cluster
+==== Install Scripts
+=== Using YangUI to Access Example Services
+Automatic install & cluster configuration.
