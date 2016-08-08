@@ -1,0 +1,23 @@
+- hosts: odl-cluster
+  remote_user: root
+
+  vars:
+    install_script: /opt/scripts/install_odl.sh
+    cluster_config: '172.17.0.2 172.17.0.3 172.17.0.4'
+    distro_name: singletonsimple-karaf-0.1.0-SNAPSHOT.zip
+    local_path: /Users/jmedved/Documents/ODL/Git/coretutorials/clustering/singletonsimple/karaf/target
+    remote_path: /opt
+  
+  tasks:
+    - name: test connection
+      ping:
+
+    - name: copy distro zip file to remote
+      copy: src={{ local_path }}/{{ distro_name }} dest={{ remote_path }}/{{ distro_name }}
+
+    - name: install image and configure cluster
+#       command: {{ install_script }}  -i "{{ distro_name }}"  -c {{ cluster_config }}
+      command: /opt/scripts/install_odl.sh -i singletonsimple-karaf-0.1.0-SNAPSHOT.zip -c "172.17.0.2 172.17.0.3 172.17.0.4"
+
+    - name: cleanup zip file on remote
+      file: path={{ remote_path }}/{{ distro_name }} state=absent
