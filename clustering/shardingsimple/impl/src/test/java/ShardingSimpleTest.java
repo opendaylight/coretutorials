@@ -43,7 +43,7 @@ public class ShardingSimpleTest {
         final ShardedDOMDataTree dataTreeShardingService = new ShardedDOMDataTree();
 
         final ShardingSimpleProvider shardingSimpleProvider =
-                new ShardingSimpleProvider(null, null, dataTreeShardingService, dataTreeShardingService, schemaService);
+                new ShardingSimpleProvider(dataTreeShardingService, dataTreeShardingService, schemaService);
         shardingSimpleProvider.init();
     }
 
