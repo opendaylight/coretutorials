@@ -1,0 +1,17 @@
+- hosts: odl-cluster
+  remote_user: root
+
+  vars:
+    distro_name: singletonsimple-karaf-0.1.0-SNAPSHOT.zip
+    local_path: /Users/jmedved/Documents/ODL/Git/coretutorials/clustering/singletonsimple/karaf/target
+    remote_path: /opt
+  
+  tasks:
+    - name: test connection
+      ping:
+
+    - name: copy distro zip file to remote
+      copy: src={{ local_path }}/{{ distro_name }} dest={{ remote_path }}/{{ distro_name }}
+
+  # - name: cleanup zip file on remote
+  #   file: path={{ remote_path }}/{{ distro_name }} state=absent

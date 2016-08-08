@@ -11,14 +11,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
   odl:use-default-for-reference-types="true">
 
-  <reference id="dataBroker"
-    interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"
-    odl:type="default" />
-
-  <reference id="domBroker"
-    interface="org.opendaylight.mdsal.dom.api.DOMDataBroker"
-    odl:type="default" />
-
   <reference id="domDataTreeShardingService"
     interface="org.opendaylight.mdsal.dom.api.DOMDataTreeShardingService"
     odl:type="default"/>
@@ -33,8 +25,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <bean id="provider"
     class="sharding.simple.impl.ShardingSimpleProvider"
     init-method="init" destroy-method="close">
-    <argument ref="dataBroker" />
-    <argument ref="domBroker" />
     <argument ref="domDataTreeShardingService" />
     <argument ref="domDataTreeService" />
     <argument ref="schemaService"/>
