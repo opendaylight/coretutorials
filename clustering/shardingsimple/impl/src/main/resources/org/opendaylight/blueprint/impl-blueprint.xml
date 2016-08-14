@@ -11,6 +11,9 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
   odl:use-default-for-reference-types="true">
 
+  <reference id="rpcRegistry"
+    interface="org.opendaylight.controller.sal.binding.api.RpcProviderRegistry"/>
+
   <reference id="domDataTreeShardingService"
     interface="org.opendaylight.mdsal.dom.api.DOMDataTreeShardingService"
     odl:type="default"/>
@@ -25,6 +28,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <bean id="provider"
     class="sharding.simple.impl.ShardingSimpleProvider"
     init-method="init" destroy-method="close">
+    <argument ref="rpcRegistry"/>
     <argument ref="domDataTreeShardingService" />
     <argument ref="domDataTreeService" />
     <argument ref="schemaService"/>

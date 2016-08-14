@@ -22,30 +22,40 @@ import org.opendaylight.yangtools.yang.data.impl.schema.builder.api.CollectionNo
 
 public final class DomListBuilder {
     // Inner List Qname identifiers for yang model's 'name' and 'value'
-    private static final org.opendaylight.yangtools.yang.common.QName IL_NAME = QName.create(InnerList.QNAME, "iid");
-    private static final org.opendaylight.yangtools.yang.common.QName IL_VALUE = QName.create(InnerList.QNAME, "value");
+    public static final org.opendaylight.yangtools.yang.common.QName IL_NAME = QName.create(InnerList.QNAME, "iid");
+    public static final org.opendaylight.yangtools.yang.common.QName IL_VALUE = QName.create(InnerList.QNAME, "value");
 
     // Outer List Qname identifier for yang model's 'id'
-    private static final org.opendaylight.yangtools.yang.common.QName OL_ID = QName.create(OuterList.QNAME, "oid");
+    public static final org.opendaylight.yangtools.yang.common.QName OL_ID = QName.create(OuterList.QNAME, "oid");
 
-    public static List<MapEntryNode> buildOuterList(int outerElements, int innerElements) {
+    /** Build the outer list. Not used in the sharding test
+     * @param outerElements: Number of outer Elements
+     * @param innerElements: Number of Inner elements
+     * @return: Normalized node corresponding to the outer list
+     */
+    public static List<MapEntryNode> buildOuterList(int outerElements, Long innerElements) {
         List<MapEntryNode> outerList = new ArrayList<MapEntryNode>(outerElements);
-        for (int j = 0; j < outerElements; j++) {
+        for (Long j = (long)0; j < outerElements; j++) {
             outerList.add(ImmutableNodes.mapEntryBuilder()
                                 .withNodeIdentifier(new NodeIdentifierWithPredicates(OuterList.QNAME, OL_ID, j))
                                 .withChild(ImmutableNodes.leafNode(OL_ID, j))
                                 .withChild(buildInnerList(j, innerElements))
                                 .build());
         }
-
         return outerList;
     }
 
-    public static MapNode buildInnerList(int index, int elements ) {
+    /** Build the inner list (the per-shard data).
+     * @param i2: outer list item index (to recognize which outer list these
+     *            inner list elements belong to)
+     * @param numItems: number if items in the list
+     * @return:Normalized node corresponding to the inner list
+     */
+    public static MapNode buildInnerList(Long i2, Long numItems ) {
         CollectionNodeBuilder<MapEntryNode, MapNode> innerList = ImmutableNodes.mapNodeBuilder(InnerList.QNAME);
 
-        final String itemStr = "Item-" + String.valueOf(index) + "-";
-        for ( int i = 0; i < elements; i++ ) {
+        final String itemStr = "Item-" + String.valueOf(i2) + "-";
+        for ( Long i = (long)0; i < numItems; i++ ) {
             innerList.addChild(ImmutableNodes.mapEntryBuilder()
                                 .withNodeIdentifier(new NodeIdentifierWithPredicates(InnerList.QNAME, IL_NAME, i))
                                 .withChild(ImmutableNodes.leafNode(IL_NAME, i))
