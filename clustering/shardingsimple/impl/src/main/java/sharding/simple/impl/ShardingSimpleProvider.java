@@ -10,13 +10,14 @@ package sharding.simple.impl;
 
 import com.google.common.collect.Lists;
 
-import java.util.ArrayList;
+
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 
+import sharding.simple.impl.ShardManager.ShardData;
+
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.controller.sal.core.api.model.SchemaService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.mdsal.common.api.TransactionCommitFailedException;
@@ -56,36 +57,27 @@ import org.slf4j.LoggerFactory;
  * @author jmedved
  *
  */
-public class ShardingSimpleProvider implements SchemaContextListener {
+public class ShardingSimpleProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(ShardingSimpleProvider.class);
 
-    private static final int DCL_EXECUTOR_MAX_POOL_SIZE = 20;
-    private static final int DCL_EXECUTOR_MAX_QUEUE_SIZE = 1000;
-    private static final int DATA_CHANGE_LISTENER_MAX_QUEUE_SIZE = 1000;
-    private static final int COMMIT_MAX_QUEUE_SIZE = 1000;
-
-    private final DOMDataTreeShardingService dataTreeShardingService;
+    private final ShardManager shardManager;
+    private final RpcProviderRegistry rpcRegistry;
     private final DOMDataTreeService dataTreeService;
-    private final SchemaService schemaService;
-
-    private final List<InMemoryDOMDataTreeShard> shards = new ArrayList<>();
-    private final List<ListenerRegistration<InMemoryDOMDataTreeShard>> dataTreeShardRegistrations = new ArrayList<>();
-    private final ListenerRegistration<SchemaContextListener> schemaServiceResistration;
-
 
     /** Public constructor - references to MD-SAL services injected through here.
-     * @param dataTreeShardingService
-     * @param dataTreeService
-     * @param schemaService
+     * @param rpcRegistry: reference to MD-SAL RPC Registry
+     * @param dataTreeShardingService: reference to MD-SAL Data Tree Sharding Service
+     * @param dataTreeService: reference to MD-SAL Data Tree  Service
+     * @param schemaService: reference to MD-SAL Schema Service
      */
-    public ShardingSimpleProvider(final DOMDataTreeShardingService dataTreeShardingService,
-                                  final DOMDataTreeService dataTreeService,
-                                  final SchemaService schemaService) {
-        this.dataTreeShardingService = dataTreeShardingService;
+    public ShardingSimpleProvider(final RpcProviderRegistry rpcRegistry,
+            final DOMDataTreeShardingService dataTreeShardingService,
+            final DOMDataTreeService dataTreeService,
+            final SchemaService schemaService) {
+        this.rpcRegistry = rpcRegistry;
+        this.shardManager = new ShardManager(dataTreeShardingService, dataTreeService, schemaService);
         this.dataTreeService = dataTreeService;
-        this.schemaService = schemaService;
-        schemaServiceResistration = schemaService.registerSchemaContextListener(this);
 
         LOG.info("ShardingSimpleProvider Constructor finished");
     }
@@ -104,14 +96,10 @@ public class ShardingSimpleProvider implements SchemaContextListener {
 
         // Verify that we have producer rights to the root shard, so that we can create sub-shards
         LOG.info("Registgering shard at CONFIG data store root");
-        final DOMDataTreeProducer producer = createAndInitShard(dtiRoot,
-                                                          DCL_EXECUTOR_MAX_POOL_SIZE,
-                                                          DCL_EXECUTOR_MAX_QUEUE_SIZE,
-                                                          DATA_CHANGE_LISTENER_MAX_QUEUE_SIZE,
-                                                          COMMIT_MAX_QUEUE_SIZE);
-        if (producer != null) {
+        final ShardData sd = shardManager.createAndInitShard(dtiRoot);
+        if (sd != null) {
             try {
-                producer.close();
+                sd.getProducer().close();
             } catch (final DOMDataTreeProducerException e) {
                 throw new RuntimeException(e);
             }
@@ -125,25 +113,19 @@ public class ShardingSimpleProvider implements SchemaContextListener {
                                                             1));
         final DOMDataTreeIdentifier dtiShard1 = new DOMDataTreeIdentifier(LogicalDatastoreType.CONFIGURATION,
                                                                     shard1Yid);
-        final DOMDataTreeProducer producerShard1 = createAndInitShard(dtiShard1,
-                                                                DCL_EXECUTOR_MAX_POOL_SIZE,
-                                                                DCL_EXECUTOR_MAX_QUEUE_SIZE,
-                                                                DATA_CHANGE_LISTENER_MAX_QUEUE_SIZE,
-                                                                COMMIT_MAX_QUEUE_SIZE);
+        final ShardData sd1 = shardManager.createAndInitShard(dtiShard1);
 
         LOG.info("Creatinglist to write to Shard1");
         final MapNode list1 = DomListBuilder.buildInnerList(1, 10);
 
         LOG.info("Creating a transaction chain for the producer");
-        final DOMDataTreeCursorAwareTransaction tx1 = producerShard1.createTransaction(false);
+        final DOMDataTreeCursorAwareTransaction tx1 = sd1.getProducer().createTransaction(false);
         final DOMDataTreeWriteCursor cursor1 = tx1.createCursor(dtiShard1);
         final YangInstanceIdentifier list1Yid = shard1Yid.node(InnerList.QNAME);
         cursor1.write(list1Yid.getLastPathArgument(), list1);
         cursor1.enter(new NodeIdentifier(InnerList.QNAME));
 
         for ( MapEntryNode item : list1.getValue()) {
-            // YangInstanceIdentifier itemYid = list1Yid.node(new NodeIdentifierWithPredicates(InnerList.QNAME,
-            //                                                item.getIdentifier().getKeyValues()));
             cursor1.write(new NodeIdentifierWithPredicates(InnerList.QNAME, item.getIdentifier().getKeyValues()), item);
         }
         cursor1.close();
@@ -161,12 +143,8 @@ public class ShardingSimpleProvider implements SchemaContextListener {
                 2));
         final DOMDataTreeIdentifier dtiShard2 = new DOMDataTreeIdentifier(LogicalDatastoreType.CONFIGURATION,
                                                                     shard2Yid);
-        final DOMDataTreeProducer producerShard2 = createAndInitShard(dtiShard2,
-                                                                DCL_EXECUTOR_MAX_POOL_SIZE,
-                                                                DCL_EXECUTOR_MAX_QUEUE_SIZE,
-                                                                DATA_CHANGE_LISTENER_MAX_QUEUE_SIZE,
-                                                                COMMIT_MAX_QUEUE_SIZE);
-        final DOMDataTreeCursorAwareTransaction tx2 = producerShard2.createTransaction(false);
+        final ShardData sd2 = shardManager.createAndInitShard(dtiShard2);
+        final DOMDataTreeCursorAwareTransaction tx2 = sd2.getProducer().createTransaction(false);
         final DOMDataTreeWriteCursor cursor2 = tx2.createCursor(dtiShard2);
 
         LOG.info("Creatinglist to write to Shard2");
@@ -195,60 +173,13 @@ public class ShardingSimpleProvider implements SchemaContextListener {
      */
     public void close() {
         LOG.info("ShardingSimpleProvider Closed");
-
-        for (final ListenerRegistration<InMemoryDOMDataTreeShard> dataTreeShardReg : dataTreeShardRegistrations) {
-            dataTreeShardReg.close();
-        }
-        schemaServiceResistration.close();
+        shardManager.close();
     }
 
-    /** Creates a shard, registers it with dataTreeShardingService and
-     * creates a producer for the shard.
+    /**
+     * @author jmedved
      *
-     * @param dti: DOM Data Tree identifier for the root of the shard
-     * @param dclExecutorMaxPoolSize:
-     * @param dclExecutorMaxQueueSize:
-     * @param dcListenerMaxQueueSize:
-     * @param commitMaxQueueSize:
-     * @return: producer created for the shard
      */
-    private DOMDataTreeProducer createAndInitShard(final DOMDataTreeIdentifier dti,
-                                                   final int dclExecutorMaxPoolSize,
-                                                   final int dclExecutorMaxQueueSize,
-                                                   final int dcListenerMaxQueueSize,
-                                                   final int commitMaxQueueSize) {
-
-        final ExecutorService configRootShardExecutor =
-                SpecialExecutors.newBlockingBoundedFastThreadPool(dclExecutorMaxPoolSize,
-                                                                  dclExecutorMaxQueueSize,
-                                                                  dti.getDatastoreType() + "RootShard-DCL");
-        final InMemoryDOMDataTreeShard shard =
-                InMemoryDOMDataTreeShard.create(dti,
-                                                configRootShardExecutor,
-                                                dcListenerMaxQueueSize,
-                                                commitMaxQueueSize);
-        shards.add(shard);
-        shard.onGlobalContextUpdated(schemaService.getGlobalContext());
-
-        final DOMDataTreeProducer producer = dataTreeService.createProducer(Collections.singletonList(dti));
-
-        try {
-            final ListenerRegistration<InMemoryDOMDataTreeShard> dataTreeShardReg =
-                    dataTreeShardingService.registerDataTreeShard(dti, shard, producer);
-            dataTreeShardRegistrations.add(dataTreeShardReg);
-        } catch (final DOMDataTreeShardingConflictException e) {
-            LOG.error("Exception in registering shard with dataTreeShardingService, {}", e);
-            return null;
-        }
-
-        return producer;
-    }
-
-    @Override
-    public void onGlobalContextUpdated(final SchemaContext schemaContext) {
-        shards.forEach(shard -> shard.onGlobalContextUpdated(schemaContext));
-    }
-
     public static final class TestListener implements DOMDataTreeListener {
 
         @Override
