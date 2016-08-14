@@ -11,8 +11,8 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.controller.sal.core.api.model.SchemaService;
-import org.opendaylight.mdsal.dom.api.DOMDataBroker;
 import org.opendaylight.mdsal.dom.broker.ShardedDOMDataTree;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.util.ListenerRegistry;
@@ -42,8 +42,11 @@ public class ShardingSimpleTest {
     public void test() {
         final ShardedDOMDataTree dataTreeShardingService = new ShardedDOMDataTree();
 
+        final RpcProviderRegistry rpcRegistry = new RpcProviderRegistryMock();
+
         final ShardingSimpleProvider shardingSimpleProvider =
-                new ShardingSimpleProvider(dataTreeShardingService, dataTreeShardingService, schemaService);
+                new ShardingSimpleProvider(rpcRegistry, dataTreeShardingService, dataTreeShardingService,
+                        schemaService);
         shardingSimpleProvider.init();
     }
 
