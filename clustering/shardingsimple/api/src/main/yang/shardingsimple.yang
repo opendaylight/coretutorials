@@ -1,10 +1,10 @@
 module shardingsimple {
     yang-version 1;
     namespace "urn:opendaylight:params:xml:ns:yang:clustering:sharding.simple";
-    prefix "shardingsimple";
+    prefix "css";
 
     revision "2016-08-02" {
-        description "Initial revision of shardingsimple model";
+        description "Initial revision of the shardingsimple model";
     }
 
     container test-data {
@@ -55,7 +55,7 @@ module shardingsimple {
 
     container test-status {
         description
-            "Shows the test application's status information";
+            "Test status and test summary information";
 
         leaf execStatus {
             type enumeration {
@@ -78,5 +78,147 @@ module shardingsimple {
             description
                 "Number of completed test runs";
           }
+    }
+
+    rpc shard-test {
+        description
+          "Start a new test run for the sharding test";
+
+        input {
+            leaf operation {
+                mandatory true;
+                type enumeration {
+                    enum "PUT" {
+                        value 1;
+                        description
+                          "The put operation";
+                    }
+                    enum "MERGE" {
+                        value 2;
+                        description
+                          "The merge operation";
+                    }
+                    enum "DELETE" {
+                        value 3;
+                        description
+                            "Delete items from a list sotred in the data store";
+                    }
+                    enum "READ" {
+                        value 4;
+                        description
+                        "The read operation";
+                    }
+                }
+                description
+                    "Type of the transaction operation to benchmark";
+            }
+            leaf transaction-type {
+                mandatory true;
+                type enumeration {
+                    enum "SIMPLE-TX" {
+                        value 1;
+                    }
+                    enum "TX-CHAINING" {
+                        value 2;
+                    }
+                }
+                description
+                    "Data format:-binding-aware or binding-independent";
+            }
+            leaf data-store {
+                mandatory true;
+                type enumeration {
+                    enum "CONFIG" {
+                        value 1;
+                    }
+                    enum "OPERATIONAL" {
+                        value 2;
+                    }
+                    enum "BOTH" {
+                        value 3;
+                    }
+                }
+            }
+            leaf shards {
+                type uint32;
+                default 1;
+                description
+                  "Number of shards";
+            }
+            leaf dataItems {
+                type uint32;
+                default 100;
+                description
+                  "Number of per-shard data items";
+            }
+            leaf putsPerTx {
+                type uint32;
+                default 1;
+                description
+                  "Number of write operations (PUT, MERGE, or DELETE)
+                   before a transaction submit() is issued";
+            }
+            leaf listeners {
+                type uint32;
+                default 0;
+                description
+                    "Number of data tree change listeners listening for
+                    changes on the test exec tree.";
+            }
+            leaf validate-data {
+                type boolean;
+                default false;
+                description
+                    "Specifies whether the written data should be
+                    validated.";
+            }
+       }
+
+        output {
+            leaf status {
+                mandatory true;
+                type enumeration {
+                    enum "OK" {
+                        value 1;
+                    }
+                    enum "FAILED" {
+                        value 2;
+                    }
+                    enum "TEST-IN-PROGRESS" {
+                        value 3;
+                    }
+                }
+                description
+                    "Indicates whether the test finished successfuly";
+            }
+            leaf listBuildTime {
+                type uint32;
+                description
+                  "The time it took to build the list";
+            }
+            leaf-list shardExecTime {
+                type uint32;
+                description
+                    "The time it took to execute transactions on a single
+                    shard";
+            }
+            leaf totalExecTime {
+                type uint32;
+                description
+                  "The time it took to execute all transactions on all
+                  shards";
+            }
+            leaf txOk {
+                type uint32;
+                description
+                  "The number of successful transactions";
+            }
+            leaf txError {
+                type uint32;
+                description
+                  "The number of failed transactions";
+            }
+
+        }
     }
 }
