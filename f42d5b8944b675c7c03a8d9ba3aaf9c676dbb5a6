@@ -1,0 +1,10 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+2: John Burns <johnburn@cisco.com>
+Verified+1: John Burns <johnburn@cisco.com>
+Code-Review+2: Jan Medved <jmedved@cisco.com>
+Verified+1: Jan Medved <jmedved@cisco.com>
+Submitted-by: Jan Medved <jmedved@cisco.com>
+Submitted-at: Mon, 22 Aug 2016 21:35:46 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/43919
+Project: coretutorials
+Branch: refs/heads/master
