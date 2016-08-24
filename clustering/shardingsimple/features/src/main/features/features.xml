@@ -33,7 +33,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <feature version="${project.version}">odl-shardingsimple-rest</feature>
     <feature version="${restconf.version}">odl-mdsal-apidocs</feature>
     <feature version="${mdsal.version}">odl-mdsal-xsql</feature>
-    <feature version="${dlux.version}">odl-dlux-yangui</feature>
+    <feature version="${dlux.version}">odl-dlux-yangman</feature>
   </feature>
   <feature name='odl-shardingsimple-cli' version='${project.version}' description='OpenDaylight :: shardingsimple :: CLI'>
     <feature version="${project.version}">odl-shardingsimple</feature>
