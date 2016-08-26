@@ -159,7 +159,7 @@ module dsbenchmark {
                     }
                 }
                 description
-                    "Indicates whether the test finished successfuly";
+                    "Indicates whether the test finished successfully";
                }
             leaf listBuildTime {
                 type uint32;
