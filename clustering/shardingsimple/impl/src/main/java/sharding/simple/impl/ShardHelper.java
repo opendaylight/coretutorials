@@ -43,7 +43,6 @@ public class ShardHelper implements AutoCloseable, SchemaContextListener {
     private static final int DCL_EXECUTOR_MAX_POOL_SIZE = 20;
     private static final int DCL_EXECUTOR_MAX_QUEUE_SIZE = 1000;
     private static final int DATA_CHANGE_LISTENER_MAX_QUEUE_SIZE = 1000;
-    private static final int COMMIT_MAX_QUEUE_SIZE = 1000;
 
     private final DOMDataTreeShardingService dataTreeShardingService;
     private final DOMDataTreeService dataTreeService;
@@ -89,8 +88,7 @@ public class ShardHelper implements AutoCloseable, SchemaContextListener {
         final InMemoryDOMDataTreeShard shard =
                 InMemoryDOMDataTreeShard.create(ddtId,
                                                 configRootShardExecutor,
-                                                ShardHelper.DATA_CHANGE_LISTENER_MAX_QUEUE_SIZE,
-                                                ShardHelper.COMMIT_MAX_QUEUE_SIZE);
+                                                ShardHelper.DATA_CHANGE_LISTENER_MAX_QUEUE_SIZE);
 
         final DOMDataTreeProducer producer = dataTreeService.createProducer(Collections.singletonList(ddtId));
         final ListenerRegistration<InMemoryDOMDataTreeShard> dataTreeShardReg =
