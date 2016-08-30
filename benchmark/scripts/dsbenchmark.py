@@ -108,11 +108,11 @@ def send_test_request(tx_type, operation, data_fmt, datastore, outer_elem, inner
 
 def print_results(run_type, idx, res):
     """
-    Prints results from a dsbenchmakr test run to console
+    Prints results from a dsbenchmark test run to console
     :param run_type: String parameter that can be used to identify the type of the
                      test run (e.g. WARMUP or TEST)
     :param idx: Index of the test run
-    :param res: Parsed json (disctionary) that was returned from a dsbenchmark
+    :param res: Parsed json (dictionary) that was returned from a dsbenchmark
                 test run
     :return: None
     """
@@ -125,7 +125,7 @@ def print_results(run_type, idx, res):
 def run_test(warmup_runs, test_runs, tx_type, operation, data_fmt, datastore,
              outer_elem, inner_elem, ops_per_tx, listeners):
     """
-    Execute a benchmark test. Performs the JVM 'wamrup' before the test, runs
+    Execute a benchmark test. Performs the JVM 'warmup' before the test, runs
     the specified number of dsbenchmark test runs and computes the average time
     for building the test data (a list of lists) and the average time for the
     execution of the test.

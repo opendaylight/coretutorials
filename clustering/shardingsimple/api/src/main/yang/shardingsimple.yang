@@ -220,4 +220,9 @@ module shardingsimple {
             }
         }
     }
+
+    rpc cleanup-store {
+        description
+          "Delete data in the test-data container that may have been left behind from a previous test run";
+    }
 }

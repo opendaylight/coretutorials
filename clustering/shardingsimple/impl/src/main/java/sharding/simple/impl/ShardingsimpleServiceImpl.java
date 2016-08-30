@@ -9,19 +9,18 @@
 package sharding.simple.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import com.google.common.util.concurrent.Futures;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RpcRegistration;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.sharding.simple.rev160802.ShardTestInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.sharding.simple.rev160802.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.sharding.simple.rev160802.ShardTestInput.DataStore;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.sharding.simple.rev160802.ShardTestInput.TestType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.sharding.simple.rev160802.ShardTestOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.sharding.simple.rev160802.ShardTestOutput.Status;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.sharding.simple.rev160802.ShardTestOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.sharding.simple.rev160802.ShardingsimpleService;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
@@ -137,5 +136,18 @@ public class ShardingsimpleServiceImpl implements ShardingsimpleService, AutoClo
                                                     .setStatus(Status.FAILED)
                                                     .build()).buildFuture();
         }
+    }
+
+    @Override
+    public Future<RpcResult<java.lang.Void>> cleanupStore() {
+        cleanupTestStore();
+        LOG.info("Data Store cleaned up");
+        return Futures.immediateFuture( RpcResultBuilder.<Void> success().build() );
+    }
+
+    public void cleanupTestStore() {
+        TestData data = new TestDataBuilder()
+                .setOuterList(Collections.emptyList())
+                .build();
     }
 }
