@@ -1,3 +1,20 @@
+# Copyright © 2016 Cisco Systems, Inc. and others.  All rights reserved.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Eclipse Public License v1.0 which accompanies this distribution,
+# and is available at http://www.eclipse.org/legal/epl-v10.html
+#
+# Author: Jan Medved
+
+# This playbook first installs the distribution specified in <distro_name> on
+# ODL nodes specified in <cluster_config>, and then configures the nodes to
+# form a cluster. <install_script> is invoked on every ODL node to perform
+# ODL installation and cluster configuration.
+#
+# The playbook assumes that there is passwordless ssh access from the node
+# where the ansible playbook is executed to the ODL nodes. To achieve that,
+# you need to copy the public keys from the asnible machine to the ODL nodes.
+
 - hosts: odl-cluster
   remote_user: root
 
@@ -7,7 +24,7 @@
     distro_name: singletonsimple-karaf-0.1.0-SNAPSHOT.zip
     local_path: /Users/jmedved/Documents/ODL/Git/coretutorials/clustering/singletonsimple/karaf/target
     remote_path: /opt
-  
+
   tasks:
     - name: test connection
       ping:
