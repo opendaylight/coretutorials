@@ -1,0 +1,307 @@
+= Creating ODL Test Containers from Scratch
+
+You can create the Docker image for the ODL Test Container from scratch in a
+docker environment of your own as follows. On a machine that has Docker
+installed (for example, a VM that will be hosting the ODL Docker containers)
+download the `coretutorials` project from the OpenDaylight Git repo:
+
+    git clone https://git.opendaylight.org/gerrit/coretutorials.git
+
+To do the step above, make sure the machine has git installed. Next, go to the
+folder containing the Dockerfile for creating of the test image:
+
+    cd coretutorials/clustering/scripts/node
+
+Create the docker image:
+
+    docker build -t clustering/odlbase:v1.1 .
+
+You can call the image something else, of course, it just happens to be called
+here `clustering/odlbase`. The image is based on Ubuntu 16.04, it contains
+Java 8 OpenJDK jre, Python, and a couple of system utilities that are either
+used by the install scripts or are helpful for debugging & troubleshooting.
+
+Check the newly built image:
+
+    docker images
+
+= Running the ODL Test Containers on a Test Host
+
+If you created the image on your target Test Host, you can create the ODL Test
+containers right away. Otherwise, you need to save the image, copy it to the
+Test Host and load it into Docker there.
+    docker save -o odl-base.tar clustering/odlbase:v1.1
+On the Test Host type:
+    docker load -i odl-base.tar
+
+Once the test image is available on the Test Host, you can create the ODL test
+containers from the image:
+
+    docker run -d --name member-1 -h member-1 clustering/odlbase:v1.1
+    docker run -d --name member-2 -h member-2 clustering/odlbase:v1.1
+    docker run -d --name member-3 -h member-3 clustering/odlbase:v1.1
+
+-d means to run the container in a daemon mode.
+
+Check that the containers are up & running:
+
+    docker ps
+
+You should see the three newly create containers in the output. Once a container has been started, it starts the ssh server daemon, so you can
+log into it as root. Try to ssh into each one of them:
+
+    ssh root@172.17.0.2
+    ssh root@172.17.0.3
+    ssh root@172.17.0.4
+
+password is `docker123` for all containers. The above assumes the standard docker bridge setup, if you put the containers on a different subnet, you of course need to change the IP address accordingly. SSH is automatically started when the container starts, so you don’t have to be on the console and start it manually.
+
+You can check out a few parameters in the container:
+* The release of Ubuntu:
+        > lsb_release -a
+
+* Interface IP addresses:
+        > ifconfig
+
+To stop a running container, type:
+    docker stop <container_name>
+
+for example:
+    docker stop member-1
+
+To start it again, type:
+    docker start <container_name>
+
+for example:
+    docker start member1
+
+Check that the containers are running ok:
+
+> docker ps -a
+
+ssh root@172.17.0.2
+
+= Setting up Networking on Your Build Host Machine
+
+There is no need to set anything up in the Test VM or in the containers, set up
+is only required on the Build Host. Let's assume for the rest of this write-up
+that the Build Host is a Mac that runs the Test VM in a VMWare Fusion
+Hypervisor.
+
+When you start the docker containers on the Test Host, they will typically be
+connected to Docker’s bridge0, which typically will have its subnet set to
+172.17.0.0/16 (unless you configured Docker on your Test Host otherwise). The
+Default Gateway’s IP address will be 172.17.0.1, the  Docker container that was
+started first gets 172.17.0.2, the second gets 172.17.0.3, the third gets
+172.17.0.4 and so forth. Therefore, the order in which you start the containers
+matters. If you want to have the lowest IP address associated with your
+member-1 container, start member-1 first.
+
+If you want to access the containers from your Mac, you need to install a static
+route pointing to the 172.17.0.0/16 subnet. First, in the VM, figure out what
+is its IP address on Fusion’s vmnet8.  In a terminal window, do:
+
+    ifconfig
+
+and check the IP address for the ‘ens33’ interface. Let's assume that it’s
+192.168.162.247. Next, in a terminal on your Mac, install a static route for 172.17.0.0/16 that points to the VM’s ethernet IP address:
+
+    sudo route -n add -172.17.0.0/16 <VM-IP-Address>
+
+In our example, it will be:
+
+> sudo route -n add 172.17.0.0/16 192.168.162.247
+
+Note that the VM’s IP address lease expires after a few hours, and the VM will
+acquire a different IP address. When that happens, you will need to delete the
+existing static route and install a new one that points to the VM’s new IP
+address. To delete a route, type:
+
+    sudo route -n delete 172.17.0.0/16
+
+= Setting VMFusion DHCP Server’s Lease Time
+
+To avoid frequent changes of the Test VM’s IP address, you can increase the
+default DHCP lease interval in VMWare Fusion’s DHCP Server. First, get the
+current DHCP settings (default lease time and max lease time) as follows:
+
+    sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cfgcli getdhcpparam vmnet8 defleasetime
+
+    sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cfgcli getdhcpparam vmnet8 maxleasetime
+
+Next, set both values to 64000:
+
+    sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cfgcli setdhcpparam vmnet8 defleasetime 64000
+
+     sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cfgcli setdhcpparam vmnet8 maxleasetime 64000
+
+Restart Fusion for the values to take effect.
+
+= Working with the ODL Test Containers: Downloading, Installing, and Running ODL Images
+
+You can either use the `install_odl.sh` script and perform the installation &
+cluster configuration locally, one-by-one on each cluster node, or use Ansible
+from a remote host to orchestrate ODL installation and cluster configuration on the entire cluster at once.
+
+If you use the option where the script downloads an image from a remote repo
+and you want to avoid entering a password every time the script downloads the
+image, you need to set up a password-less secure copy (scp). between the
+containers and you download  To do that, you need to install the container’s
+keys on your remote host. This is done in 2 steps:
+
+First, after logging into the test container (ssh root@<test-container-vm>),
+generate a pair of authentication keys. Do not enter a passphrase:
+
+    ssh-keygen -t rsa
+
+    Generating public/private rsa key pair.
+    Enter file in which to save the key (/home/a/.ssh/id_rsa):
+    Created directory '/home/a/.ssh'.
+    Enter passphrase (empty for no passphrase):
+    Enter same passphrase again:
+    Your identification has been saved in /home/a/.ssh/id_rsa.
+    Your public key has been saved in /home/a/.ssh/id_rsa.pub.
+    The key fingerprint is:
+
+Next, copy the newly generated keys to your Build Host (or to the host from
+which you will be downloading the ODL images):
+
+    ssh-copy-id <username>@<host>
+
+where host is the remote host’s IP address. With a setup on the Mac, remote
+host’s IP address will be MAc’s IP address on Fusion’s vmnet8. In our example,
+the Mac’s IP address on vmnet8 is 192.168.162.1 (it will end in ’1’ on your
+system too).
+
+Now, you’re ready to use the install script. From the container console, go to
+`/opt`:
+
+    cd /opt
+
+The download scripts are in `/opt/scripts`. Print the download script  help message:
+
+    ./scripts/install_odl.sh -h
+
+    usage: $program_name [-h?an] [-c "cluster-config"] [-d dest] [-i image] [-r remote-host] [-p path-to-distribution] [-u user]
+    -h|?
+         Print this message
+    -c <"cluster-configuration">
+          IP addresses for all nodes in the cluster in form of a string
+          containing a comma/space delimited IP-address list
+    -d <destination-folder>
+          Destination folder where to install the ODL distribution
+          Default: '/opt/odl'
+    -i <distro-image>
+          Name of the ODL distro to download
+    -p <path-to-distribution>
+          Path to the distribution zip file. If <user> and <host> are specified
+          and <host> is not 'localhost, <path> is the the path on the remote
+          host; otherwise, <path> is the  path to a (pre-downloaded) zip file
+          on the local host. Default: '/opt'
+    -r <remote-host>
+          IP address or name of the host from which to download the distribution
+          Default: 'localhost'
+    -u <user>
+          User name to login to <remote-host>
+
+    Example:
+    /opt/scripts/install_odl.sh -d /opt/odl - i example-karaf-0.1.0-SNAPSHOT.zip -p . -c '172.17.0.2 172.17.0.3 172.17.0.4'
+
+and then use the script with appropriate parameters. For example, if you wish
+to download the singletonsimple-karaf-0.1.0-SNAPSHOT.zip image that was compiled
+on your Mac, you would type:
+
+    ./scripts/install_odl.sh -i singletonsimple-karaf-0.1.0-SNAPSHOT.zip -u jmedved -n 192.168.162.1 -p /Users/jmedved/Documents/ODL/Git/coretutorials/clustering/singletonsimple/karaf/target -c '172.17.0.2 172.17.0.3 172.17.0.4'
+
+This will install the specified ODL image on the node and set it up for
+clustering. Note that you have to run this script on every container node.
+See the next section how all nodes in a cluster can be set up with a single
+Ansible script.
+
+Note1: Make sure that the parameter `<user>` is the same user as in the
+`ssh-copy-id` script.
+
+
+= Running and Testing the Cluster
+
+After running the install script, you can run the ODL image in each container:
+
+    cd odl/singletonsimple-karaf-0.1.0-SNAPSHOT/bin/
+    ./karaf
+
+If you wish to run karaf in the background, type `./start` rather than
+`./karaf`.
+
+You can access the GUI of an ODL running in the container from a browser
+running on the Mac by going to the RESTCONF interface of any of the ODLs:
+* `member-1`:
+        http://172.17.0.2:8181/index.html
+
+* `member-2`:
+        http://172.17.0.3:8181/index.html
+
+* `member-3`:
+        http://172.17.0.4:8181/index.html
+
+= Setting up the Cluster with Ansible
+
+Executing the playbook ‘playbook.yaml’, Ansible orchestrates ODL installation
+and cluster configuration on all nodes in a cluster.
+
+First, Ansible downloads a specified ODL distribution to all nodes in the cluster. Next, it runs the install_odl.sh ocal script on every node in the cluster; this will install the ODL distribution in the test container and configure it to be a part of a test cluster. Finally, it will do a cleanup.  the script will take an image from the local machine, download it to all test containers, run the installation script (which will install the downloaded image and configure clustering on the test container) and perform a minor cleanup.
+
+Prerequisites:
+* Ansible installed on the remote host. This will typically be the machine where you build your ODL images.
+* There is network connectivity between the remote host and the test containers (use ping to validate).
+* The test containers must be set up for passwordless ssh access from the remote host. Do:
+        ssh-copy-id root@172.17.0.2
+        ssh-copy-id root@172.17.0.3
+        ssh-copy-id root@172.17.0.4
+
+The above commands will prompt you for the root password on the test container; enter `docker123`.
+
+Next, download coretutorials from the ODL Git and go to the Ansible scripts directory:
+
+    git clone https://git.opendaylight.org/gerrit/coretutorials.git
+    cd coretutorials/clustering/scripts/ansible
+
+Edit the ‘distro_name’ and ‘local_path’ path variables in the playbook.yaml
+file to reflect the desired distribution you want to install and its location
+ on the local host where your are executing the ansible script. Finally, run
+ the script.
+
+    ansible-playbook -i hosts playbook.yaml
+
+If the installation & setup was successful, you’ll see something like this:
+
+    PLAY [odl-cluster] ************************************************************
+
+    TASK [setup] ******************************************************************
+    ok: [member-3]
+    ok: [member-1]
+    ok: [member-2]
+
+    TASK [test connection] ********************************************************
+    ok: [member-2]
+    ok: [member-1]
+    ok: [member-3]
+
+    TASK [copy distro zip file to remote] *****************************************
+    changed: [member-2]
+    changed: [member-1]
+    changed: [member-3]
+
+    TASK [install image and configure cluster] ************************************
+    changed: [member-3]
+    changed: [member-2]
+    changed: [member-1]
+
+    TASK [cleanup zip file on remote] *********************************************
+    changed: [member-2]
+    changed: [member-3]
+    changed: [member-1]
+
+    PLAY RECAP ********************************************************************
+    member-1                   : ok=5    changed=3    unreachable=0    failed=0
+    member-2                   : ok=5    changed=3    unreachable=0    failed=0
+    member-3                   : ok=5    changed=3    unreachable=0    failed=0
