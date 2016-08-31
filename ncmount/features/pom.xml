@@ -9,25 +9,25 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   <parent>
     <groupId>org.opendaylight.odlparent</groupId>
     <artifactId>features-parent</artifactId>
-    <version>1.7.0-SNAPSHOT</version>
+    <version>1.8.0-SNAPSHOT</version>
     <relativePath/>
   </parent>
   <groupId>org.opendaylight.coretutorials</groupId>
   <artifactId>ncmount-features</artifactId>
-  <version>1.1.0-SNAPSHOT</version>
+  <version>1.2.0-SNAPSHOT</version>
   <name>${project.artifactId}</name>
   <modelVersion>4.0.0</modelVersion>
   <prerequisites>
     <maven>3.1.1</maven>
   </prerequisites>
   <properties>
-    <controller.mdsal.version>1.4.0-SNAPSHOT</controller.mdsal.version>
-    <mdsal.version>2.1.0-SNAPSHOT</mdsal.version>
-    <mdsal.model.version>0.9.0-SNAPSHOT</mdsal.model.version>
-    <netconf.version>1.1.0-SNAPSHOT</netconf.version>
-    <restconf.version>1.4.0-SNAPSHOT</restconf.version>
-    <yangtools.version>1.0.0-SNAPSHOT</yangtools.version>
-    <dlux.version>0.4.0-SNAPSHOT</dlux.version>
+    <controller.mdsal.version>1.5.0-SNAPSHOT</controller.mdsal.version>
+    <mdsal.version>2.2.0-SNAPSHOT</mdsal.version>
+    <mdsal.model.version>0.10.0-SNAPSHOT</mdsal.model.version>
+    <netconf.version>1.2.0-SNAPSHOT</netconf.version>
+    <restconf.version>1.5.0-SNAPSHOT</restconf.version>
+    <yangtools.version>1.1.0-SNAPSHOT</yangtools.version>
+    <dlux.version>0.5.0-SNAPSHOT</dlux.version>
     <configfile.directory>etc/opendaylight/karaf</configfile.directory>
   </properties>
   <dependencyManagement>
