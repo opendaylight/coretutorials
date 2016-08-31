@@ -102,6 +102,8 @@ public class MultiThreadShardTest extends AbstractShardTest {
         } catch (final InterruptedException e) {
             allThreadsCompleted = false;
             LOG.warn("Unable to execute requests", e);
+        } finally {
+            executorService.shutdownNow();
         }
         final long endTime = System.nanoTime();
 
