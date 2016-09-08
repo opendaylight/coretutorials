@@ -101,6 +101,14 @@ module shardingsimple {
                             dedicated thread for shard that pushes data
                             into the shard";
                     }
+                    enum "SOAK-TEST" {
+                        value 3;
+                        description
+                            "Run a long-running test that randomly and
+                            repeatedly writes data from a set into the
+                            data store. Entire data set in the data store
+                            is being churned.";
+                    }
                 }
                 default "ROUND-ROBIN";
                 description
@@ -132,7 +140,14 @@ module shardingsimple {
                 description
                   "Number of per-shard data items";
             }
-            leaf putsPerTx {
+            leaf operations {
+                type uint32;
+                default 100;
+                description
+                  "When test-type is SOAK-TEST, specifies the number of
+                    writes to perform on the data store.";
+            }
+           leaf putsPerTx {
                 type uint32;
                 default 1;
                 description

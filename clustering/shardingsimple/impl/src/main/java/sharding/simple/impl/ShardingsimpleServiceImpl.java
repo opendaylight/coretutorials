@@ -55,30 +55,6 @@ public class ShardingsimpleServiceImpl implements ShardingsimpleService, AutoClo
         this.testFactory = testFactory;
     }
 
-    /** Converts external test type to internal shard test type.
-     * @param testType: Binding-aware yang-generated test type
-     * @return: internal ShardTestType
-     * @throws ShardTestException when yang-generated test type is unknown
-     */
-    private ShardTestType getShardTestType(TestType testType) throws ShardTestException {
-        switch (testType) {
-            case MULTITHREADED:
-                return ShardTestType.MULTI_THREAD;
-            case ROUNDROBIN:
-                return ShardTestType.ROUND_ROBIN;
-            default:
-                throw new ShardTestException("Invalid test type ".concat(String.valueOf(testType)));
-        }
-    }
-
-    /** Converts external data store type to internal LogicalDatastoreType type.
-     * @param dataStore: Binding-aware yang-generated data store type
-     * @return: LogicalDatastoreType (CONFIG or OPERATIONAL)
-     */
-    private LogicalDatastoreType getLogicalDatastoreType(DataStore dataStore) {
-        return dataStore == DataStore.CONFIG ? LogicalDatastoreType.CONFIGURATION : LogicalDatastoreType.OPERATIONAL;
-    }
-
     /** Initialization - called when Blueprint container is coming up.
      *
      */
@@ -100,14 +76,7 @@ public class ShardingsimpleServiceImpl implements ShardingsimpleService, AutoClo
         LOG.info("Input: {}", input);
 
         try {
-            final AbstractShardTest shardTest = testFactory.createTest(
-                    getShardTestType(input.getTestType()),
-                    input.getShards(),
-                    input.getDataItems(),
-                    input.getListeners(),
-                    input.getPutsPerTx(),
-                    getLogicalDatastoreType(input.getDataStore()),
-                    input.isPrecreateData());
+            final AbstractShardTest shardTest = testFactory.createTest(input);
             final ShardTestStats stats = shardTest.runTest();
             if (input.isValidateData()) {
                 shardTest.registerValidationListener();
