@@ -10,6 +10,7 @@ package sharding.simple.shardtests;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opendaylight.mdsal.dom.api.DOMDataTreeIdentifier;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeListener;
@@ -23,25 +24,25 @@ import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidate;
  *
  */
 class ShardTestListener implements DOMDataTreeListener {
-    private Long dataTreeEventsOk = (long)0;
-    private Long dataTreeEventsFail = (long)0;
+    private AtomicInteger dataTreeEventsOk = new AtomicInteger();
+    private AtomicInteger dataTreeEventsFail = new AtomicInteger();
 
     @Override
     public void onDataTreeChanged(final Collection<DataTreeCandidate> collection,
             final Map<DOMDataTreeIdentifier, NormalizedNode<?, ?>> map) {
-        dataTreeEventsOk++;
+        dataTreeEventsOk.incrementAndGet();
     }
 
     @Override
     public void onDataTreeFailed(final Collection<DOMDataTreeListeningException> collection) {
-        dataTreeEventsFail++;
+        dataTreeEventsFail.incrementAndGet();
     }
 
     public Long getDataTreeEventsOk() {
-        return dataTreeEventsOk;
+        return dataTreeEventsOk.longValue();
     }
 
     public Long getDataTreeEventsFail() {
-        return dataTreeEventsFail;
+        return dataTreeEventsFail.longValue();
     }
 }
