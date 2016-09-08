@@ -12,6 +12,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -23,7 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clusteri
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifierWithPredicates;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,32 +31,25 @@ import sharding.simple.impl.DomListBuilder;
 import sharding.simple.impl.ShardHelper;
 import sharding.simple.impl.ShardHelper.ShardData;
 
-/** Implements the shard performance test.
- * @author jmedved
- *
- */
-public class RoundRobinShardTest extends AbstractShardTest {
-    private static final Logger LOG = LoggerFactory.getLogger(RoundRobinShardTest.class);
+public class SoakShardTest extends AbstractShardTest {
+    private static final Logger LOG = LoggerFactory.getLogger(SoakShardTest.class);
+    private final long operations;
 
     private final AtomicInteger txOk = new AtomicInteger();
     private final AtomicInteger txError = new AtomicInteger();
 
-    RoundRobinShardTest(Long numShards, Long numItems, Long numListeners, Long opsPerTx,
+    SoakShardTest(Long numShards, Long numItems, Long operations, Long numListeners, Long opsPerTx,
             LogicalDatastoreType dataStoreType, Boolean precreateTestData, ShardHelper shardHelper,
             DOMDataTreeService dataTreeService) throws ShardTestException {
-
         super(numShards, numItems, numListeners, opsPerTx, dataStoreType, precreateTestData,
                 shardHelper, dataTreeService);
-        LOG.info("Created RoundRobinShardTest");
+        this.operations = operations;
+        LOG.info("Created SoakShardTest");
     }
 
-    /** Performs a test where data items are created on fly and written
-     *  round-robin into the data store.
-     * @return: performance statistics from the test.
-     */
     @Override
     public ShardTestStats runTest() {
-        LOG.info("Running RoundRobinShardTest");
+        LOG.info("Running SoakShardTest");
 
         createListAnchors();
         final List<MapEntryNode> testData = preCreateTestData();
@@ -74,47 +67,51 @@ public class RoundRobinShardTest extends AbstractShardTest {
         }
 
         int txSubmitted = 0;
-        int testDataIdx = 0;
+        Random rnd = new Random();
+        int dataSetSize = (int)(numItems * numShards);
         final long startTime = System.nanoTime();
 
-        for (int i = 0; i < numItems; i++) {
-            for (int s = 0; s < numShards; s++) {
-                NodeIdentifierWithPredicates nodeId = new NodeIdentifierWithPredicates(InnerList.QNAME,
-                        DomListBuilder.IL_NAME, (long)i);
-                MapEntryNode element;
-                if (preCreateTestData) {
-                    element = testData.get(testDataIdx++);
-                } else {
-                    element = createListEntry(nodeId, s, (long)i);
-                }
-                writeCnt[s]++;
-                cursor[s].write(nodeId, element);
+        for (int op = 0; op < operations; op++) {
+            int testDataIdx = rnd.nextInt(dataSetSize);
+            int shardIdx = testDataIdx % (int)numShards;
+            long dataIdx = testDataIdx / numShards;
+            // LOG.info("op {}: testDataIdx {}, shardIdx {}, dataIdx {}", op, testDataIdx, shardIdx, dataIdx);
 
-                if (writeCnt[s] == opsPerTx) {
-                    // We have reached the limit of writes-per-transaction.
-                    // Submit the current outstanding transaction and create
-                    // a new one in its place.
-                    txSubmitted++;
-                    cursor[s].close();
-                    Futures.addCallback(tx[s].submit(), new FutureCallback<Void>() {
-                        @Override
-                        public void onSuccess(final Void result) {
-                            // txOk.incrementAndGet();
-                        }
+            NodeIdentifierWithPredicates nodeId = new NodeIdentifierWithPredicates(InnerList.QNAME,
+                    DomListBuilder.IL_NAME, dataIdx);
+            MapEntryNode element;
+            if (preCreateTestData) {
+                element = testData.get(testDataIdx);
+            } else {
+                element = createListEntry(nodeId, shardIdx, dataIdx);
+            }
+            writeCnt[shardIdx]++;
+            cursor[shardIdx].write(nodeId, element);
 
-                        @Override
-                        public void onFailure(final Throwable t1) {
-                            LOG.error("Transaction failed, {}", t1);
-                            txError.incrementAndGet();
-                        }
-                    });
+            if (writeCnt[shardIdx] == opsPerTx) {
+                // We have reached the limit of writes-per-transaction.
+                // Submit the current outstanding transaction and create
+                // a new one in its place.
+                txSubmitted++;
+                cursor[shardIdx].close();
+                Futures.addCallback(tx[shardIdx].submit(), new FutureCallback<Void>() {
+                    @Override
+                    public void onSuccess(final Void result) {
+                        txOk.incrementAndGet();
+                    }
 
-                    writeCnt[s] = 0;
-                    ShardData sd = shardData.get(s);
-                    tx[s] = sd.getProducer().createTransaction(false);
-                    cursor[s] = tx[s].createCursor(sd.getDOMDataTreeIdentifier());
-                    cursor[s].enter(new NodeIdentifier(InnerList.QNAME));
-                }
+                    @Override
+                    public void onFailure(final Throwable t1) {
+                        LOG.error("Transaction failed, {}", t1);
+                        txError.incrementAndGet();
+                    }
+                });
+
+                writeCnt[shardIdx] = 0;
+                ShardData sd = shardData.get(shardIdx);
+                tx[shardIdx] = sd.getProducer().createTransaction(false);
+                cursor[shardIdx] = tx[shardIdx].createCursor(sd.getDOMDataTreeIdentifier());
+                cursor[shardIdx].enter(new NodeIdentifier(InnerList.QNAME));
             }
         }
 
@@ -127,7 +124,7 @@ public class RoundRobinShardTest extends AbstractShardTest {
             cursor[s].close();
             try {
                 tx[s].submit().checkedGet();
-                // txOk.incrementAndGet();
+                txOk.incrementAndGet();
             } catch (TransactionCommitFailedException e) {
                 LOG.error("Transaction failed, {}", e);
                 txError.incrementAndGet();
@@ -135,7 +132,7 @@ public class RoundRobinShardTest extends AbstractShardTest {
         }
 
         final long endTime = System.nanoTime();
-        LOG.info("RoundRobinShardTest finished");
+        LOG.info("SoakShardTest finished");
         return new ShardTestStats(ShardTestStats.TestStatus.OK, txOk.intValue(), txError.intValue(), txSubmitted,
                 (endTime - startTime) / 1000, getListenerEventsOk(), getListenerEventsFail());
     }

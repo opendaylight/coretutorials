@@ -51,7 +51,7 @@ public class MultiThreadShardTest extends AbstractShardTest {
      * @return: the list of pre-created test elements that will be pushed
      *          into the data store during the test run.
      */
-    private List<MapEntryNode> preCreateTestData(int shardNum) {
+    private List<MapEntryNode> preCreatePerShardTestData(int shardNum) {
         final List<MapEntryNode> testData;
         if (preCreateTestData) {
             LOG.info("Pre-creating test data for Shard {}...", shardNum);
@@ -76,7 +76,7 @@ public class MultiThreadShardTest extends AbstractShardTest {
         createListAnchors();
         final List<ShardTestCallable> callables = Lists.newArrayList();
         for (int s = 0; s < numShards; s++) {
-            callables.add(new ShardTestCallable(shardData.get(s), s, numItems, opsPerTx, preCreateTestData(s)));
+            callables.add(new ShardTestCallable(shardData.get(s), s, numItems, opsPerTx, preCreatePerShardTestData(s)));
         }
 
         final ExecutorService executorService = Executors.newFixedThreadPool((int) numShards);

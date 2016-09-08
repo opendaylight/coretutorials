@@ -108,6 +108,32 @@ public abstract class AbstractShardTest implements AutoCloseable {
         }
     }
 
+    /** Pre-creates test data (InnerList elements) before the measured test
+     *  run and puts them in an array list for quick retrieval during the
+     *  test run.
+     * @return: the list of pre-created test elements that will be pushed
+     *          into the data store during the test run.
+     */
+    protected List<MapEntryNode> preCreateTestData() {
+        final List<MapEntryNode> testData;
+        if (preCreateTestData) {
+            LOG.info("Pre-creating test data...");
+            testData = Lists.newArrayList();
+            for (int i = 0; i < numItems; i++) {
+                for (int s = 0; s < numShards; s++) {
+                    NodeIdentifierWithPredicates nodeId = new NodeIdentifierWithPredicates(InnerList.QNAME,
+                            DomListBuilder.IL_NAME, (long)i);
+                    testData.add(createListEntry(nodeId, s, i));
+                }
+            }
+            LOG.info("   Done. {} elements created.", testData.size());
+        } else {
+            LOG.info("No test data pre-created.");
+            testData = null;
+        }
+        return testData;
+    }
+
     /** Creates a root "anchor" node (actually an InnerList hanging off an
      *  outer list item) in each shard.
      *
@@ -160,12 +186,12 @@ public abstract class AbstractShardTest implements AutoCloseable {
     }
 
     public static MapEntryNode createListEntry(NodeIdentifierWithPredicates nodeId,
-            int shardIndex, int elementIndex) {
+            int shardIndex, long elementIndex) {
         return ImmutableNodes.mapEntryBuilder()
                 .withNodeIdentifier(nodeId)
-                .withChild(ImmutableNodes.leafNode(DomListBuilder.IL_NAME, (long)elementIndex))
+                .withChild(ImmutableNodes.leafNode(DomListBuilder.IL_NAME, elementIndex))
                 .withChild(ImmutableNodes.leafNode(DomListBuilder.IL_VALUE,
-                        "Item-" + String.valueOf(shardIndex) + "-" + String.valueOf(elementIndex)))
+                        "Item-" + String.valueOf(shardIndex) + "-" + String.valueOf((int)elementIndex)))
                 .build();
     }
 
