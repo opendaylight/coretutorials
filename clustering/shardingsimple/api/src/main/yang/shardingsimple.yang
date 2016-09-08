@@ -101,6 +101,13 @@ module shardingsimple {
                             dedicated thread for shard that pushes data
                             into the shard";
                     }
+                    enum "RANDOM-SHARD" {
+                        value 3;
+                        description
+                            "Run a multi-threaded test where there is a
+                            dedicated thread for shard that pushes data
+                            randomly into the shard";
+                    }
                 }
                 default "ROUND-ROBIN";
                 description

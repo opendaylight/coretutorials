@@ -66,6 +66,8 @@ public class ShardingsimpleServiceImpl implements ShardingsimpleService, AutoClo
                 return ShardTestType.MULTI_THREAD;
             case ROUNDROBIN:
                 return ShardTestType.ROUND_ROBIN;
+            case RANDOMSHARD:
+                return ShardTestType.RANDOM_SHARD;
             default:
                 throw new ShardTestException("Invalid test type ".concat(String.valueOf(testType)));
         }

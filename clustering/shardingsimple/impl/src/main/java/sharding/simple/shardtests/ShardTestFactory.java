@@ -28,7 +28,7 @@ public class ShardTestFactory {
      * @author jmedved
      *
      */
-    public enum ShardTestType { ROUND_ROBIN, MULTI_THREAD }
+    public enum ShardTestType { ROUND_ROBIN, MULTI_THREAD, RANDOM_SHARD }
 
     private static final Logger LOG = LoggerFactory.getLogger(ShardTestFactory.class);
 
@@ -69,6 +69,9 @@ public class ShardTestFactory {
                             dataStoreType, preCreateTestData, shardHelper, dataTreeService);
                 case MULTI_THREAD:
                     return new MultiThreadShardTest(numShards, numItems, numListeners, opsPerTx,
+                            dataStoreType, preCreateTestData, shardHelper, dataTreeService);
+                case RANDOM_SHARD:
+                    return new RandomShardTest(numShards, numItems, numListeners, opsPerTx,
                             dataStoreType, preCreateTestData, shardHelper, dataTreeService);
                 default:
                     throw new ShardTestException("Invalid test type ".concat(String.valueOf(type)));

@@ -123,8 +123,10 @@ public abstract class AbstractShardTest implements AutoCloseable {
             final DOMDataTreeCursorAwareTransaction tx = sd.getProducer().createTransaction(false);
             final DOMDataTreeWriteCursor cursor = tx.createCursor(sd.getDOMDataTreeIdentifier());
             final YangInstanceIdentifier shardRootYid = sd.getDOMDataTreeIdentifier().getRootIdentifier();
-            cursor.write(shardRootYid.node(InnerList.QNAME).getLastPathArgument(), mapNode);
-            cursor.close();
+            if (cursor != null) {
+                cursor.write(shardRootYid.node(InnerList.QNAME).getLastPathArgument(), mapNode);
+                cursor.close();
+            } else LOG.warn("Can't create list anchors because cursor is NULL.");
             try {
                 tx.submit().checkedGet();
             } catch (TransactionCommitFailedException e) {
@@ -148,7 +150,7 @@ public abstract class AbstractShardTest implements AutoCloseable {
 
     /** Retrieve the number of failed event notifications from all
      *  TestListeners.
-     * @return: the total number of failed event notifications from
+     * @return the total number of failed event notifications from
      *      all TestListeners
      */
     protected int getListenerEventsFail() {
