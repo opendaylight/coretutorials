@@ -99,7 +99,7 @@ public class RoundRobinShardTest extends AbstractShardTest {
                     Futures.addCallback(tx[s].submit(), new FutureCallback<Void>() {
                         @Override
                         public void onSuccess(final Void result) {
-                            // txOk.incrementAndGet();
+                            txOk.incrementAndGet();
                         }
 
                         @Override
