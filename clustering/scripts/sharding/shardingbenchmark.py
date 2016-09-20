@@ -18,9 +18,9 @@ parser.add_argument("--host", default="localhost", help="the IP of the target ho
 parser.add_argument("--port", type=int, default=8181, help="the port number of target host.")
 
 # Test Parameters
-parser.add_argument("--type", choices=["ROUND-ROBIN", "MULTI-THREADED", "SOAK-TEST"], nargs='+',
-                    default=["ROUND-ROBIN", "MULTI-THREADED"],
-                    help='Type of test to run. Default=["ROUND-ROBIN", "MULTI-THREADED"]')
+parser.add_argument("--type", choices=["ROUND-ROBIN", "MULTI-THREADED", "SOAK-TEST", "RANDOM-SHARD"], nargs='+',
+                    default=["ROUND-ROBIN", "MULTI-THREADED", "SOAK-TEST", "RANDOM-SHARD"],
+                    help='Type of test to run. Default=["ROUND-ROBIN", "MULTI-THREADED", "SOAK-TEST", "RANDOM-SHARD"]')
 parser.add_argument("--datastore", choices=["CONFIG", "OPERATIONAL"],
                     nargs='+', default=["CONFIG", "OPERATIONAL"], help="Data store type.")
 parser.add_argument("--shards", type=int, default=[1, 2, 4, 8], nargs="+",
@@ -119,8 +119,8 @@ def run_test(warmup_runs, test_runs, test_type, datastore, shards, data_items, o
     Execute a shardingsimple test.
     The shardingsimple app will perform the requested benchmark test and return measured
     transaction times
-    :param operations:
-    :param warmup_runs:
+    :param operations: Total number of put operations to perform on the data set
+    :param warmup_runs: Number of warm-up test runs before the real test running
     :param test_runs: Number of test runs
     :param test_type: Type of test to run, "ROUND-ROBIN" or "MULTI-THREADED"
     :param datastore: "CONFIG" or "OPERATIONAL"
@@ -137,7 +137,8 @@ def run_test(warmup_runs, test_runs, test_type, datastore, shards, data_items, o
 
     print 'Test Type: {0:s}, Datastore: {1:s}, Shards: {2:d}, Data Items: {3:d}, Operations: {4:d},' \
           'Puts per Tx: {5:d}, Listeners: {6:d}, Precreate Data: {7:s}, Validate Data: {8:s}' \
-        .format(test_type, datastore, shards, data_items, operations, puts_per_tx, listeners, precreate_data, validate_data)
+        .format(test_type, datastore, shards, data_items, operations, puts_per_tx,
+                listeners, precreate_data, validate_data)
 
     for idx in range(warmup_runs):
         res = send_test_request(test_type, datastore, shards, data_items, operations,

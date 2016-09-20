@@ -109,6 +109,13 @@ module shardingsimple {
                             data store. Entire data set in the data store
                             is being churned.";
                     }
+                    enum "RANDOM-SHARD" {
+                        value 4;
+                        description
+                            "Run a multi-threaded test where there is a
+                            dedicated thread for shard that pushes data
+                            randomly into the shard";
+                    }
                 }
                 default "ROUND-ROBIN";
                 description

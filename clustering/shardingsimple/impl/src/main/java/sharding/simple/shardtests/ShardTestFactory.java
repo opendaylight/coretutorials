@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import sharding.simple.impl.ShardHelper;
 import sharding.simple.impl.ShardHelper.ShardData;
-import sharding.simple.shardtests.ShardTestFactory.ShardTestType;
 
 /** Creates ShardTest instances.
  * @author jmedved
@@ -32,7 +31,7 @@ public class ShardTestFactory {
      * @author jmedved
      *
      */
-    public enum ShardTestType { ROUND_ROBIN, MULTI_THREAD, SOAK_TEST }
+    public enum ShardTestType { ROUND_ROBIN, MULTI_THREAD, SOAK_TEST, RANDOM_SHARD }
 
     private static final Logger LOG = LoggerFactory.getLogger(ShardTestFactory.class);
 
@@ -51,7 +50,7 @@ public class ShardTestFactory {
 
     /** Converts external test type to internal shard test type.
      * @param testType: Binding-aware yang-generated test type
-     * @return: internal ShardTestType
+     * @return internal ShardTestType
      * @throws ShardTestException when yang-generated test type is unknown
      */
     private ShardTestType getShardTestType(TestType testType) throws ShardTestException {
@@ -62,6 +61,8 @@ public class ShardTestFactory {
                 return ShardTestType.ROUND_ROBIN;
             case SOAKTEST:
                 return ShardTestType.SOAK_TEST;
+            case RANDOMSHARD:
+                return ShardTestType.RANDOM_SHARD;
             default:
                 throw new ShardTestException("Invalid test type ".concat(String.valueOf(testType)));
         }
@@ -69,7 +70,7 @@ public class ShardTestFactory {
 
     /** Converts external data store type to internal LogicalDatastoreType type.
      * @param dataStore: Binding-aware yang-generated data store type
-     * @return: LogicalDatastoreType (CONFIG or OPERATIONAL)
+     * @return LogicalDatastoreType (CONFIG or OPERATIONAL)
      */
     private LogicalDatastoreType getLogicalDatastoreType(DataStore dataStore) {
         return dataStore == DataStore.CONFIG ? LogicalDatastoreType.CONFIGURATION : LogicalDatastoreType.OPERATIONAL;
@@ -77,7 +78,7 @@ public class ShardTestFactory {
 
     /** Creates new test with parameters.
      * @param input: input parameters for the test
-     * @return: newly created ShardTest
+     * @return newly created ShardTest
      * @throws ShardTestException when test creation failed
      */
     public AbstractShardTest createTest(ShardTestInput input) throws ShardTestException {
@@ -99,7 +100,10 @@ public class ShardTestFactory {
                     return new SoakShardTest(input.getShards(), input.getDataItems(), input.getOperations(),
                             input.getListeners(), input.getPutsPerTx(), getLogicalDatastoreType(input.getDataStore()),
                             input.isPrecreateData(), shardHelper, dataTreeService);
-
+                case RANDOM_SHARD:
+                    return new RandomShardTest(input.getShards(), input.getDataItems(), input.getListeners(),
+                            input.getPutsPerTx(), getLogicalDatastoreType(input.getDataStore()),
+                            input.isPrecreateData(), shardHelper, dataTreeService);
                 default:
                     throw new ShardTestException("Invalid test type ".concat(String.valueOf(testType)));
             }
@@ -112,7 +116,7 @@ public class ShardTestFactory {
     /** Verifies that we can register shards from the root.
      * @throws ShardVerifyException when shard verification failed
      */
-    public void verifyProducerRights() throws ShardVerifyException {
+    private void verifyProducerRights() throws ShardVerifyException {
         // Verify that we have producer rights to the root shard,
         // so that we can create sub-shards
         LOG.info("Registering shard at CONFIG data store root");
