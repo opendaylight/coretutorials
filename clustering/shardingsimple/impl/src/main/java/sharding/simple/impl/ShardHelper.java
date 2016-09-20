@@ -79,7 +79,7 @@ public class ShardHelper implements AutoCloseable, SchemaContextListener {
     public ShardData createAndInitShard(LogicalDatastoreType dataStoreType, YangInstanceIdentifier yiId)
             throws DOMDataTreeShardingConflictException {
 
-        final DOMDataTreeIdentifier ddtId = new DOMDataTreeIdentifier(dataStoreType, yiId);
+        final DOMDataTreeIdentifier ddtId = new DOMDataTreeIdentifier(dataStoreType, yiId.toOptimized());
 
         final ExecutorService configRootShardExecutor =
                 SpecialExecutors.newBlockingBoundedFastThreadPool(ShardHelper.DCL_EXECUTOR_MAX_POOL_SIZE,
