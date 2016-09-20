@@ -111,7 +111,7 @@ public abstract class AbstractShardTest implements AutoCloseable {
     /** Pre-creates test data (InnerList elements) before the measured test
      *  run and puts them in an array list for quick retrieval during the
      *  test run.
-     * @return: the list of pre-created test elements that will be pushed
+     * @return the list of pre-created test elements that will be pushed
      *          into the data store during the test run.
      */
     protected List<MapEntryNode> preCreateTestData() {
@@ -149,8 +149,10 @@ public abstract class AbstractShardTest implements AutoCloseable {
             final DOMDataTreeCursorAwareTransaction tx = sd.getProducer().createTransaction(false);
             final DOMDataTreeWriteCursor cursor = tx.createCursor(sd.getDOMDataTreeIdentifier());
             final YangInstanceIdentifier shardRootYid = sd.getDOMDataTreeIdentifier().getRootIdentifier();
-            cursor.write(shardRootYid.node(InnerList.QNAME).getLastPathArgument(), mapNode);
-            cursor.close();
+            if (cursor != null) {
+                cursor.write(shardRootYid.node(InnerList.QNAME).getLastPathArgument(), mapNode);
+                cursor.close();
+            } else LOG.warn("Can't create list anchors because cursor is NULL.");
             try {
                 tx.submit().checkedGet();
             } catch (TransactionCommitFailedException e) {
@@ -161,7 +163,7 @@ public abstract class AbstractShardTest implements AutoCloseable {
     }
 
     /** Retrieve the number of ok event notifications from all TestListeners.
-     * @return :the total number of ok event notifications from
+     * @return the total number of ok event notifications from
      *      all TestListeners
      */
     protected int getListenerEventsOk() {
@@ -174,7 +176,7 @@ public abstract class AbstractShardTest implements AutoCloseable {
 
     /** Retrieve the number of failed event notifications from all
      *  TestListeners.
-     * @return: the total number of failed event notifications from
+     * @return the total number of failed event notifications from
      *      all TestListeners
      */
     protected int getListenerEventsFail() {
