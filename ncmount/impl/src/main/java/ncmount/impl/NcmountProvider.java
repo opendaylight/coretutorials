@@ -75,6 +75,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.available.capabilities.AvailableCapability;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.network.topology.topology.topology.types.TopologyNetconf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.ListNodesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.ListNodesOutputBuilder;
@@ -448,7 +449,7 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
                 // We have a Netconf device
                 ConnectionStatus csts = nnode.getConnectionStatus();
                 if (csts == ConnectionStatus.Connected) {
-                    List<String> capabilities = nnode
+                    List<AvailableCapability> capabilities = nnode
                             .getAvailableCapabilities()
                             .getAvailableCapability();
                     LOG.info("Capabilities: {}", capabilities);
@@ -514,12 +515,12 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
                         // Fully connected, all services for remote device are
                         // available from the MountPointService.
                         LOG.info("NETCONF Node: {} is fully connected", nodeId.getValue());
-                        List<String> capabilities =
+                        List<AvailableCapability> capabilities =
                                 nnode.getAvailableCapabilities().getAvailableCapability();
                         LOG.info("Capabilities: {}", capabilities);
 
                         // Check if device supports our example notification and if it does, register a notification listener
-                        if (capabilities.contains(QName.create(VrfRouteNotification.QNAME, "Example-notifications").toString())) {
+                        if (containsCapability(capabilities,QName.create(VrfRouteNotification.QNAME, "Example-notifications").toString())) {
                             registerNotificationListener(nodeId);
                         }
 
@@ -557,6 +558,16 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
                 LOG.info("NETCONF Node: {} was removed", nodeId.getValue());
             }
         }
+    }
+
+    private boolean containsCapability(final List<AvailableCapability> availableCapabilities,final String capability)
+    {
+        for(AvailableCapability availableCapability:availableCapabilities) {
+            if (capability.equals(availableCapability.getCapability())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void registerNotificationListener(final NodeId nodeId) {
