@@ -19,13 +19,13 @@ import org.apache.directory.server.dhcp.options.OptionsField;
 import org.apache.directory.server.dhcp.service.manager.LeaseManager;
 import org.apache.directory.server.dhcp.service.manager.LeaseManagerDhcpService;
 import org.opendaylight.dhcpv6.server.CustomDhcpv6Option;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dhcp.impl.rev151018.DefaultOption;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dhcp.impl.rev151018.MessageType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dhcp.rev161018.dhcp.server.cfg.DefaultOption;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dhcp.rev161018.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Simple extension to LeaseManagerDhcpService that provides a set of predefined options
+ * Simple extension to LeaseManagerDhcpService that provides a set of predefined options.
  */
 public class CustomisableLeaseManagerDhcpService extends LeaseManagerDhcpService {
 
