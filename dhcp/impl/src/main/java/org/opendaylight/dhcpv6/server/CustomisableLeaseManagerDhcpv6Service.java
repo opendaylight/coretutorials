@@ -18,8 +18,8 @@ import org.anarres.dhcp.v6.options.Dhcp6Options;
 import org.anarres.dhcp.v6.options.DuidOption;
 import org.anarres.dhcp.v6.service.Dhcp6LeaseManager;
 import org.anarres.dhcp.v6.service.LeaseManagerDhcp6Service;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dhcp.impl.v6.rev151018.DefaultOption;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dhcp.impl.v6.rev151018.MessageType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dhcp.rev161018.dhcp.server.cfg.DefaultOption;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dhcp.rev161018.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,11 +71,11 @@ public class CustomisableLeaseManagerDhcpv6Service extends LeaseManagerDhcp6Serv
                 continue;
             }
             scope = o.getScope();
-            if (scope == MessageType.DHCPADVERTISE || scope == MessageType.ALL) {
+            if (scope == MessageType.DHCPREQUEST || scope == MessageType.ALL) {
                 dhcpv6AdvertiseOptions.add(dhcp6Option);
                 LOG.debug("DHCPv6 ADVERTISE option {} implemented");
             }
-            if (scope == MessageType.DHCPREPLY || scope == MessageType.ALL) {
+            if (scope == MessageType.DHCPACK || scope == MessageType.ALL) {
                 dhcpv6ReplyOptions.add(dhcp6Option);
                 LOG.debug("DHCPv6 REPLY option {} implemented");
             }

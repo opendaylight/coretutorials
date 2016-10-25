@@ -20,22 +20,38 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   <prerequisites>
     <maven>3.1.1</maven>
   </prerequisites>
-  <properties>
-    <mdsal.version>2.2.0-SNAPSHOT</mdsal.version>
-    <controller.mdsal.version>1.5.0-SNAPSHOT</controller.mdsal.version>
-    <restconf.version>1.5.0-SNAPSHOT</restconf.version>
-    <config.version>0.6.0-SNAPSHOT</config.version>
-    <mdsal.model.version>0.10.0-SNAPSHOT</mdsal.model.version>
-    <dlux.version>0.5.0-SNAPSHOT</dlux.version>
-    <configfile.directory>etc/opendaylight/karaf</configfile.directory>
-  </properties>
+
+    <properties>
+        <mdsal.model.version>0.10.0-SNAPSHOT</mdsal.model.version>
+        <mdsal.version>2.2.0-SNAPSHOT</mdsal.version>
+        <controller.mdsal.version>1.5.0-SNAPSHOT</controller.mdsal.version>
+        <restconf.version>1.5.0-SNAPSHOT</restconf.version>
+        <yangtools.version>1.1.0-SNAPSHOT</yangtools.version>
+        <dlux.version>0.5.0-SNAPSHOT</dlux.version>
+        <config.version>0.6.0-SNAPSHOT</config.version>
+        <configfile.directory>etc/opendaylight/karaf</configfile.directory>
+    </properties>
   <dependencyManagement>
     <dependencies>
       <!-- project specific dependencies -->
       <dependency>
+        <groupId>org.opendaylight.controller</groupId>
+        <artifactId>mdsal-artifacts</artifactId>
+        <version>${controller.mdsal.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
         <groupId>org.opendaylight.netconf</groupId>
         <artifactId>restconf-artifacts</artifactId>
         <version>${restconf.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opendaylight.yangtools</groupId>
+        <artifactId>yangtools-artifacts</artifactId>
+        <version>${yangtools.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -44,10 +60,25 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
 
   <dependencies>
     <dependency>
+      <groupId>org.opendaylight.yangtools</groupId>
+      <artifactId>features-yangtools</artifactId>
+      <classifier>features</classifier>
+      <type>xml</type>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.mdsal.model</groupId>
+      <artifactId>features-mdsal-model</artifactId>
+      <version>${mdsal.model.version}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opendaylight.controller</groupId>
       <artifactId>features-mdsal</artifactId>
-      <classifier>features</classifier>
       <version>${controller.mdsal.version}</version>
+      <classifier>features</classifier>
       <type>xml</type>
       <scope>runtime</scope>
     </dependency>
@@ -55,24 +86,16 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
       <groupId>org.opendaylight.netconf</groupId>
       <artifactId>features-restconf</artifactId>
       <classifier>features</classifier>
-      <version>${restconf.version}</version>
-      <type>xml</type>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.controller</groupId>
-      <artifactId>features-config-netty</artifactId>
-      <classifier>features</classifier>
-      <version>${config.version}</version>
       <type>xml</type>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.dlux</groupId>
       <artifactId>features-dlux</artifactId>
-      <version>${dlux.version}</version>
       <classifier>features</classifier>
+      <version>${dlux.version}</version>
       <type>xml</type>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -81,17 +104,28 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>dhcp-impl</artifactId>
+      <artifactId>dhcp-api</artifactId>
       <version>${project.version}</version>
-      <type>xml</type>
-      <classifier>config</classifier>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>dhcp-impl</artifactId>
-      <version>${project.version}</version>
-      <type>xml</type>
-      <classifier>v6config</classifier>
+      <groupId>org.apache.karaf.http</groupId>
+      <artifactId>org.apache.karaf.http.core</artifactId>
+      <version>${karaf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.karaf.http</groupId>
+      <artifactId>org.apache.karaf.http.command</artifactId>
+      <version>${karaf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.karaf.web</groupId>
+      <artifactId>org.apache.karaf.web.core</artifactId>
+      <version>${karaf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.karaf.web</groupId>
+      <artifactId>org.apache.karaf.web.command</artifactId>
+      <version>${karaf.version}</version>
     </dependency>
   </dependencies>
 </project>

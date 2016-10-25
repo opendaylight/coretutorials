@@ -23,7 +23,6 @@ import org.anarres.dhcp.v6.options.IaOption;
 import org.anarres.dhcp.v6.options.VendorSpecificInformationOption;
 import org.anarres.dhcp.v6.service.AbstractDhcp6LeaseManager;
 import org.anarres.dhcp.v6.service.ClientBindingRegistry;
-import org.opendaylight.dhcp.server.ExampleLeaseManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,8 +36,8 @@ public class Examplev6LeaseManager extends AbstractDhcp6LeaseManager implements 
 
     private InetAddress ip;
 
-    public Examplev6LeaseManager(final Lifetimes lifetimes, final String baseIp) {
-        super(lifetimes, ClientBindingRegistry.createForIaNa(), ClientBindingRegistry.createForIaTa());
+    public Examplev6LeaseManager(final String baseIp) {
+        super(new AbstractDhcp6LeaseManager.Lifetimes(50000, 80000, 100000, 150000), ClientBindingRegistry.createForIaNa(), ClientBindingRegistry.createForIaTa());
         try {
             this.ip = InetAddress.getByName(baseIp);
         } catch (UnknownHostException e) {
