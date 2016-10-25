@@ -1,0 +1,76 @@
+module dhcp {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:dhcp";
+    prefix "dhcp";
+
+    revision "2016-10-18" {
+        description "Initial revision of dhcp model";
+    }
+	import ietf-inet-types { prefix inet; }
+    typedef message-type {
+        type enumeration {
+            enum "DHCPDISCOVER" {
+                value 1;
+                description "DHCP Discover";
+            }
+            enum "DHCPOFFER" {
+                value 2;
+                description "DHCP Offer";
+            }
+            enum "DHCPREQUEST" {
+                value 3;
+                description "DHCP Request";
+            }
+            enum "DHCPDECLINE" {
+                value 4;
+                description "DHCP Decline";
+            }
+            enum "DHCPACK" {
+                value 5;
+                description "DHCP Acknowledge";
+             }
+             enum "DHCPNAK" {
+                 value 6;
+                 description "DHCP Not Acknowledge";
+             }
+             enum "DHCPRELEASE" {
+                 value 7;
+                 description "DHCP Release";
+             }
+             enum "DHCPINFORM" {
+                 value 8;
+                 description "DHCP Inform";
+             }
+             enum "ALL" {
+                 value 9;
+                 description "all DHCP messages";
+             }
+         }
+     }
+     container dhcp-server-cfg {
+            leaf port {
+                type inet:port-number;
+                description "port to bind the DHCP server to";
+                default 67;
+            }
+
+            leaf-list network-interface {
+                description "network interfaces upon the dhcp server should listen to";
+                type string;
+             }
+
+            list default-option {
+                description "options which will be included in the chosen outcoming DHCP message";
+                key "id scope";
+                leaf id {
+                    type uint16;
+                }
+                leaf value {
+                    type string;
+                }
+                leaf scope {
+                    type message-type;
+                }
+             }
+         }
+}
