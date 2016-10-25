@@ -523,7 +523,7 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
                         LOG.info("Capabilities: {}", capabilities);
 
                         // Check if device supports our example notification and if it does, register a notification listener
-                        if (capabilities.contains(QName.create(VrfRouteNotification.QNAME, "Example-notifications").toString())) {
+                        if (containsCapability(capabilities,QName.create(VrfRouteNotification.QNAME, "Example-notifications").toString())) {
                             registerNotificationListener(nodeId);
                         }
 
