@@ -13,7 +13,7 @@ import org.apache.directory.server.dhcp.options.DhcpOption;
 import com.google.common.io.BaseEncoding;
 
 /**
- * Custom HEX based DHCP option
+ * Custom HEX based DHCP option.
  */
 public class CustomDhcpOption extends DhcpOption {
 
