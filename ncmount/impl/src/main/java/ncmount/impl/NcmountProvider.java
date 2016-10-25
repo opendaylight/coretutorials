@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 import ncmount.impl.listener.LoggingNotificationListener;
 import ncmount.impl.listener.PerformanceAwareNotificationListener;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -75,6 +76,8 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.available.capabilities.AvailableCapability;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.available.capabilities.AvailableCapabilityBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.network.topology.topology.topology.types.TopologyNetconf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.ListNodesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.ListNodesOutputBuilder;
@@ -448,9 +451,9 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
                 // We have a Netconf device
                 ConnectionStatus csts = nnode.getConnectionStatus();
                 if (csts == ConnectionStatus.Connected) {
-                    List<String> capabilities = nnode
-                            .getAvailableCapabilities()
-                            .getAvailableCapability();
+                    List<String> capabilities =
+                            nnode.getAvailableCapabilities().getAvailableCapability().stream().map(cp ->
+                                    cp.getCapability()).collect(Collectors.toList());
                     LOG.info("Capabilities: {}", capabilities);
                 }
             }
@@ -515,7 +518,8 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
                         // available from the MountPointService.
                         LOG.info("NETCONF Node: {} is fully connected", nodeId.getValue());
                         List<String> capabilities =
-                                nnode.getAvailableCapabilities().getAvailableCapability();
+                                nnode.getAvailableCapabilities().getAvailableCapability().stream().map(cp ->
+                                        cp.getCapability()).collect(Collectors.toList());
                         LOG.info("Capabilities: {}", capabilities);
 
                         // Check if device supports our example notification and if it does, register a notification listener
