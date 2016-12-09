@@ -7,12 +7,19 @@
  */
 
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
+import org.opendaylight.controller.cluster.access.concepts.MemberName;
+import org.opendaylight.controller.cluster.sharding.DOMDataTreeShardCreationFailedException;
+import org.opendaylight.controller.cluster.sharding.DistributedShardFactory;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.controller.sal.core.api.model.SchemaService;
+import org.opendaylight.mdsal.dom.api.DOMDataTreeIdentifier;
+import org.opendaylight.mdsal.dom.api.DOMDataTreeProducerException;
+import org.opendaylight.mdsal.dom.api.DOMDataTreeShardingConflictException;
 import org.opendaylight.mdsal.dom.broker.ShardedDOMDataTree;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.util.ListenerRegistry;
@@ -38,17 +45,27 @@ public class ShardingSimpleTest {
         schemaService.changeSchema(createTestContext());
     }
 
-    @Test
-    public void test() {
-        final ShardedDOMDataTree dataTreeShardingService = new ShardedDOMDataTree();
-
-        final RpcProviderRegistry rpcRegistry = new RpcProviderRegistryMock();
-
-        final ShardingSimpleProvider shardingSimpleProvider =
-                new ShardingSimpleProvider(rpcRegistry, dataTreeShardingService, dataTreeShardingService,
-                        schemaService);
-        shardingSimpleProvider.init();
-    }
+//    @Test
+//    public void test() {
+//        final ShardedDOMDataTree dataTreeShardingService = new ShardedDOMDataTree();
+//
+//        final RpcProviderRegistry rpcRegistry = new RpcProviderRegistryMock();
+//
+//        DistributedShardFactory distributedShardFactory = new DistributedShardFactory() {
+//            @Override
+//            public DistributedShardRegistration createDistributedShard(DOMDataTreeIdentifier prefix,
+//                                                                       Collection<MemberName> replicaMembers)
+//                    throws DOMDataTreeShardingConflictException,
+//                    DOMDataTreeProducerException, DOMDataTreeShardCreationFailedException {
+//                return null;
+//            }
+//        };
+//
+//        final ShardingSimpleProvider shardingSimpleProvider =
+//                new ShardingSimpleProvider(rpcRegistry, dataTreeShardingService, dataTreeShardingService,
+//                        distributedShardFactory, schemaService);
+//        shardingSimpleProvider.init();
+//    }
 
     public static SchemaContext createTestContext() throws ReactorException {
         return parseYangStreams(Collections.singletonList(getInputStream()));

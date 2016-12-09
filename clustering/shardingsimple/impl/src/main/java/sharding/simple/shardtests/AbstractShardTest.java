@@ -8,17 +8,21 @@
 
 package sharding.simple.shardtests;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opendaylight.controller.cluster.sharding.DOMDataTreeShardCreationFailedException;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.mdsal.common.api.TransactionCommitFailedException;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeCursorAwareTransaction;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeIdentifier;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeLoopException;
+import org.opendaylight.mdsal.dom.api.DOMDataTreeProducer;
+import org.opendaylight.mdsal.dom.api.DOMDataTreeProducerException;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeService;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeShardingConflictException;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeWriteCursor;
@@ -36,8 +40,8 @@ import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableMapNodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import sharding.simple.impl.DomListBuilder;
+import sharding.simple.impl.ShardFactory;
 import sharding.simple.impl.ShardHelper;
 import sharding.simple.impl.ShardHelper.ShardData;
 
@@ -46,14 +50,18 @@ public abstract class AbstractShardTest implements AutoCloseable {
 
     private final List<ListenerRegistration<ShardTestListener>> testListenerRegs = Lists.newArrayList();
     private ListenerRegistration<ValidationListener> validationListenerReg = null;
+    private final LogicalDatastoreType datastoreType;
 
     private final DOMDataTreeService dataTreeService;
+    private final ShardFactory shardFactory;
+    private final long numListeners;
     protected final long numShards;
     protected final long numItems;
     protected final Boolean preCreateTestData;
 
     protected final long opsPerTx;
     protected final List<ShardData> shardData = Lists.newArrayList();
+    private final List<ShardFactory.ShardRegistration> shardRegistrations = Lists.newArrayList();
 
     static final YangInstanceIdentifier TEST_DATA_ROOT_YID =
             YangInstanceIdentifier.builder().node(TestData.QNAME).node(OuterList.QNAME).build();
@@ -68,7 +76,7 @@ public abstract class AbstractShardTest implements AutoCloseable {
      */
     AbstractShardTest(Long numShards, Long numItems, Long numListeners, Long opsPerTx,
             LogicalDatastoreType dataStoreType, Boolean precreateTestData, ShardHelper shardHelper,
-            DOMDataTreeService dataTreeService) throws ShardTestException {
+            DOMDataTreeService dataTreeService, ShardFactory shardFactory) throws ShardTestException {
         LOG.info("Creating ShardTest");
 
         this.dataTreeService = dataTreeService;
@@ -76,28 +84,28 @@ public abstract class AbstractShardTest implements AutoCloseable {
         this.numItems = numItems;
         this.preCreateTestData = precreateTestData;
         this.opsPerTx = opsPerTx;
+        this.shardFactory = shardFactory;
+        this.datastoreType = dataStoreType;
+        this.numListeners = numListeners;
+    }
 
-        // Create the specified number of shards/producers and register them
-        // with MD-SAL
-        try {
-            for (Long i = (long)0; i < numShards; i++) {
-                final YangInstanceIdentifier yiId =
-                                TEST_DATA_ROOT_YID.node(new NodeIdentifierWithPredicates(OuterList.QNAME,
-                                QName.create(OuterList.QNAME, "oid"),
-                                i));
-                final ShardData sd = shardHelper.createAndInitShard(dataStoreType, yiId);
-                shardData.add(sd);
-            }
-        } catch (DOMDataTreeShardingConflictException e) {
-            LOG.error("Failed to create shard, exception {}", e);
-            throw new ShardTestException(e.getMessage(), e.getCause());
+    List<SingleShardTest> createTestShardLayout() throws ShardTestException, DOMDataTreeShardCreationFailedException,
+            DOMDataTreeProducerException, DOMDataTreeShardingConflictException {
+        final List<SingleShardTest> singleShardTests = Lists.newArrayList();
+        final ArrayList<DOMDataTreeIdentifier> treeIds = Lists.newArrayList();
+
+        // TODO we should catch all exceptions and at least LOG what happened
+        for (long i = 0L; i < numShards; i++) {
+            final YangInstanceIdentifier yiId =
+                    TEST_DATA_ROOT_YID.node(new NodeIdentifierWithPredicates(
+                            OuterList.QNAME, QName.create(OuterList.QNAME, "oid"), i));
+            shardRegistrations.add(shardFactory.createShard(new DOMDataTreeIdentifier(datastoreType, yiId)));
+            singleShardTests.add(
+                    new SingleShardTest(dataTreeService, new DOMDataTreeIdentifier(datastoreType, yiId), opsPerTx));
+            treeIds.add(new DOMDataTreeIdentifier(datastoreType, yiId));
         }
 
-        // Create the specified number of test listeners and register them
-        // with MD-SAL
         try {
-            final ArrayList<DOMDataTreeIdentifier> treeIds = Lists.newArrayList();
-            shardData.forEach(sd -> treeIds.add(sd.getDOMDataTreeIdentifier()));
             for (long i = 0; i < numListeners; i++) {
                 testListenerRegs.add(dataTreeService.registerListener(new ShardTestListener(),
                         treeIds, false, Collections.emptyList()));
@@ -106,11 +114,18 @@ public abstract class AbstractShardTest implements AutoCloseable {
             LOG.error("Failed to register a test listener, exception {}", e);
             throw new ShardTestException(e.getMessage(), e.getCause());
         }
+
+        createListAnchors(singleShardTests);
+
+        singleShardTests.forEach(SingleShardTest::initCursor);
+
+        return singleShardTests;
     }
 
-    /** Pre-creates test data (InnerList elements) before the measured test
-     *  run and puts them in an array list for quick retrieval during the
-     *  test run.
+    /**
+     * Pre-creates test data (InnerList elements) before the measured test
+     * run and puts them in an array list for quick retrieval during the
+     * test run.
      * @return the list of pre-created test elements that will be pushed
      *          into the data store during the test run.
      */
@@ -134,25 +149,28 @@ public abstract class AbstractShardTest implements AutoCloseable {
         return testData;
     }
 
-    /** Creates a root "anchor" node (actually an InnerList hanging off an
-     *  outer list item) in each shard.
+    /**
+     * Creates a root "anchor" node (actually an InnerList hanging off an
+     * outer list item) in each shard.
      *
      */
-    protected void createListAnchors() {
-        MapNode mapNode = ImmutableMapNodeBuilder
+    private void createListAnchors(final List<SingleShardTest> singleShardTests) {
+        final MapNode mapNode = ImmutableMapNodeBuilder
                 .create()
                 .withNodeIdentifier(new NodeIdentifier(InnerList.QNAME))
                 .build();
-        for (int s = 0; s < numShards; s++) {
-            ShardData sd = shardData.get(s);
 
-            final DOMDataTreeCursorAwareTransaction tx = sd.getProducer().createTransaction(false);
-            final DOMDataTreeWriteCursor cursor = tx.createCursor(sd.getDOMDataTreeIdentifier());
-            final YangInstanceIdentifier shardRootYid = sd.getDOMDataTreeIdentifier().getRootIdentifier();
-            if (cursor != null) {
-                cursor.write(shardRootYid.node(InnerList.QNAME).getLastPathArgument(), mapNode);
-                cursor.close();
-            } else LOG.warn("Can't create list anchors because cursor is NULL.");
+        for (final SingleShardTest test : singleShardTests) {
+
+            final DOMDataTreeProducer producer = test.getProducer();
+            final DOMDataTreeCursorAwareTransaction tx = producer.createTransaction(false);
+
+            final DOMDataTreeWriteCursor cursor = Preconditions.checkNotNull(tx.createCursor(test.getPrefix()));
+            final YangInstanceIdentifier shardRootYid = test.getPrefix().getRootIdentifier();
+
+            cursor.write(shardRootYid.node(InnerList.QNAME).getLastPathArgument(), mapNode);
+            cursor.close();
+
             try {
                 tx.submit().checkedGet();
             } catch (TransactionCommitFailedException e) {
@@ -221,6 +239,10 @@ public abstract class AbstractShardTest implements AutoCloseable {
     public void close() throws Exception {
         LOG.info("Closing ShardTest");
 
+        for (ShardFactory.ShardRegistration shardReg : shardRegistrations) {
+            shardReg.close();
+        }
+
         testListenerRegs.forEach( lReg -> lReg.close());
         if (validationListenerReg != null) {
             validationListenerReg.close();
@@ -228,5 +250,5 @@ public abstract class AbstractShardTest implements AutoCloseable {
         }
     }
 
-    public abstract ShardTestStats runTest();
+    public abstract ShardTestStats runTest() throws DOMDataTreeShardingConflictException, ShardTestException, DOMDataTreeProducerException, DOMDataTreeShardCreationFailedException;
 }

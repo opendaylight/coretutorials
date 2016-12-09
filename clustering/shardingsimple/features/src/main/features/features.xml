@@ -23,6 +23,8 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <feature version='${mdsal.version.new}'>odl-mdsal-dom-broker</feature>
     <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
     <feature version='${project.version}'>odl-shardingsimple-api</feature>
+    <feature version="${controller.version}">odl-mdsal-distributed-datastore</feature>
+    <bundle>mvn:com.google.code.gson/gson/{{VERSION}}</bundle>
     <bundle>mvn:org.opendaylight.coretutorials.clustering/shardingsimple-impl/{{VERSION}}</bundle>
   </feature>
   <feature name='odl-shardingsimple-rest' version='${project.version}' description='OpenDaylight :: shardingsimple :: REST'>
