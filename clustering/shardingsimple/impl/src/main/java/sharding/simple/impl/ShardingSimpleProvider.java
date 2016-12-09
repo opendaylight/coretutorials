@@ -8,6 +8,8 @@
 
 package sharding.simple.impl;
 
+import org.opendaylight.controller.cluster.ActorSystemProvider;
+import org.opendaylight.controller.cluster.sharding.DistributedShardFactory;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.controller.sal.core.api.model.SchemaService;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeService;
@@ -39,11 +41,13 @@ public class ShardingSimpleProvider {
      * @param schemaService: reference to MD-SAL Schema Service
      */
     public ShardingSimpleProvider(final RpcProviderRegistry rpcRegistry,
-            final DOMDataTreeShardingService dataTreeShardingService,
-            final DOMDataTreeService dataTreeService,
-            final SchemaService schemaService) {
+                                  final DOMDataTreeShardingService dataTreeShardingService,
+                                  final DOMDataTreeService dataTreeService,
+                                  final DistributedShardFactory shardFactory,
+                                  final ActorSystemProvider actorSystemProvider,
+                                  final SchemaService schemaService) {
         this.shardHelper = new ShardHelper(dataTreeShardingService, dataTreeService, schemaService);
-        this.testFactory = new ShardTestFactory(shardHelper, dataTreeService);
+        this.testFactory = new ShardTestFactory(shardHelper, dataTreeService, shardFactory, dataTreeShardingService, actorSystemProvider, schemaService);
         this.rpcServiceImpl = new ShardingsimpleServiceImpl(rpcRegistry, testFactory);
 
         LOG.info("ShardingSimpleProvider Constructor finished");

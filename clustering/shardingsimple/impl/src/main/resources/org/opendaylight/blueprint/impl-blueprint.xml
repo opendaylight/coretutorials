@@ -16,10 +16,18 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
 
   <reference id="domDataTreeShardingService"
     interface="org.opendaylight.mdsal.dom.api.DOMDataTreeShardingService"
-    odl:type="default"/>
+    odl:type="distributed-datastore"/>
 
   <reference id="domDataTreeService"
     interface="org.opendaylight.mdsal.dom.api.DOMDataTreeService"
+    odl:type="distributed-datastore"/>
+
+  <reference id="distributedShardFactory"
+    interface="org.opendaylight.controller.cluster.sharding.DistributedShardFactory"
+    odl:type="distributed-datastore"/>
+
+  <reference id="actorSystemProvider"
+    interface="org.opendaylight.controller.cluster.ActorSystemProvider"
     odl:type="default"/>
 
   <odl:static-reference id="schemaService"
@@ -31,6 +39,8 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <argument ref="rpcRegistry"/>
     <argument ref="domDataTreeShardingService" />
     <argument ref="domDataTreeService" />
+    <argument ref="distributedShardFactory"/>
+    <argument ref="actorSystemProvider"/>
     <argument ref="schemaService"/>
   </bean>
 
