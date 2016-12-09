@@ -16,8 +16,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import org.opendaylight.controller.cluster.sharding.DOMDataTreeShardCreationFailedException;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.mdsal.dom.api.DOMDataTreeProducerException;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeService;
+import org.opendaylight.mdsal.dom.api.DOMDataTreeShardingConflictException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.sharding.simple.rev160802.test.data.outer.list.InnerList;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifierWithPredicates;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
@@ -25,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import sharding.simple.impl.DomListBuilder;
+import sharding.simple.impl.ShardFactory;
 import sharding.simple.impl.ShardHelper;
 import sharding.simple.shardtests.ShardTestStats.TestStatus;
 
@@ -38,10 +42,10 @@ public class MultiThreadShardTest extends AbstractShardTest {
 
     MultiThreadShardTest(Long numShards, Long numItems, Long numListeners, Long opsPerTx,
             LogicalDatastoreType dataStoreType, Boolean precreateTestData, ShardHelper shardHelper,
-            DOMDataTreeService dataTreeService) throws ShardTestException {
+            DOMDataTreeService dataTreeService, ShardFactory shardFactory) throws ShardTestException {
 
         super(numShards, numItems, numListeners, opsPerTx, dataStoreType, precreateTestData, shardHelper,
-                dataTreeService);
+                dataTreeService, shardFactory);
         LOG.info("Created MultiThreadShardTest");
     }
 
@@ -73,10 +77,14 @@ public class MultiThreadShardTest extends AbstractShardTest {
     public ShardTestStats runTest() {
         LOG.info("Running MultiThreadShardTest");
 
-        createListAnchors();
         final List<ShardTestCallable> callables = Lists.newArrayList();
-        for (int s = 0; s < numShards; s++) {
-            callables.add(new ShardTestCallable(shardData.get(s), s, numItems, opsPerTx, preCreatePerShardTestData(s)));
+        int s = 0;
+        try {
+            for (SingleShardTest shardTest : createTestShardLayout()) {
+                callables.add(new ShardTestCallable(shardTest, shardData.get(s), s, numItems, opsPerTx, preCreatePerShardTestData(s)));
+            }
+        } catch (ShardTestException | DOMDataTreeShardCreationFailedException | DOMDataTreeProducerException | DOMDataTreeShardingConflictException e) {
+            e.printStackTrace();
         }
 
         final ExecutorService executorService = Executors.newFixedThreadPool((int) numShards);

@@ -17,6 +17,7 @@ import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sharding.simple.impl.DomListBuilder;
+import sharding.simple.impl.ShardFactory;
 import sharding.simple.impl.ShardHelper;
 import sharding.simple.shardtests.ShardTestStats.TestStatus;
 
@@ -33,11 +34,11 @@ public class RandomShardTest extends AbstractShardTest{
     private static final Logger LOG = LoggerFactory.getLogger(RandomShardTest.class);
 
     RandomShardTest(Long numShards, Long numItems, Long numListeners, Long opsPerTx,
-                         LogicalDatastoreType dataStoreType, Boolean precreateTestData, ShardHelper shardHelper,
-                         DOMDataTreeService dataTreeService) throws ShardTestException {
+                    LogicalDatastoreType dataStoreType, Boolean precreateTestData, ShardHelper shardHelper,
+                    DOMDataTreeService dataTreeService, ShardFactory shardFactory) throws ShardTestException {
 
         super(numShards, numItems, numListeners, opsPerTx, dataStoreType, precreateTestData, shardHelper,
-                dataTreeService);
+                dataTreeService, shardFactory);
         LOG.info("Created RandomShardTest");
     }
 
@@ -68,7 +69,7 @@ public class RandomShardTest extends AbstractShardTest{
     @Override
     public ShardTestStats runTest() {
         LOG.info("Running RandomShardTest");
-        createListAnchors();
+
         int rand;
         int txOK = 0;
         int txError = 0;
