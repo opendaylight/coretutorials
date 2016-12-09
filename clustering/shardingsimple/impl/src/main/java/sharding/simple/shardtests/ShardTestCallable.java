@@ -16,6 +16,7 @@ import java.util.concurrent.Callable;
 import org.opendaylight.mdsal.common.api.TransactionCommitFailedException;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeCursorAwareTransaction;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeWriteCursor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.sharding.simple.rev160802.ShardTestOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.sharding.simple.rev160802.test.data.outer.list.InnerList;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifierWithPredicates;
@@ -40,9 +41,20 @@ public class ShardTestCallable implements Callable<Void> {
     private final long opsPerTx;
     private final List<MapEntryNode> testData;
 
+    private final SingleShardTest shardTest;
+
     int txSubmitted = 0;
     int txOk = 0;
     int txError = 0;
+
+    ShardTestCallable(SingleShardTest shardTest, ShardData sd, int shardNum, long numItems, long opsPerTx, List<MapEntryNode> testData) {
+        this.sd = sd;
+        this.shardNum = shardNum;
+        this.numItems = numItems;
+        this.opsPerTx = opsPerTx;
+        this.testData = testData;
+        this.shardTest = shardTest;
+    }
 
     ShardTestCallable(ShardData sd, int shardNum, long numItems, long opsPerTx, List<MapEntryNode> testData) {
         this.sd = sd;
@@ -50,69 +62,30 @@ public class ShardTestCallable implements Callable<Void> {
         this.numItems = numItems;
         this.opsPerTx = opsPerTx;
         this.testData = testData;
+        this.shardTest = null;
         LOG.info("ShardTestCallable created");
     }
 
     @Override
     public Void call() throws Exception {
-        int testDataIdx = 0;
-
-        int writeCnt = 0;
-        DOMDataTreeCursorAwareTransaction tx = sd.getProducer().createTransaction(false);
-        DOMDataTreeWriteCursor cursor = tx.createCursor(sd.getDOMDataTreeIdentifier());
-        cursor.enter(new NodeIdentifier(InnerList.QNAME));
-
         for (int i = 0; i < numItems; i++) {
             NodeIdentifierWithPredicates nodeId = new NodeIdentifierWithPredicates(InnerList.QNAME,
-                    DomListBuilder.IL_NAME, (long)i);
+                    DomListBuilder.IL_NAME, (long) i);
             MapEntryNode element;
             if (testData != null) {
-                element = testData.get(testDataIdx++);
+                element = testData.get(i++);
             } else {
                 element = AbstractShardTest.createListEntry(nodeId, shardNum, i);
             }
-            writeCnt++;
-            cursor.write(nodeId, element);
 
-            if (writeCnt == opsPerTx) {
-                // We have reached the limit of writes-per-transaction.
-                // Submit the current outstanding transaction and create
-                // a new one in its place.
-                txSubmitted++;
-                cursor.close();
-                Futures.addCallback(tx.submit(), new FutureCallback<Void>() {
-                    @Override
-                    public void onSuccess(final Void result) {
-                        txOk++;
-                    }
-
-                    @Override
-                    public void onFailure(final Throwable t1) {
-                        LOG.error("Transaction failed, shard {}, exception {}", shardNum, t1);
-                        txError++;
-                    }
-                });
-
-                writeCnt = 0;
-                tx = sd.getProducer().createTransaction(false);
-                cursor = tx.createCursor(sd.getDOMDataTreeIdentifier());
-                cursor.enter(new NodeIdentifier(InnerList.QNAME));
-            }
+            shardTest.executeSingleWrite(element);
         }
 
-        // Submit the last outstanding transaction even if it's empty and wait
-        // for it to complete. This will flush all outstanding transactions to
-        // the data store. Note that all tx submits except for the last one are
-        // asynchronous.
-        txSubmitted++;
-        cursor.close();
-        try {
-            tx.submit().checkedGet();
-            txOk++;
-        } catch (TransactionCommitFailedException e) {
-            LOG.error("Last transaction submit failed, shard {}, exception {}", shardNum, e);
-            txError++;
-        }
+        ShardTestOutput testOutput = shardTest.getTestResults();
+        txOk += testOutput.getTxOk();
+        txSubmitted += testOutput.getTxSubmitted();
+        txError += testOutput.getTxError();
+
         return null;
     }
 

@@ -39,6 +39,14 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <artifactId>mdsal-dom-inmemory-datastore</artifactId>
   </dependency>
   <dependency>
+    <groupId>org.opendaylight.controller</groupId>
+    <artifactId>sal-distributed-datastore</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>org.opendaylight.controller</groupId>
+    <artifactId>sal-clustering-commons</artifactId>
+  </dependency>
+  <dependency>
     <groupId>org.opendaylight.mdsal</groupId>
     <artifactId>mdsal-dom-broker</artifactId>
     <scope>test</scope>

@@ -135,6 +135,17 @@ module shardingsimple {
                     "Data store stype - must be either CONFIG or
                     OPERATIONAL";
             }
+            leaf shard-type {
+                type enumeration {
+                    enum "INMEMORY" {
+                        value 1;
+                    }
+                    enum "CDS" {
+                        value 2;
+                    }
+                }
+                default "INMEMORY";
+            }
             leaf shards {
                 type uint32;
                 default 1;

@@ -27,7 +27,7 @@ public class ShardTestStats {
     private final long listenerEventsOk;
     private final long listenerEventsFail;
 
-    ShardTestStats(TestStatus status, int txOk, int txError, int txSubmitted, long execTime,
+    ShardTestStats(TestStatus status, long txOk, long txError, long txSubmitted, long execTime,
             long dataTreeEventsOk, long dataTreeEventsFail) {
         this.status = status;
         this.txOk = txOk;
