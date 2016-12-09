@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import sharding.simple.impl.DomListBuilder;
+import sharding.simple.impl.ShardFactory;
 import sharding.simple.impl.ShardHelper;
 import sharding.simple.impl.ShardHelper.ShardData;
 
@@ -40,10 +41,10 @@ public class SoakShardTest extends AbstractShardTest {
     private final AtomicInteger txError = new AtomicInteger();
 
     SoakShardTest(Long numShards, Long numItems, Long operations, Long numListeners, Long opsPerTx,
-            LogicalDatastoreType dataStoreType, Boolean precreateTestData, ShardHelper shardHelper,
-            DOMDataTreeService dataTreeService) throws ShardTestException {
+                  LogicalDatastoreType dataStoreType, Boolean precreateTestData, ShardHelper shardHelper,
+                  DOMDataTreeService dataTreeService, ShardFactory shardFactory) throws ShardTestException {
         super(numShards, numItems, numListeners, opsPerTx, dataStoreType, precreateTestData,
-                shardHelper, dataTreeService);
+                shardHelper, dataTreeService, shardFactory);
         this.operations = operations;
         LOG.info("Created SoakShardTest");
     }
@@ -52,7 +53,6 @@ public class SoakShardTest extends AbstractShardTest {
     public ShardTestStats runTest() {
         LOG.info("Running SoakShardTest");
 
-        createListAnchors();
         final List<MapEntryNode> testData = preCreateTestData();
 
         DOMDataTreeCursorAwareTransaction[] tx = new DOMDataTreeCursorAwareTransaction[(int) numShards];
