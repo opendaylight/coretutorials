@@ -8,10 +8,14 @@
 
 package sharding.simple.shardtests;
 
+import org.opendaylight.controller.cluster.ActorSystemProvider;
+import org.opendaylight.controller.cluster.sharding.DistributedShardFactory;
+import org.opendaylight.controller.sal.core.api.model.SchemaService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeProducerException;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeService;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeShardingConflictException;
+import org.opendaylight.mdsal.dom.api.DOMDataTreeShardingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.sharding.simple.rev160802.ShardTestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.sharding.simple.rev160802.ShardTestInput.DataStore;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.sharding.simple.rev160802.ShardTestInput.TestType;
@@ -19,6 +23,9 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import sharding.simple.impl.CDSTestShardFactory;
+import sharding.simple.impl.InMemoryShardFactory;
+import sharding.simple.impl.ShardFactory;
 import sharding.simple.impl.ShardHelper;
 import sharding.simple.impl.ShardHelper.ShardData;
 
@@ -37,14 +44,29 @@ public class ShardTestFactory {
 
     private final ShardHelper shardHelper;
     private final DOMDataTreeService dataTreeService;
+    private final DistributedShardFactory distributedShardFactory;
+    private final DOMDataTreeShardingService dataTreeShardingService;
+    private final ActorSystemProvider actorSystemProvider;
+    private final SchemaService schemaService;
 
     /** Constructor for the TestFactory.
-     * @param shardHelper: Reference to the ShardHelper
-     * @param dataTreeService: Reference to the MD-SAL Data Tree Service
+     * @param shardHelper : Reference to the ShardHelper
+     * @param dataTreeService : Reference to the MD-SAL Data Tree Service
+     * @param distributedShardFactory
+     * @param dataTreeShardingService
+     * @param actorSystemProvider
+     * @param schemaService
      */
-    public ShardTestFactory(ShardHelper shardHelper, DOMDataTreeService dataTreeService) {
+    public ShardTestFactory(ShardHelper shardHelper, DOMDataTreeService dataTreeService,
+                            DistributedShardFactory distributedShardFactory,
+                            DOMDataTreeShardingService dataTreeShardingService,
+                            ActorSystemProvider actorSystemProvider, SchemaService schemaService) {
         this.shardHelper = shardHelper;
         this.dataTreeService = dataTreeService;
+        this.dataTreeShardingService = dataTreeShardingService;
+        this.actorSystemProvider = actorSystemProvider;
+        this.distributedShardFactory = distributedShardFactory;
+        this.schemaService = schemaService;
         LOG.info("TestFactory created.");
     }
 
@@ -83,31 +105,39 @@ public class ShardTestFactory {
      */
     public AbstractShardTest createTest(ShardTestInput input) throws ShardTestException {
         ShardTestType testType = getShardTestType(input.getTestType());
+        ShardTestInput.ShardType shardType = input.getShardType();
+
+        final ShardFactory shardFactory;
+        if (shardType == ShardTestInput.ShardType.CDS) {
+            shardFactory = new CDSTestShardFactory(distributedShardFactory, actorSystemProvider);
+        } else {
+            shardFactory = new InMemoryShardFactory(dataTreeShardingService, dataTreeService, schemaService);
+        }
 
         try {
-            shardHelper.clear();
-            verifyProducerRights();
+            // shardHelper.clear();
+            //verifyProducerRights();
             switch (testType) {
                 case ROUND_ROBIN:
                     return new RoundRobinShardTest(input.getShards(), input.getDataItems(), input.getListeners(),
                             input.getPutsPerTx(), getLogicalDatastoreType(input.getDataStore()),
-                            input.isPrecreateData(), shardHelper, dataTreeService);
+                            input.isPrecreateData(), shardHelper, dataTreeService, shardFactory);
                 case MULTI_THREAD:
                     return new MultiThreadShardTest(input.getShards(), input.getDataItems(), input.getListeners(),
                             input.getPutsPerTx(), getLogicalDatastoreType(input.getDataStore()),
-                            input.isPrecreateData(), shardHelper, dataTreeService);
+                            input.isPrecreateData(), shardHelper, dataTreeService, shardFactory);
                 case SOAK_TEST:
                     return new SoakShardTest(input.getShards(), input.getDataItems(), input.getOperations(),
                             input.getListeners(), input.getPutsPerTx(), getLogicalDatastoreType(input.getDataStore()),
-                            input.isPrecreateData(), shardHelper, dataTreeService);
+                            input.isPrecreateData(), shardHelper, dataTreeService, shardFactory);
                 case RANDOM_SHARD:
                     return new RandomShardTest(input.getShards(), input.getDataItems(), input.getListeners(),
                             input.getPutsPerTx(), getLogicalDatastoreType(input.getDataStore()),
-                            input.isPrecreateData(), shardHelper, dataTreeService);
+                            input.isPrecreateData(), shardHelper, dataTreeService, shardFactory);
                 default:
                     throw new ShardTestException("Invalid test type ".concat(String.valueOf(testType)));
             }
-        } catch (ShardTestException | ShardVerifyException e) {
+        } catch (ShardTestException e) {
             LOG.error("Exception creating test, {}", e);
             throw new ShardTestException(e.getMessage(), e.getCause());
         }
