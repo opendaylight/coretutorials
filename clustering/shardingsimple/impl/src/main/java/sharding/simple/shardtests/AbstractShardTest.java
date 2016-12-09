@@ -14,11 +14,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opendaylight.controller.cluster.sharding.DOMDataTreeShardCreationFailedException;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.mdsal.common.api.TransactionCommitFailedException;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeCursorAwareTransaction;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeIdentifier;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeLoopException;
+import org.opendaylight.mdsal.dom.api.DOMDataTreeProducer;
+import org.opendaylight.mdsal.dom.api.DOMDataTreeProducerException;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeService;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeShardingConflictException;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeWriteCursor;
@@ -38,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import sharding.simple.impl.DomListBuilder;
+import sharding.simple.impl.ShardFactory;
 import sharding.simple.impl.ShardHelper;
 import sharding.simple.impl.ShardHelper.ShardData;
 
@@ -46,14 +50,18 @@ public abstract class AbstractShardTest implements AutoCloseable {
 
     private final List<ListenerRegistration<ShardTestListener>> testListenerRegs = Lists.newArrayList();
     private ListenerRegistration<ValidationListener> validationListenerReg = null;
+    private final LogicalDatastoreType datastoreType;
 
     private final DOMDataTreeService dataTreeService;
+    private final ShardFactory shardFactory;
+    private final long numListeners;
     protected final long numShards;
     protected final long numItems;
     protected final Boolean preCreateTestData;
 
     protected final long opsPerTx;
     protected final List<ShardData> shardData = Lists.newArrayList();
+    private final List<ShardFactory.ShardRegistration> shardRegistrations = Lists.newArrayList();
 
     static final YangInstanceIdentifier TEST_DATA_ROOT_YID =
             YangInstanceIdentifier.builder().node(TestData.QNAME).node(OuterList.QNAME).build();
@@ -68,7 +76,7 @@ public abstract class AbstractShardTest implements AutoCloseable {
      */
     AbstractShardTest(Long numShards, Long numItems, Long numListeners, Long opsPerTx,
             LogicalDatastoreType dataStoreType, Boolean precreateTestData, ShardHelper shardHelper,
-            DOMDataTreeService dataTreeService) throws ShardTestException {
+            DOMDataTreeService dataTreeService, ShardFactory shardFactory) throws ShardTestException {
         LOG.info("Creating ShardTest");
 
         this.dataTreeService = dataTreeService;
@@ -76,28 +84,26 @@ public abstract class AbstractShardTest implements AutoCloseable {
         this.numItems = numItems;
         this.preCreateTestData = precreateTestData;
         this.opsPerTx = opsPerTx;
+        this.shardFactory = shardFactory;
+        this.datastoreType = dataStoreType;
+        this.numListeners = numListeners;
+    }
 
-        // Create the specified number of shards/producers and register them
-        // with MD-SAL
-        try {
-            for (Long i = (long)0; i < numShards; i++) {
-                final YangInstanceIdentifier yiId =
-                                TEST_DATA_ROOT_YID.node(new NodeIdentifierWithPredicates(OuterList.QNAME,
-                                QName.create(OuterList.QNAME, "oid"),
-                                i));
-                final ShardData sd = shardHelper.createAndInitShard(dataStoreType, yiId);
-                shardData.add(sd);
-            }
-        } catch (DOMDataTreeShardingConflictException e) {
-            LOG.error("Failed to create shard, exception {}", e);
-            throw new ShardTestException(e.getMessage(), e.getCause());
+    List<SingleShardTest> createTestShardLayout() throws ShardTestException, DOMDataTreeShardCreationFailedException,
+            DOMDataTreeProducerException, DOMDataTreeShardingConflictException {
+        final List<SingleShardTest> singleShardTests = Lists.newArrayList();
+        final ArrayList<DOMDataTreeIdentifier> treeIds = Lists.newArrayList();
+
+        for (long i = 0L; i < numShards; i++) {
+            final YangInstanceIdentifier yiId =
+                    TEST_DATA_ROOT_YID.node(new NodeIdentifierWithPredicates(
+                            OuterList.QNAME, QName.create(OuterList.QNAME, "oid"), i));
+            shardRegistrations.add(shardFactory.createShard(new DOMDataTreeIdentifier(datastoreType, yiId)));
+            singleShardTests.add(new SingleShardTest(dataTreeService, new DOMDataTreeIdentifier(datastoreType, yiId), opsPerTx));
+            treeIds.add(new DOMDataTreeIdentifier(datastoreType, yiId));
         }
 
-        // Create the specified number of test listeners and register them
-        // with MD-SAL
         try {
-            final ArrayList<DOMDataTreeIdentifier> treeIds = Lists.newArrayList();
-            shardData.forEach(sd -> treeIds.add(sd.getDOMDataTreeIdentifier()));
             for (long i = 0; i < numListeners; i++) {
                 testListenerRegs.add(dataTreeService.registerListener(new ShardTestListener(),
                         treeIds, false, Collections.emptyList()));
@@ -106,6 +112,8 @@ public abstract class AbstractShardTest implements AutoCloseable {
             LOG.error("Failed to register a test listener, exception {}", e);
             throw new ShardTestException(e.getMessage(), e.getCause());
         }
+
+        return singleShardTests;
     }
 
     /** Pre-creates test data (InnerList elements) before the measured test
@@ -138,17 +146,19 @@ public abstract class AbstractShardTest implements AutoCloseable {
      *  outer list item) in each shard.
      *
      */
-    protected void createListAnchors() {
+    protected void createListAnchors(List<DOMDataTreeIdentifier> dataTreeIdentifiers) {
         MapNode mapNode = ImmutableMapNodeBuilder
                 .create()
                 .withNodeIdentifier(new NodeIdentifier(InnerList.QNAME))
                 .build();
-        for (int s = 0; s < numShards; s++) {
-            ShardData sd = shardData.get(s);
 
-            final DOMDataTreeCursorAwareTransaction tx = sd.getProducer().createTransaction(false);
-            final DOMDataTreeWriteCursor cursor = tx.createCursor(sd.getDOMDataTreeIdentifier());
-            final YangInstanceIdentifier shardRootYid = sd.getDOMDataTreeIdentifier().getRootIdentifier();
+        DOMDataTreeProducer producer = dataTreeService.createProducer(dataTreeIdentifiers);
+
+        for (DOMDataTreeIdentifier treeId : dataTreeIdentifiers) {
+
+            final DOMDataTreeCursorAwareTransaction tx = producer.createTransaction(false);
+            final DOMDataTreeWriteCursor cursor = tx.createCursor(treeId);
+            final YangInstanceIdentifier shardRootYid = treeId.getRootIdentifier();
             if (cursor != null) {
                 cursor.write(shardRootYid.node(InnerList.QNAME).getLastPathArgument(), mapNode);
                 cursor.close();
