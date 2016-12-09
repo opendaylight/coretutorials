@@ -8,6 +8,7 @@
 
 package sharding.simple.shardtests;
 
+import org.opendaylight.controller.cluster.sharding.DistributedShardFactory;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeProducerException;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeService;
@@ -39,10 +40,12 @@ public class ShardTestFactory {
     private final DOMDataTreeService dataTreeService;
 
     /** Constructor for the TestFactory.
-     * @param shardHelper: Reference to the ShardHelper
-     * @param dataTreeService: Reference to the MD-SAL Data Tree Service
+     * @param shardHelper : Reference to the ShardHelper
+     * @param dataTreeService : Reference to the MD-SAL Data Tree Service
+     * @param distributedShardFactory
      */
-    public ShardTestFactory(ShardHelper shardHelper, DOMDataTreeService dataTreeService) {
+    public ShardTestFactory(ShardHelper shardHelper, DOMDataTreeService dataTreeService,
+                            DistributedShardFactory distributedShardFactory) {
         this.shardHelper = shardHelper;
         this.dataTreeService = dataTreeService;
         LOG.info("TestFactory created.");
@@ -83,6 +86,9 @@ public class ShardTestFactory {
      */
     public AbstractShardTest createTest(ShardTestInput input) throws ShardTestException {
         ShardTestType testType = getShardTestType(input.getTestType());
+        ShardTestInput.ShardType shardType = input.getShardType();
+
+        if
 
         try {
             shardHelper.clear();

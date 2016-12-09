@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
+import org.opendaylight.controller.cluster.sharding.DistributedShardFactory;
 import org.opendaylight.controller.sal.core.api.model.SchemaService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeIdentifier;
@@ -24,6 +25,7 @@ import org.opendaylight.mdsal.dom.api.DOMDataTreeService;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeShardingConflictException;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeShardingService;
 import org.opendaylight.mdsal.dom.store.inmemory.InMemoryDOMDataTreeShard;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.sharding.simple.rev160802.ShardTestInput;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.util.concurrent.SpecialExecutors;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -52,6 +54,8 @@ public class ShardHelper implements AutoCloseable, SchemaContextListener {
     private final List<ListenerRegistration<InMemoryDOMDataTreeShard>> dataTreeShardRegistrations = new ArrayList<>();
     private final Map<DOMDataTreeIdentifier, ShardData> shardDb = new HashMap<>();
 
+    private DistributedShardFactory shardFactory;
+
     /** Constructor.
      * @param dataTreeShardingService: reference to MD-SAL Data Tree Sharding Service
      * @param dataTreeService: reference to MD-SAL Data Tree  Service
@@ -66,6 +70,23 @@ public class ShardHelper implements AutoCloseable, SchemaContextListener {
         schemaServiceRegistration = schemaService.registerSchemaContextListener(this);
 
         LOG.info("ShardHelper Created & Initialized");
+    }
+
+    public void setShardFactory(DistributedShardFactory shardFactory) {
+        this.shardFactory = shardFactory;
+    }
+
+    public ShardData createAndInitShard(LogicalDatastoreType dataStoreType, YangInstanceIdentifier yiId,
+                                        ShardTestInput.ShardType shardType) {
+        final DOMDataTreeIdentifier ddtId = new DOMDataTreeIdentifier(dataStoreType, yiId.toOptimized());
+
+//        if (shardType == ShardTestInput.ShardType.CDS) {
+//            return createAndInitCDSShard(dataStoreType, yiId);
+//        } else {
+//            return createAndInitInmemoryShard(dataStoreType, yiId);
+//        }
+
+        return createAndInitShard(dataStoreType, yiId);
     }
 
     /** Helper function that first creates a shard,creates a producer for the
