@@ -111,12 +111,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
     </dependency>
     <dependency>
       <groupId>org.opendaylight.netconf</groupId>
-      <artifactId>messagebus-netconf</artifactId>
-      <type>xml</type>
-      <classifier>config</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.netconf</groupId>
       <artifactId>sal-rest-docgen</artifactId>
       <version>${restconf.version}</version>
     </dependency>
