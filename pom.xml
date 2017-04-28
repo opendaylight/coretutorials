@@ -34,6 +34,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
     <module>dhcp</module>
     <module>benchmark</module>
     <module>clustering</module>
+    <module>binding2-prototype</module>
   </modules>
 
 </project>
