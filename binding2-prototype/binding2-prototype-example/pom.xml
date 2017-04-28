@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2017 Cisco Systems, Inc. and others.  All rights reserved.
+  ~
+  ~ This program and the accompanying materials are made available under the
+  ~ terms of the Eclipse Public License v1.0 which accompanies this distribution,
+  ~ and is available at http://www.eclipse.org/legal/epl-v10.html
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.opendaylight.odlparent</groupId>
+        <artifactId>odlparent</artifactId>
+        <version>1.8.0-SNAPSHOT</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>org.opendaylight.coretutorials</groupId>
+    <artifactId>binding2-prototype-example</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>binding2-prototype-example</name>
+    <description>
+        Opendaylight MD-SAL Binding specification v2 example. Based on given
+        YANG files in src/main/yang and upon a standard Maven build, it runs transformation
+        process via yang-maven-plugin and mdsal-binding2-maven-api-gen-plugin to generate
+        Java binding v2 source code in target folder.
+    </description>
+    <packaging>jar</packaging>
+
+    <prerequisites>
+        <maven>3.3.0</maven>
+    </prerequisites>
+
+    <properties>
+        <!-- stable/carbon versions -->
+        <yang.yangtools.version>1.1.0-SNAPSHOT</yang.yangtools.version>
+        <yang.maven.plugin.version>1.1.0-SNAPSHOT</yang.maven.plugin.version>
+        <mdsal.binding.version>0.10.0-SNAPSHOT</mdsal.binding.version>
+        <java.source.version>1.8</java.source.version>
+        <java.target.version>1.8</java.target.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.opendaylight.mdsal</groupId>
+            <artifactId>mdsal-binding2-spec</artifactId>
+            <version>${mdsal.binding.version}</version>
+        </dependency>
+
+        <!-- Note: there is no Carbon version in public repositories at this moment:
+            https://nexus.opendaylight.org/content/repositories/public/org/opendaylight/mdsal/model/yang-ext/
+        -->
+        <dependency>
+            <groupId>org.opendaylight.mdsal.model</groupId>
+            <artifactId>yang-ext</artifactId>
+            <version>2013.09.07.9-Boron</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opendaylight.mdsal</groupId>
+            <artifactId>mdsal-binding2-generator-impl</artifactId>
+            <version>${mdsal.binding.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opendaylight.yangtools</groupId>
+            <artifactId>yang-parser-impl</artifactId>
+            <classifier>sources</classifier>
+            <version>${yang.yangtools.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+
+        <plugins>
+            <plugin>
+                <groupId>org.opendaylight.yangtools</groupId>
+                <artifactId>yang-maven-plugin</artifactId>
+                <version>${yang.maven.plugin.version}</version>
+
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate-sources</goal>
+                        </goals>
+
+                        <configuration>
+                            <yangFilesRootDir>src/main/yang</yangFilesRootDir>
+
+                            <codeGenerators>
+                                <generator>
+                                    <codeGeneratorClass>
+                                        org.opendaylight.mdsal.binding.javav2.maven.api.gen.plugin.CodeGeneratorImpl
+                                    </codeGeneratorClass>
+
+                                    <outputBaseDir>target/generated-sources/mdsal-binding2</outputBaseDir>
+                                </generator>
+                            </codeGenerators>
+
+                            <inspectDependencies>true</inspectDependencies>
+                        </configuration>
+                    </execution>
+                </executions>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>org.opendaylight.mdsal</groupId>
+                        <artifactId>mdsal-binding2-maven-api-gen-plugin</artifactId>
+                        <version>${mdsal.binding.version}</version>
+                        <type>jar</type>
+                    </dependency>
+                </dependencies>
+
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.source.version}</source>
+                    <target>${java.source.version}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+
+    </build>
+
+    <!--
+        Maven Site Configuration
+
+        The following configuration is necessary for maven-site-plugin to
+        correctly identify the correct deployment path for OpenDaylight Maven
+        sites.
+    -->
+    <url>${odl.site.url}/${project.groupId}/${stream}/</url>
+
+    <distributionManagement>
+        <site>
+            <id>opendaylight-site</id>
+            <url>${nexus.site.url}/</url>
+        </site>
+    </distributionManagement>
+</project>
