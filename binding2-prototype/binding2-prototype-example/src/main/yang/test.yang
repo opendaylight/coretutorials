@@ -1,0 +1,9 @@
+module test {
+    yang-version 1.1;
+    namespace "urn:test";
+    prefix tst;
+
+    revision 2017-04-28 {
+        description "YANG file for testing Binding specification V2. Let's grow up gradually.";
+    }
+}
