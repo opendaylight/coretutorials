@@ -1,0 +1,23 @@
+module apple-test {
+    yang-version 1;
+
+    namespace "urn:test:apple:test";
+    prefix apple;
+    organization "apple.test.org";
+    revision "2017-05-03";
+
+    container apple {
+
+        leaf apple {
+
+            type enumeration {
+                enum apple1 {
+                    value 0 ;
+                }
+                enum apple2 {
+                    value 1 ;
+                }
+            }
+        }
+    }
+}
