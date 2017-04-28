@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vi: set et smarttab sw=4 tabstop=4: -->
+<!--
+Copyright (c) 2017 Cisco Systems
+
+This program and the accompanying materials are made available under the
+terms of the Eclipse Public License v1.0 which accompanies this distribution,
+and is available at http://www.eclipse.org/legal/epl-v10.html
+-->
+<features name="odl-binding2-prototype-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
+  <repository>mvn:org.opendaylight.yangtools/features-yangtools/{{VERSION}}/xml/features</repository>
+  <repository>mvn:org.opendaylight.controller/features-mdsal/{{VERSION}}/xml/features</repository>
+  <repository>mvn:org.opendaylight.netconf/features-restconf/{{VERSION}}/xml/features</repository>
+  <repository>mvn:org.opendaylight.dluxapps/features-dluxapps/{{VERSION}}/xml/features</repository>
+  <repository>mvn:org.opendaylight.mdsal.model/features-mdsal-model/{{VERSION}}/xml/features</repository>
+
+    <feature name='odl-binding2-prototype-api' version='${project.version}' description='OpenDaylight :: binding2-prototype :: api '>
+    <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>
+    <bundle>mvn:org.opendaylight.coretutorials/binding2-prototype-api/{{VERSION}}</bundle>
+  </feature>
+  <feature name='odl-binding2-prototype-impl' version='${project.version}' description='OpenDaylight :: binding2-prototype :: impl '>
+    <feature version='${controller.mdsal.version}'>odl-mdsal-broker</feature>
+    <feature version='${project.version}'>odl-binding2-prototype-api</feature>
+    <bundle>mvn:org.opendaylight.coretutorials/binding2-prototype-impl/{{VERSION}}</bundle>
+    <configfile finalname="binding2-prototype-impl-default-config.xml">mvn:org.opendaylight.coretutorials/binding2-prototype-impl/{{VERSION}}/xml/config</configfile>
+  </feature>
+  <feature name='odl-binding2-prototype-impl-rest' version='${project.version}' description='OpenDaylight :: binding2-prototype :: impl :: REST '>
+    <feature version="${project.version}">odl-binding2-prototype-impl</feature>
+    <feature version="${restconf.version}">odl-restconf-all</feature>
+  </feature>
+  <feature name='odl-binding2-prototype-impl-ui' version='${project.version}' description='OpenDaylight :: binding2-prototype :: impl :: UI'>
+    <feature version="${project.version}">odl-binding2-prototype-impl-rest</feature>
+    <feature version="${restconf.version}">odl-mdsal-apidocs</feature>
+    <feature version="${dlux.version}">odl-dluxapps-yangman</feature>
+
+  </feature>
+
+</features>
