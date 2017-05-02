@@ -26,8 +26,8 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     odl:type="default" />
 
   <bean id="provider"
-    class="org.opendaylight.coretutorials.clustering.singleton.hs.topo.HighSacalabilitySampleTopoProvider"
-    init-method="init" destroy-method="close">
+    class="org.opendaylight.coretutorials.clustering.singleton.hs.topo.HighScalabilitySampleTopoProvider"
+    destroy-method="close">
     <argument ref="dataBroker" />
     <argument ref="rpcRegistry" />
     <argument ref="clusterSingletonService" />

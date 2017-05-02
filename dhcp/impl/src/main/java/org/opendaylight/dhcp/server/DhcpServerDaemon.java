@@ -7,21 +7,16 @@
  */
 package org.opendaylight.dhcp.server;
 
-import com.google.common.base.Predicate;
 import io.netty.channel.EventLoopGroup;
 import java.io.IOException;
-import java.net.NetworkInterface;
 import java.util.List;
-import org.apache.directory.server.dhcp.service.manager.LeaseManager;
-import org.apache.directory.server.dhcp.service.DhcpService;
 import org.anarres.dhcp.common.address.InterfaceAddress;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.directory.server.dhcp.service.DhcpService;
+import org.apache.directory.server.dhcp.service.manager.LeaseManager;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dhcp.rev161018.DhcpServerCfg;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dhcp.rev161018.dhcp.server.cfg.DefaultOption;
-
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * DhcpServer Deamon,as blueprint bean.
@@ -34,7 +29,8 @@ public class DhcpServerDaemon {
     private final DataBroker dataBroker;
 
     public DhcpServerDaemon(final DataBroker dataBroker,
-                        final EventLoopGroup eventLoopGroup,final LeaseManager manager, final DhcpServerCfg dhcpServerCfg) {
+                        final EventLoopGroup eventLoopGroup,final LeaseManager manager,
+                        final DhcpServerCfg dhcpServerCfg) {
         this.dataBroker = dataBroker;
         this.eventLoopGroup = eventLoopGroup;
         final int port = dhcpServerCfg.getPort().getValue();
@@ -59,12 +55,8 @@ public class DhcpServerDaemon {
 
         // Bind only to pre-configured network interfaces
         try {
-            dhcpServer.addInterfaces(new Predicate<NetworkInterface>() {
-
-                public boolean apply(final NetworkInterface input) {
-                    return (networkInterfaces.contains(input.getName()) || networkInterfaces.isEmpty());
-                }
-            });
+            dhcpServer.addInterfaces(networkInterfaces.isEmpty() ? input -> true
+                    : input -> networkInterfaces.contains(input.getName()));
         } catch (IOException | InterruptedException  e) {
             LOG.error("DHCP server on port {} failed to add network interfaces: {}", port, e);
             throw new IllegalStateException(e);

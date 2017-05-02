@@ -14,7 +14,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <repository>mvn:org.opendaylight.controller/features-mdsal/{{VERSION}}/xml/features</repository>
   <repository>mvn:org.opendaylight.mdsal.model/features-mdsal-model/{{VERSION}}/xml/features</repository>
   <repository>mvn:org.opendaylight.netconf/features-restconf/{{VERSION}}/xml/features</repository>
-  <repository>mvn:org.opendaylight.dlux/features-dlux/{{VERSION}}/xml/features</repository>
+  <repository>mvn:org.opendaylight.dluxapps/features-dluxapps/{{VERSION}}/xml/features</repository>
   <feature name='odl-singletonsimple-api' version='${project.version}' description='OpenDaylight :: singletonsimple :: api'>
     <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>
     <bundle>mvn:org.opendaylight.coretutorials.clustering/singletonsimple-api/{{VERSION}}</bundle>
@@ -32,8 +32,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <feature name='odl-singletonsimple-ui' version='${project.version}' description='OpenDaylight :: singletonsimple :: UI'>
     <feature version="${project.version}">odl-singletonsimple-rest</feature>
     <feature version="${restconf.version}">odl-mdsal-apidocs</feature>
-    <feature version="${mdsal.version}">odl-mdsal-xsql</feature>
-    <feature version="${dlux.version}">odl-dlux-yangman</feature>
+    <feature version="${dlux.version}">odl-dluxapps-yangman</feature>
   </feature>
   <feature name='odl-singletonsimple-cli' version='${project.version}' description='OpenDaylight :: singletonsimple :: CLI'>
     <feature version="${project.version}">odl-singletonsimple</feature>
