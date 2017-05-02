@@ -15,7 +15,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <repository>mvn:org.opendaylight.controller/features-mdsal-benchmark/${mdsal.benchmark.version}/xml/features</repository>
   <repository>mvn:org.opendaylight.mdsal.model/features-mdsal-model/${mdsal.model.version}/xml/features</repository>
   <repository>mvn:org.opendaylight.netconf/features-restconf/${restconf.version}/xml/features</repository>
-  <repository>mvn:org.opendaylight.dlux/features-dlux/${dlux.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.dluxapps/features-dluxapps/${dlux.version}/xml/features</repository>
   <feature name='odl-benchmark-api' version='${project.version}' description='OpenDaylight :: benchmark :: api'>
     <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>
     <bundle>mvn:org.opendaylight.coretutorials/benchmark-api/${project.version}</bundle>
@@ -35,7 +35,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <feature version="${project.version}">odl-benchmark-rest</feature>
     <feature version="${restconf.version}">odl-mdsal-apidocs</feature>
     <feature version="${mdsal.version}">odl-mdsal-xsql</feature>
-    <feature version="${dlux.version}">odl-dlux-yangman</feature>
+    <feature version="${dlux.version}">odl-dluxapps-yangman</feature>
   </feature>
 
 </features>
