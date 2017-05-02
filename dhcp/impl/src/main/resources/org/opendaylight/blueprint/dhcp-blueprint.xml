@@ -36,7 +36,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
                               binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dhcp.rev161018.DhcpServerCfg">
         <odl:default-config><![CDATA[
       <dhcp-server-cfg xmlns="urn:opendaylight:params:xml:ns:yang:dhcp">
-          <port>67</port>
+          <port>1067</port>
           <network-interface>lo</network-interface>
           <network-interface>eth1</network-interface>
           <default-option>
@@ -48,14 +48,14 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
       ]]>
         </odl:default-config>
     </odl:clustered-app-config>
-    <bean id="dhcpServer"
+    <!-- bean id="dhcpServer"
           class="org.opendaylight.dhcp.server.DhcpServerDaemon"
           init-method="init" destroy-method="close">
         <argument ref="dataBroker" />
         <argument ref="globalWorkerGroup" />
         <argument ref="leaseManager" />
         <argument ref="dhcpConfig" />
-    </bean>
+    </bean -->
     <bean id="v6dhcpServer"
           class="org.opendaylight.dhcpv6.server.Dhcpv6ServerDaemon"
           init-method="init" destroy-method="close">
