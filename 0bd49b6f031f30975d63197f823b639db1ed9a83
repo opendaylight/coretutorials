@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba068154_1fbb8fc5",
+        "filename": "binding2-prototype/binding2-prototype-example/src/main/yang/test.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 2682
+      },
+      "writtenOn": "2017-05-02T12:15:29Z",
+      "side": 1,
+      "message": "https://git.opendaylight.org/gerrit/#/c/56377/ needs to get merged first to be able to evolve this YANG",
+      "revId": "0bd49b6f031f30975d63197f823b639db1ed9a83",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
