@@ -20,12 +20,12 @@ import org.slf4j.LoggerFactory;
  * @author jmedved
  *
  */
-public class HighSacalabilitySampleTopoProvider {
+public class HighScalabilitySampleTopoProvider {
 
-    private static final Logger LOG = LoggerFactory.getLogger(HighSacalabilitySampleTopoProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HighScalabilitySampleTopoProvider.class);
 
     // References to MD-SAL Infrastructure services, initialized in the constructor
-    private static SampleDeviceTopologyDiscoveryManager sampleDeviceTopologyDiscoveryManager;
+    private SampleDeviceTopologyDiscoveryManager sampleDeviceTopologyDiscoveryManager;
 
     /**
      * Method called when the blueprint container is created.
@@ -35,11 +35,11 @@ public class HighSacalabilitySampleTopoProvider {
      * @param clusterSingletonServiceProvider : reference to MD-SAL Cluster Singleton Service
      * @param sampleServiceProvider : All device RPCs holder
      */
-    public static void init(final DataBroker dataBroker,
+    public HighScalabilitySampleTopoProvider(final DataBroker dataBroker,
             final RpcProviderRegistry rpcProviderRegistry,
             final ClusterSingletonServiceProvider clusterSingletonServiceProvider,
             final SampleServicesProvider sampleServiceProvider) {
-        LOG.info("HighSacalabilitySampleTopoProvider Session Initiated");
+        LOG.info("HighScalabilitySampleTopoProvider Session Initiated");
         Preconditions.checkState(sampleDeviceTopologyDiscoveryManager == null, "we have instance of SFRM");
         sampleDeviceTopologyDiscoveryManager = new SampleDeviceTopologyDiscoveryManager(dataBroker, rpcProviderRegistry,
                 clusterSingletonServiceProvider, sampleServiceProvider);
@@ -51,7 +51,7 @@ public class HighSacalabilitySampleTopoProvider {
      * @throws Exception unexpected close exception
      */
     public void close() throws Exception {
-        LOG.info("HighSacalabilitySampleTopoProvider Closed");
+        LOG.info("HighScalabilitySampleTopoProvider Closed");
         if (sampleDeviceTopologyDiscoveryManager != null) {
             sampleDeviceTopologyDiscoveryManager.close();
             sampleDeviceTopologyDiscoveryManager = null;
