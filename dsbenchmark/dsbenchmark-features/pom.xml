@@ -72,8 +72,8 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.dlux</groupId>
-      <artifactId>features-dlux</artifactId>
+      <groupId>org.opendaylight.dluxapps</groupId>
+      <artifactId>features-dluxapps</artifactId>
       <version>${dlux.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
