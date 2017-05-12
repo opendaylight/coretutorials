@@ -1,0 +1,15 @@
+module test-model {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:test:model";
+    prefix "tstmdl";
+
+    revision "2017-05-11" {
+        description "Initial revision of test module";
+    }
+
+    container cont-test-model {
+        leaf leaf-test-model {
+            type string;
+        }
+    }
+}
