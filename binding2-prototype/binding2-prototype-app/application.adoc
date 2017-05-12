@@ -1,0 +1,77 @@
+== Binding specification v2
+
+=== How to work with binding2-prototype-app
+* navigate to:
+
+ ~/coretutorials/binding2-prototype/binding2-prototype-app/binding2-prototype-app-api/src/main/yang
+
+* put YANG files here
+* from root of project:
+
+ ~/coretutorials/binding2-prototype/binding2-prototype-app
+
+* run:
+
+ mvn clean install
+
+* after getting build success, implement code in:
+
+ ~/coretutorials/binding2-prototype/binding2-prototype-app/binding2-prototype-app-impl/src/main/java/org/opendaylight/binding2/prototype/demo/app
+ 
+* for run karaf:
+
+ ./coretutorials/binding2-prototype/binding2-prototype-app/binding2-prototype-app-karaf/target/assembly/bin/karaf
+
+* features for application are preinstalled
+
+=== Example for RPC
+
+* yang file with RPC (in binding2-prototype-app-api)
+
+ module binding2-prototype-app {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:binding2-prototype-app";
+    prefix "bind2prot";
+    revision "2017-05-05" {
+        description "Initial revision of binding2-prototype-app model";
+    }
+    rpc hello-world {
+        input {
+            leaf name {
+                type string;
+            }
+        }
+        output {
+            leaf greeting {
+                type string;
+            }
+        }
+    }
+ }
+
+* prepare constructor of provider for RPC registration
+
+ public Binding2PrototypeProvider(RpcRegistration rpcRegistration) {
+    this.rpcRegistration = rpcRegistration;
+ }
+* implements generated interface of RPC (Binding2PrototypeAppHelloWorldRpc) to provider:
+
+ public class Binding2PrototypeProvider implements BindingAwareProvider, AutoCloseable Binding2PrototypeAppHelloWorldRpc
+ 
+* override existing method from interface (invoke)
+
+ @Override
+ public void invoke(final HelloWorldInput input, final RpcCallback<HelloWorldOutput> callback) {
+    //TODO add your implementation
+ }
+
+* add implementation for getting name from input and add it to output
+
+ @Override
+ public void invoke(final HelloWorldInput input, final RpcCallback<HelloWorldOutput> callback) {
+    final HelloWorldOutputBuilder helloWorldOutputBuilder = new HelloWorldOutputBuilder();
+    helloWorldOutputBuilder.setGreeting("Hello " + input.getName());
+    callback.onSuccess(helloWorldOutputBuilder.build());
+ }
+
+ 
