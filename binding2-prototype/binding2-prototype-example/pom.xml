@@ -12,13 +12,13 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>odlparent</artifactId>
-        <version>1.8.0-SNAPSHOT</version>
+        <version>1.8.1-SNAPSHOT</version>
         <relativePath/>
     </parent>
 
     <groupId>org.opendaylight.coretutorials</groupId>
     <artifactId>binding2-prototype-example</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1.1-SNAPSHOT</version>
     <name>binding2-prototype-example</name>
     <description>
         Opendaylight MD-SAL Binding specification v2 example. Based on given
@@ -34,9 +34,9 @@
 
     <properties>
         <!-- stable/carbon versions -->
-        <yang.yangtools.version>1.1.0-SNAPSHOT</yang.yangtools.version>
-        <yang.maven.plugin.version>1.1.0-SNAPSHOT</yang.maven.plugin.version>
-        <mdsal.binding.version>0.10.0-SNAPSHOT</mdsal.binding.version>
+        <yang.yangtools.version>1.1.1-SNAPSHOT</yang.yangtools.version>
+        <yang.maven.plugin.version>1.1.1-SNAPSHOT</yang.maven.plugin.version>
+        <mdsal.binding.version>0.10.1-SNAPSHOT</mdsal.binding.version>
         <java.source.version>1.8</java.source.version>
         <java.target.version>1.8</java.target.version>
     </properties>
