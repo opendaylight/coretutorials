@@ -11,20 +11,20 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <parent>
         <groupId>org.opendaylight.mdsal</groupId>
         <artifactId>binding-parent</artifactId>
-        <version>0.10.0-SNAPSHOT</version>
+        <version>0.10.1-SNAPSHOT</version>
         <relativePath/>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opendaylight.coretutorials</groupId>
     <artifactId>dhcp-api</artifactId>
-    <version>0.2.0-SNAPSHOT</version>
+    <version>0.2.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <dependencies>
         <dependency>
             <groupId>org.opendaylight.mdsal.model</groupId>
             <artifactId>ietf-inet-types</artifactId>
-            <version>2010.09.24.10-SNAPSHOT</version>
+            <version>2010.09.24.10.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
