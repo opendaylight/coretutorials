@@ -11,9 +11,9 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderCo
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.mdsal.binding.javav2.spec.base.RpcCallback;
 import org.opendaylight.mdsal.gen.javav2.urn.opendaylight.params.xml.ns.yang.binding2.prototype.app.rev170505.Binding2PrototypeAppHelloWorldRpc;
-import org.opendaylight.mdsal.gen.javav2.urn.opendaylight.params.xml.ns.yang.binding2.prototype.app.rev170505.HelloWorldInput;
-import org.opendaylight.mdsal.gen.javav2.urn.opendaylight.params.xml.ns.yang.binding2.prototype.app.rev170505.HelloWorldOutput;
-import org.opendaylight.mdsal.gen.javav2.urn.opendaylight.params.xml.ns.yang.binding2.prototype.app.rev170505.HelloWorldOutputBuilder;
+import org.opendaylight.mdsal.gen.javav2.urn.opendaylight.params.xml.ns.yang.binding2.prototype.app.rev170505.data.hello_world.HelloWorldInput;
+import org.opendaylight.mdsal.gen.javav2.urn.opendaylight.params.xml.ns.yang.binding2.prototype.app.rev170505.data.hello_world.HelloWorldOutput;
+import org.opendaylight.mdsal.gen.javav2.urn.opendaylight.params.xml.ns.yang.binding2.prototype.app.rev170505.dto.hello_world.HelloWorldOutputBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
