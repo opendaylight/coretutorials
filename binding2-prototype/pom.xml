@@ -35,7 +35,8 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
     <modules>
         <module>binding2-prototype-example</module>
         <module>binding2-prototype-app</module>
-    </modules>
+        <module>binding2-benchmark</module>
+  </modules>
 
     <!--
         Maven Site Configuration
