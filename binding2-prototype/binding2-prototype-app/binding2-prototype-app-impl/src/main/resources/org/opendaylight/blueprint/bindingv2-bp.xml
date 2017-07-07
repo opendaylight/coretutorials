@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0">
+
+  <!-- Runtime binding/normalized mapping service -->
+
+  <reference id="domSchemaService" interface="org.opendaylight.mdsal.dom.api.DOMSchemaService" />
+
+  <bean id="mappingCodec" class="org.opendaylight.mdsal.binding.javav2.dom.adapter.impl.BindingToNormalizedNodeCodecFactory"
+         factory-method="newInstance">
+  </bean>
+
+  <!-- Register the BindingToNormalizedNodeCodec with the SchemaService as a SchemaContextListener -->
+  <bean id="mappingCodecListenerReg" class="org.opendaylight.mdsal.binding.javav2.dom.adapter.impl.BindingToNormalizedNodeCodecFactory"
+         factory-method="registerInstance" destroy-method="close">
+    <argument ref="mappingCodec"/>
+    <argument ref="domSchemaService"/>
+  </bean>
+
+  <service ref="mappingCodec" odl:type="default">
+    <interfaces>
+      <value>org.opendaylight.mdsal.binding.javav2.dom.codec.api.serializer.BindingNormalizedNodeSerializer</value>
+      <value>org.opendaylight.mdsal.binding.javav2.dom.codec.api.factory.BindingTreeCodecFactory</value>
+    </interfaces>
+  </service>
+
+  <!-- Binding RPC Registry Service -->
+  <reference id="domRpcRegistry" interface="org.opendaylight.mdsal.dom.api.DOMRpcProviderService"/>
+
+  <bean id="bindingRpcProviderAdapter" class="org.opendaylight.mdsal.binding.javav2.dom.adapter.impl.operation.BindingDOMOperationProviderServiceAdapter" >
+    <argument ref="domRpcRegistry"/>
+    <argument ref="mappingCodec"/>
+  </bean>
+
+  <service ref="bindingRpcProviderAdapter" interface="org.opendaylight.mdsal.binding.javav2.api.RpcActionProviderService"
+          odl:type="default"/>
+
+</blueprint>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0">
+
+  <reference id="bundleCtx" interface="org.osgi.framework.BundleContext" />
+
+  <bean id="osgiBundleSchemaService" class="org.opendaylight.mdsal.dom.broker.osgi.OsgiBundleScanningSchemaService"
+         factory-method="createInstance">
+    <argument ref="bundleCtx"/>
+  </bean>
+
+  <service ref="osgiBundleSchemaService" interface="org.opendaylight.mdsal.dom.api.DOMSchemaService" odl:type="default"/>
+
+</blueprint>
