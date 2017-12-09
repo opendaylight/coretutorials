@@ -1,4 +1,4 @@
-# UUID                                                                  	Group Name
+# UUID                                                                       	Group Name
 #
-c9025ab9ddc1e3171919e085449f22c54f8f7b54                                	GitHub Replication
-ldap:cn=gerrit-coretutorials-committers,ou=Groups,dc=opendaylight,dc=org	ldap/gerrit-coretutorials-committers
+c9025ab9ddc1e3171919e085449f22c54f8f7b54                                     	GitHub Replication
+ldap:cn=odl-gerrit-coretutorials-committers,ou=Groups,dc=freestandards,dc=org	ldap/odl-gerrit-coretutorials-committers
