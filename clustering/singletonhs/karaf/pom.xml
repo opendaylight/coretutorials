@@ -17,7 +17,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
 
   <groupId>org.opendaylight.coretutorials.clustering</groupId>
   <artifactId>singletonhs-karaf</artifactId>
-  <version>3.1.0-SNAPSHOT</version>
+  <version>4.0.0-SNAPSHOT</version>
   <name>${project.artifactId}</name>
 
   <prerequisites>
