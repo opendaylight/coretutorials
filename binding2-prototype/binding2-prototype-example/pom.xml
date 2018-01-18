@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>odlparent</artifactId>
-        <version>1.8.2-Carbon</version>
+        <version>2.0.5</version>
         <relativePath/>
     </parent>
 
@@ -34,9 +34,9 @@
 
     <properties>
         <!-- stable/carbon versions -->
-        <yang.yangtools.version>1.1.2-Carbon</yang.yangtools.version>
-        <yang.maven.plugin.version>1.1.2-Carbon</yang.maven.plugin.version>
-        <mdsal.binding.version>0.10.2-Carbon</mdsal.binding.version>
+        <yang.yangtools.version>1.2.1</yang.yangtools.version>
+        <yang.maven.plugin.version>1.2.1</yang.maven.plugin.version>
+        <mdsal.binding.version>0.11.1</mdsal.binding.version>
         <java.source.version>1.8</java.source.version>
         <java.target.version>1.8</java.target.version>
     </properties>

@@ -9,7 +9,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   <parent>
     <groupId>org.opendaylight.odlparent</groupId>
     <artifactId>features-parent</artifactId>
-    <version>1.8.2-Carbon</version>
+    <version>2.0.5</version>
     <relativePath/>
   </parent>
   <groupId>org.opendaylight.coretutorials</groupId>
@@ -22,12 +22,12 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   </prerequisites>
   <properties>
     <dscrud.version>3.1.0-SNAPSHOT</dscrud.version>
-    <dlux.version>0.5.2-Carbon</dlux.version>
-    <controller.mdsal.version>1.5.2-Carbon</controller.mdsal.version>
-    <mdsal.version>2.2.2-Carbon</mdsal.version>
-    <mdsal.model.version>0.10.2-Carbon</mdsal.model.version>
-    <restconf.version>1.5.2-Carbon</restconf.version>
-    <yangtools.version>1.1.2-Carbon</yangtools.version>
+    <dlux.version>0.6.1</dlux.version>
+    <controller.mdsal.version>1.6.1</controller.mdsal.version>
+    <mdsal.version>2.3.1</mdsal.version>
+    <mdsal.model.version>0.11.1</mdsal.model.version>
+    <restconf.version>1.6.1</restconf.version>
+    <yangtools.version>1.2.1</yangtools.version>
     <configfile.directory>etc/opendaylight/karaf</configfile.directory>
   </properties>
 

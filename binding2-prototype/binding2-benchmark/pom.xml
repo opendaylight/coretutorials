@@ -44,8 +44,8 @@ THE POSSIBILITY OF SUCH DAMAGE.
     <name>JMH benchmark sample: Java</name>
 
     <properties>
-        <mdsal.model.version>0.10.2-Carbon</mdsal.model.version>
-        <yangtools.version>1.1.2-Carbon</yangtools.version>
+        <mdsal.model.version>0.11.1</mdsal.model.version>
+        <yangtools.version>1.2.1</yangtools.version>
         <slf4j.version>1.7.21</slf4j.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jmh.version>1.19</jmh.version>
