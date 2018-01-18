@@ -11,7 +11,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <parent>
         <groupId>org.opendaylight.mdsal</groupId>
         <artifactId>binding-parent</artifactId>
-        <version>0.10.2-SNAPSHOT</version>
+        <version>0.10.2-Carbon</version>
         <relativePath/>
     </parent>
 
@@ -24,7 +24,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
         <dependency>
             <groupId>org.opendaylight.mdsal.model</groupId>
             <artifactId>ietf-inet-types</artifactId>
-            <version>2010.09.24.10.2-SNAPSHOT</version>
+            <version>2010.09.24.10.2-Carbon</version>
         </dependency>
     </dependencies>
 </project>

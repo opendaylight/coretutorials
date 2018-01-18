@@ -9,7 +9,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   <parent>
     <groupId>org.opendaylight.odlparent</groupId>
     <artifactId>features-parent</artifactId>
-    <version>1.8.2-SNAPSHOT</version>
+    <version>1.8.2-Carbon</version>
     <relativePath/>
   </parent>
 
@@ -24,12 +24,12 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   </prerequisites>
 
   <properties>
-    <controller.mdsal.version>1.5.2-SNAPSHOT</controller.mdsal.version>
-    <restconf.version>1.5.2-SNAPSHOT</restconf.version>
-    <mdsal.version>2.2.2-SNAPSHOT</mdsal.version>
-    <mdsal.model.version>0.10.2-SNAPSHOT</mdsal.model.version>
-    <dlux.version>0.5.2-SNAPSHOT</dlux.version>
-    <yangtools.version>1.1.2-SNAPSHOT</yangtools.version>
+    <controller.mdsal.version>1.5.2-Carbon</controller.mdsal.version>
+    <restconf.version>1.5.2-Carbon</restconf.version>
+    <mdsal.version>2.2.2-Carbon</mdsal.version>
+    <mdsal.model.version>0.10.2-Carbon</mdsal.model.version>
+    <dlux.version>0.5.2-Carbon</dlux.version>
+    <yangtools.version>1.1.2-Carbon</yangtools.version>
   </properties>
 
   <dependencies>
@@ -64,13 +64,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
       <classifier>features</classifier>
       <type>xml</type>
       <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.mdsal</groupId>
-      <artifactId>features-mdsal</artifactId>
-      <version>${mdsal.version}</version>
-      <classifier>features</classifier>
-      <type>xml</type>
     </dependency>
 
     <dependency>
