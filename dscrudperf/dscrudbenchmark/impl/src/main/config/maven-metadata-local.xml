@@ -2,7 +2,7 @@
 <metadata modelVersion="1.1.0">
   <groupId>org.opendaylight.coretutorials</groupId>
   <artifactId>dscrudbenchmark-impl</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1</version>
   <versioning>
     <snapshot>
       <localCopy>true</localCopy>
@@ -12,7 +12,7 @@
       <snapshotVersion>
         <classifier>config</classifier>
         <extension>xml</extension>
-        <value>0.0.1-SNAPSHOT</value>
+        <value>0.0.1</value>
         <updated>20150818214012</updated>
       </snapshotVersion>
     </snapshotVersions>

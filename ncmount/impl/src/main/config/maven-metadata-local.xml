@@ -2,7 +2,7 @@
 <metadata modelVersion="1.1.0">
   <groupId>org.opendaylight.coretutorials</groupId>
   <artifactId>ncmount-impl</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <versioning>
     <snapshot>
       <localCopy>true</localCopy>
@@ -12,7 +12,7 @@
       <snapshotVersion>
         <classifier>config</classifier>
         <extension>xml</extension>
-        <value>1.0.0-SNAPSHOT</value>
+        <value>1.0.0</value>
         <updated>20150227155909</updated>
       </snapshotVersion>
     </snapshotVersions>
