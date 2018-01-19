@@ -1,154 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright © 2015 Copyright (c) 2015 Cisco Systems, Inc. and others. All rights reserved.
-
-This program and the accompanying materials are made available under the
-terms of the Eclipse Public License v1.0 which accompanies this distribution,
-and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
+    Copyright (c) 2017 Pantheon Technologies, s.r.o. and others. All rights reserved.
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v1.0 which accompanies this distribution,
+    and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <parent>
-    <groupId>org.opendaylight.odlparent</groupId>
-    <artifactId>features-parent</artifactId>
-    <version>2.0.5</version>
-    <relativePath/>
-  </parent>
-  <groupId>org.opendaylight.coretutorials</groupId>
-  <artifactId>benchmark-features</artifactId>
-  <version>3.1.0-SNAPSHOT</version>
-  <name>${project.artifactId}</name>
-  <modelVersion>4.0.0</modelVersion>
-  <prerequisites>
-    <maven>3.1.1</maven>
-  </prerequisites>
-  <properties>
-    <mdsal.model.version>0.11.1</mdsal.model.version>
-    <mdsal.version>1.6.1</mdsal.version>
-    <mdsal.benchmark.version>1.4.1</mdsal.benchmark.version>
-    <restconf.version>1.6.1</restconf.version>
-    <yangtools.version>1.2.1</yangtools.version>
-    <dlux.version>0.6.1</dlux.version>
-    <configfile.directory>etc/opendaylight/karaf</configfile.directory>
-  </properties>
-  <dependencyManagement>
-    <dependencies>
-      <!-- project specific dependencies -->
-      <dependency>
-        <groupId>org.opendaylight.controller</groupId>
-        <artifactId>mdsal-artifacts</artifactId>
-        <version>${mdsal.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.opendaylight.netconf</groupId>
-        <artifactId>restconf-artifacts</artifactId>
-        <version>${restconf.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-  <dependencies>
-    <dependency>
-      <groupId>org.opendaylight.yangtools</groupId>
-      <artifactId>features-yangtools</artifactId>
-      <classifier>features</classifier>
-      <version>${yangtools.version}</version>
-      <type>xml</type>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.mdsal.model</groupId>
-      <artifactId>features-mdsal-model</artifactId>
-      <version>${mdsal.model.version}</version>
-      <classifier>features</classifier>
-      <type>xml</type>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.controller</groupId>
-      <artifactId>features-mdsal</artifactId>
-      <classifier>features</classifier>
-      <version>${mdsal.version}</version>
-      <type>xml</type>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.controller</groupId>
-      <artifactId>features-mdsal-benchmark</artifactId>
-      <classifier>features</classifier>
-      <version>${mdsal.benchmark.version}</version>
-      <type>xml</type>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.netconf</groupId>
-      <artifactId>features-restconf</artifactId>
-      <classifier>features</classifier>
-      <version>${restconf.version}</version>
-      <type>xml</type>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.dluxapps</groupId>
-      <artifactId>features-dluxapps</artifactId>
-      <classifier>features</classifier>
-      <version>${dlux.version}</version>
-      <type>xml</type>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>benchmark-impl</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>benchmark-impl</artifactId>
-      <version>${project.version}</version>
-      <type>xml</type>
-      <classifier>config</classifier>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>benchmark-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-  </dependencies>
-  <build>
-  	<pluginManagement>
-  		<plugins>
-  			<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-  			<plugin>
-  				<groupId>org.eclipse.m2e</groupId>
-  				<artifactId>lifecycle-mapping</artifactId>
-  				<version>1.0.0</version>
-  				<configuration>
-  					<lifecycleMappingMetadata>
-  						<pluginExecutions>
-  							<pluginExecution>
-  								<pluginExecutionFilter>
-  									<groupId>org.jacoco</groupId>
-  									<artifactId>
-  										jacoco-maven-plugin
-  									</artifactId>
-  									<versionRange>
-  										[0.7.2.201409121644,)
-  									</versionRange>
-  									<goals>
-  										<goal>prepare-agent</goal>
-  									</goals>
-  								</pluginExecutionFilter>
-  								<action>
-  									<ignore></ignore>
-  								</action>
-  							</pluginExecution>
-  						</pluginExecutions>
-  					</lifecycleMappingMetadata>
-  				</configuration>
-  			</plugin>
-  		</plugins>
-  	</pluginManagement>
-  </build>
+    <groupId>org.opendaylight.coretutorials</groupId>
+    <artifactId>benchmark-features-aggregator</artifactId>
+    <version>3.1.0-SNAPSHOT</version>
+    <name>${project.artifactId}</name>
+    <packaging>pom</packaging>
+    <modelVersion>4.0.0</modelVersion>
+
+    <modules>
+        <module>odl-benchmark</module>
+        <module>odl-benchmark-api</module>
+        <module>odl-benchmark-rest</module>
+        <module>odl-benchmark-ui</module>
+        <module>benchmark-features</module>
+    </modules>
 </project>
