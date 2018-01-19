@@ -17,9 +17,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   <artifactId>dsbenchmark-karaf</artifactId>
   <version>3.1.0-SNAPSHOT</version>
   <name>${project.artifactId}</name>
-  <prerequisites>
-    <maven>3.1.1</maven>
-  </prerequisites>
+
   <properties>
     <karaf.localFeature>odl-dsbenchmark-impl-ui</karaf.localFeature>
   </properties>

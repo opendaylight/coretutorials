@@ -7,17 +7,17 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <groupId>org.opendaylight.coretutorials</groupId>
-    <artifactId>benchmark-features-aggregator</artifactId>
+    <artifactId>dsbenchmark-features-aggregator</artifactId>
     <version>3.1.0-SNAPSHOT</version>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
     <modelVersion>4.0.0</modelVersion>
 
     <modules>
-        <module>odl-benchmark</module>
-        <module>odl-benchmark-api</module>
-        <module>odl-benchmark-rest</module>
-        <module>odl-benchmark-ui</module>
-        <module>benchmark-features</module>
+        <module>odl-dsbenchmark-api</module>
+        <module>odl-dsbenchmark-impl</module>
+        <module>odl-dsbenchmark-impl-rest</module>
+        <module>odl-dsbenchmark-impl-ui</module>
+        <module>dsbenchmark-features</module>
     </modules>
 </project>
