@@ -52,5 +52,11 @@
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
+        <dependency>
+            <groupId>org.opendaylight.coretutorials</groupId>
+            <artifactId>odl-coretutorials-ncmount</artifactId>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
     </dependencies>
 </project>
