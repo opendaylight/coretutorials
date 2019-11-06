@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright © 2016 Cisco Systems, Inc. and others. All rights reserved.
-This program and the accompanying materials are made available under the
-terms of the Eclipse Public License v1.0 which accompanies this distribution,
-and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
+  Copyright © 2016 Cisco Systems, Inc. and others. All rights reserved.
+
+  This program and the accompanying materials are made available under the
+  terms of the Eclipse Public License v1.0 which accompanies this distribution,
+  and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
 --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>org.opendaylight.odlparent</groupId>
-    <artifactId>odlparent</artifactId>
-    <version>3.0.2</version>
+    <artifactId>odlparent-lite</artifactId>
+    <version>4.0.11</version>
     <relativePath/>
   </parent>
 
@@ -20,16 +20,10 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   <name>clustering</name>
   <packaging>pom</packaging>
 
-  <prerequisites>
-    <maven>3.1.1</maven>
-  </prerequisites>
-
-  <scm>
-    <connection>scm:git:ssh://git.opendaylight.org:29418/clustering.git</connection>
-    <developerConnection>scm:git:ssh://git.opendaylight.org:29418/clustering.git</developerConnection>
-    <tag>HEAD</tag>
-    <url>https://wiki.opendaylight.org/view/clustering:Main</url>
-  </scm>
+  <properties>
+    <maven.deploy.skip>true</maven.deploy.skip>
+    <maven.install.skip>true</maven.install.skip>
+  </properties>
 
   <modules>
     <module>singletonsimple</module>
@@ -37,19 +31,10 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
     <module>shardingsimple</module>
   </modules>
 
-  <!--
-      Maven Site Configuration
-
-      The following configuration is necessary for maven-site-plugin to
-      correctly identify the correct deployment path for OpenDaylight Maven
-      sites.
-  -->
-  <url>${odl.site.url}/${project.groupId}/${stream}/</url>
-
-  <distributionManagement>
-    <site>
-      <id>opendaylight-site</id>
-      <url>${nexus.site.url}/</url>
-    </site>
-  </distributionManagement>
+  <scm>
+    <connection>scm:git:ssh://git.opendaylight.org:29418/clustering.git</connection>
+    <developerConnection>scm:git:ssh://git.opendaylight.org:29418/clustering.git</developerConnection>
+    <tag>HEAD</tag>
+    <url>https://wiki.opendaylight.org/view/clustering:Main</url>
+  </scm>
 </project>
