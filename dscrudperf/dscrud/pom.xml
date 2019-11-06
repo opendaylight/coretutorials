@@ -7,29 +7,29 @@
   and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.opendaylight.odlparent</groupId>
-    <artifactId>odlparent-lite</artifactId>
-    <version>4.0.11</version>
-    <relativePath/>
-  </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.opendaylight.odlparent</groupId>
+        <artifactId>odlparent-lite</artifactId>
+        <version>4.0.11</version>
+        <relativePath/>
+    </parent>
 
-  <groupId>org.opendaylight.coretutorials</groupId>
-  <artifactId>dscrud-aggregator</artifactId>
-  <version>4.0.0-SNAPSHOT</version>
-  <name>dscrud</name>
-  <packaging>pom</packaging>
+    <groupId>org.opendaylight.coretutorials</groupId>
+    <artifactId>dscrud-aggregator</artifactId>
+    <version>4.0.0-SNAPSHOT</version>
+    <name>dscrud</name>
+    <packaging>pom</packaging>
 
-  <properties>
-    <maven.deploy.skip>true</maven.deploy.skip>
-    <maven.install.skip>true</maven.install.skip>
-  </properties>
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+        <maven.install.skip>true</maven.install.skip>
+    </properties>
 
-  <modules>
-    <module>api</module>
-    <module>impl</module>
-    <!--module>features</module-->
-    <module>artifacts</module>
-  </modules>
+    <modules>
+        <module>artifacts</module>
+        <module>api</module>
+        <module>impl</module>
+        <module>odl-coretutorials-dscrud</module>
+    </modules>
 </project>
