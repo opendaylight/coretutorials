@@ -9,7 +9,7 @@
 package org.opendaylight.coretutorials.clustering.singleton.hs.spi;
 
 import com.google.common.base.Preconditions;
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.coretutorials.clustering.singleton.hs.common.HostInformation;
 import org.opendaylight.coretutorials.clustering.singleton.hs.spi.SampleDeviceSetupBuilder.SampleDeviceSetup;
@@ -44,12 +44,12 @@ class SingletonhsRpcTopoDiscoveryServiceImpl implements SingletonhsRpcTopoDiscov
     }
 
     @Override
-    public Future<RpcResult<SampleTopoDiscoveryRpcOutput>> sampleTopoDiscoveryRpc(
+    public ListenableFuture<RpcResult<SampleTopoDiscoveryRpcOutput>> sampleTopoDiscoveryRpc(
             final SampleTopoDiscoveryRpcInput input) {
         LOG.warn("TOPO DISCOVERY for {} {} {} in {}", deviceSetup.getIdent(), hostInfo.getHostName(),
                 hostInfo.getIpAddresses(), hostInfo.getJvmUptime());
 
-        final SampleTopoDiscoveryRpcOutput output = (new SampleTopoDiscoveryRpcOutputBuilder()).setReport(true)
+        final SampleTopoDiscoveryRpcOutput output = new SampleTopoDiscoveryRpcOutputBuilder().setReport(true)
                 .build();
         return RpcResultBuilder.success(output).buildFuture();
     }

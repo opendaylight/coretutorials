@@ -9,13 +9,12 @@
 package sharding.simple.shardtests;
 
 import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
-
+import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.mdsal.common.api.TransactionCommitFailedException;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeCursorAwareTransaction;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeService;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeWriteCursor;
@@ -23,10 +22,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clusteri
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifierWithPredicates;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import sharding.simple.impl.DomListBuilder;
 import sharding.simple.impl.ShardHelper;
 import sharding.simple.impl.ShardHelper.ShardData;
@@ -85,7 +82,7 @@ public class RoundRobinShardTest extends AbstractShardTest {
                 if (preCreateTestData) {
                     element = testData.get(testDataIdx++);
                 } else {
-                    element = createListEntry(nodeId, s, (long)i);
+                    element = createListEntry(nodeId, s, i);
                 }
                 writeCnt[s]++;
                 cursor[s].write(nodeId, element);
@@ -96,9 +93,9 @@ public class RoundRobinShardTest extends AbstractShardTest {
                     // a new one in its place.
                     txSubmitted++;
                     cursor[s].close();
-                    Futures.addCallback(tx[s].submit(), new FutureCallback<Void>() {
+                    tx[s].commit().addCallback(new FutureCallback<CommitInfo>() {
                         @Override
-                        public void onSuccess(final Void result) {
+                        public void onSuccess(final CommitInfo result) {
                             txOk.incrementAndGet();
                         }
 
@@ -107,7 +104,7 @@ public class RoundRobinShardTest extends AbstractShardTest {
                             LOG.error("Transaction failed, {}", t1);
                             txError.incrementAndGet();
                         }
-                    });
+                    }, MoreExecutors.directExecutor());
 
                     writeCnt[s] = 0;
                     ShardData sd = shardData.get(s);
@@ -126,9 +123,9 @@ public class RoundRobinShardTest extends AbstractShardTest {
             txSubmitted++;
             cursor[s].close();
             try {
-                tx[s].submit().checkedGet();
+                tx[s].commit().get();
                 // txOk.incrementAndGet();
-            } catch (TransactionCommitFailedException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 LOG.error("Transaction failed, {}", e);
                 txError.incrementAndGet();
             }

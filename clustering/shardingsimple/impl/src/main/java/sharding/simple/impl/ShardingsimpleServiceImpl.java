@@ -8,30 +8,22 @@
 
 package sharding.simple.impl;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
-
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RpcRegistration;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.sharding.simple.rev160802.ShardTestInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.sharding.simple.rev160802.ShardTestInput.DataStore;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.sharding.simple.rev160802.ShardTestInput.TestType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.sharding.simple.rev160802.ShardTestOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.sharding.simple.rev160802.ShardTestOutput.Status;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.sharding.simple.rev160802.ShardTestOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.sharding.simple.rev160802.ShardingsimpleService;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import sharding.simple.shardtests.AbstractShardTest;
-import sharding.simple.shardtests.ShardTestException;
 import sharding.simple.shardtests.ShardTestFactory;
-import sharding.simple.shardtests.ShardTestFactory.ShardTestType;
 import sharding.simple.shardtests.ShardTestStats;
 
 /** Implements the shardingsimple RPC API.
@@ -72,7 +64,7 @@ public class ShardingsimpleServiceImpl implements ShardingsimpleService, AutoClo
     }
 
     @Override
-    public Future<RpcResult<ShardTestOutput>> shardTest(ShardTestInput input) {
+    public ListenableFuture<RpcResult<ShardTestOutput>> shardTest(ShardTestInput input) {
         LOG.info("Input: {}", input);
 
         try {

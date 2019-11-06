@@ -9,13 +9,11 @@
 package sharding.simple.impl;
 
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.controller.sal.core.api.model.SchemaService;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeService;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeShardingService;
-
+import org.opendaylight.mdsal.dom.api.DOMSchemaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import sharding.simple.shardtests.ShardTestFactory;
 
 /** Interfaces the shardingsimple application with the Blueprint.
@@ -41,7 +39,7 @@ public class ShardingSimpleProvider {
     public ShardingSimpleProvider(final RpcProviderRegistry rpcRegistry,
             final DOMDataTreeShardingService dataTreeShardingService,
             final DOMDataTreeService dataTreeService,
-            final SchemaService schemaService) {
+            final DOMSchemaService schemaService) {
         this.shardHelper = new ShardHelper(dataTreeShardingService, dataTreeService, schemaService);
         this.testFactory = new ShardTestFactory(shardHelper, dataTreeService);
         this.rpcServiceImpl = new ShardingsimpleServiceImpl(rpcRegistry, testFactory);

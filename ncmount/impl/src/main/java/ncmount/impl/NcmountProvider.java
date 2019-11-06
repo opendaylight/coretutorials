@@ -7,7 +7,6 @@
  */
 package ncmount.impl;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.cache.CacheBuilder;
@@ -16,25 +15,26 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import ncmount.impl.listener.LoggingNotificationListener;
 import ncmount.impl.listener.PerformanceAwareNotificationListener;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.binding.api.MountPoint;
 import org.opendaylight.controller.md.sal.binding.api.MountPointService;
 import org.opendaylight.controller.md.sal.binding.api.NotificationService;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
@@ -60,7 +60,6 @@ import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._stat
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._static.cfg.rev130722.router._static.vrfs.VrfKey;
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._static.cfg.rev130722.vrf.prefix.table.VrfPrefixes;
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._static.cfg.rev130722.vrf.prefix.table.VrfPrefixesBuilder;
-import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._static.cfg.rev130722.vrf.prefix.table.vrf.prefixes.VrfPrefix;
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._static.cfg.rev130722.vrf.prefix.table.vrf.prefixes.VrfPrefixBuilder;
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._static.cfg.rev130722.vrf.prefix.table.vrf.prefixes.VrfPrefixKey;
 import org.opendaylight.yang.gen.v1.http.cisco.com.ns.yang.cisco.ios.xr.ip._static.cfg.rev130722.vrf.route.VrfRouteBuilder;
@@ -73,12 +72,11 @@ import org.opendaylight.yang.gen.v1.org.opendaylight.coretutorials.ncmount.examp
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.CreateSubscriptionInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.NotificationsService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.netconf.notification._1._0.rev080714.StreamNameType;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.available.capabilities.AvailableCapability;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.available.capabilities.AvailableCapabilityBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.network.topology.topology.topology.types.TopologyNetconf;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.ListNodesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.ListNodesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.ListNodesOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.NcmountService;
@@ -86,11 +84,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.ShowNodeOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.ShowNodeOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.WriteRoutesInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.WriteRoutesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.show.node.output.IfCfgDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.show.node.output._if.cfg.data.Ifc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.show.node.output._if.cfg.data.IfcBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.show.node.output._if.cfg.data.IfcKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.write.routes.input.Route;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
@@ -99,7 +97,6 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.Identifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
@@ -116,7 +113,7 @@ import org.slf4j.LoggerFactory;
  * The skeleton for this class was generated with the MD-SAL application
  * archetype.
  */
-public class NcmountProvider implements DataChangeListener, NcmountService,
+public class NcmountProvider implements DataTreeChangeListener<Node>, NcmountService,
         BindingAwareProvider, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(NcmountProvider.class);
     public static final InstanceIdentifier<Topology> NETCONF_TOPO_IID =
@@ -126,10 +123,9 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
                             new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())));
 
     private RpcRegistration<NcmountService> rpcReg;
-    private ListenerRegistration<DataChangeListener> dclReg;
+    private ListenerRegistration<?> dclReg;
     private MountPointService mountService;
     private DataBroker dataBroker;
-    private RpcResult<Void> SUCCESS = RpcResultBuilder.<Void>success().build();
 
     /**
      * A method called when the session to MD-SAL is established. It initializes
@@ -160,10 +156,8 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
         // is equivalent to the following URL:
         // .../restconf/operational/network-topology:network-topology/topology/topology-netconf
         if (dataBroker != null) {
-            this.dclReg = dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                    NETCONF_TOPO_IID.child(Node.class),
-                    this,
-                    DataChangeScope.SUBTREE);
+            this.dclReg = dataBroker.registerDataTreeChangeListener(
+                new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, NETCONF_TOPO_IID.child(Node.class)), this);
         }
     }
 
@@ -192,7 +186,7 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
      * service provides two example functions:
      * 1. Browse through a subset of a mounted node's configuration data
      * 2. Browse through  a subset of a mounted node's operational data
-     * <p>
+     *
      * <p>
      * The signature for this method was generated by yang tools from the
      * ncmount API model.
@@ -202,7 +196,7 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
      * @return Retrieved configuration and operational data
      */
     @Override
-    public Future<RpcResult<ShowNodeOutput>> showNode(ShowNodeInput input) {
+    public ListenableFuture<RpcResult<ShowNodeOutput>> showNode(ShowNodeInput input) {
         LOG.info("showNode called, input {}", input);
 
         // Get the mount point for the specified node
@@ -242,7 +236,7 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
             throw new IllegalStateException("Unexpected error reading data from " + input.getNodeName(), e);
         }
 
-        List<Ifc> ifcList = new ArrayList<Ifc>();
+        List<Ifc> ifcList = new ArrayList<>();
         if (ifConfig.isPresent()) {
             List<InterfaceConfiguration> ifConfigs = ifConfig
                     .get()
@@ -258,7 +252,7 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
                         .setDescription(config.getDescription())
                         .setInterfaceName(ifcName)
                         .setLinkStatus(config.isLinkStatus() == Boolean.TRUE ? "Up" : "Down")
-                        .setKey(new IfcKey(ifcActive, ifcName))
+                        .withKey(new IfcKey(ifcActive, ifcName))
                         .build());
             }
         } else {
@@ -293,7 +287,7 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
                 List<Locationview> locationViews = lw.getLocationview();
                 for (Locationview view : locationViews) {
                     LOG.info("LocationView '{}': {}",
-                            view.getKey().getLocationviewName().getValue(),
+                            view.key().getLocationviewName().getValue(),
                             view);
                 }
 
@@ -323,6 +317,7 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
             .maximumSize(20)
             .build(
                     new CacheLoader<String, KeyedInstanceIdentifier<Node, NodeKey>>() {
+                        @Override
                         public KeyedInstanceIdentifier<Node, NodeKey> load(final String key) {
                             return NETCONF_TOPO_IID.child(Node.class, new NodeKey(new NodeId(key)));
                         }
@@ -336,7 +331,7 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
      * @return Success if routes were written to mounted netconf device
      */
     @Override
-    public Future<RpcResult<Void>> writeRoutes(final WriteRoutesInput input) {
+    public ListenableFuture<RpcResult<WriteRoutesOutput>> writeRoutes(final WriteRoutesInput input) {
         final Optional<MountPoint> mountPoint;
         try {
             // Get mount point for specified device
@@ -356,32 +351,28 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
 
         // Prepare the actual routes for VRF. Transform Rpc input routes into VRF routes
         final VrfPrefixes transformedRoutes = new VrfPrefixesBuilder()
-                .setVrfPrefix(Lists.transform(input.getRoute(), new Function<Route, VrfPrefix>() {
-
-                    @Override
-                    public VrfPrefix apply(final Route input) {
-                        final IpAddress prefix = new IpAddress(input.getIpv4Prefix());
-                        final IpAddress nextHop = new IpAddress(input.getIpv4NextHop());
-                        final long prefixLength = input.getIpv4PrefixLength();
-                        return new VrfPrefixBuilder()
-                                .setVrfRoute(new VrfRouteBuilder()
-                                        .setVrfNextHops(new VrfNextHopsBuilder()
-                                                .setNextHopAddress(Collections.singletonList(new NextHopAddressBuilder()
-                                                        .setNextHopAddress(nextHop)
-                                                        .build()))
-                                                .build())
-                                        .build())
-                                .setPrefix(prefix)
-                                .setPrefixLength(prefixLength)
-                                .setKey(new VrfPrefixKey(prefix, prefixLength))
-                                .build();
-                    }
+                .setVrfPrefix(Lists.transform(input.getRoute(), input1 -> {
+                    final IpAddress prefix = new IpAddress(input1.getIpv4Prefix());
+                    final IpAddress nextHop = new IpAddress(input1.getIpv4NextHop());
+                    final long prefixLength = input1.getIpv4PrefixLength();
+                    return new VrfPrefixBuilder()
+                            .setVrfRoute(new VrfRouteBuilder()
+                                    .setVrfNextHops(new VrfNextHopsBuilder()
+                                            .setNextHopAddress(Collections.singletonList(new NextHopAddressBuilder()
+                                                    .setNextHopAddress(nextHop)
+                                                    .build()))
+                                            .build())
+                                    .build())
+                            .setPrefix(prefix)
+                            .setPrefixLength(prefixLength)
+                            .withKey(new VrfPrefixKey(prefix, prefixLength))
+                            .build();
                 })).build();
 
         // Build the parent data structure for VRF
         final Vrf newRoutes = new VrfBuilder()
                 .setVrfName(name)
-                .setKey(new VrfKey(name))
+                .withKey(new VrfKey(name))
                 .setAddressFamily(new AddressFamilyBuilder()
                         .setVrfipv4(new Vrfipv4Builder()
                                 .setVrfUnicast(new VrfUnicastBuilder()
@@ -396,12 +387,9 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
 
         // commit
         final CheckedFuture<Void, TransactionCommitFailedException> submit = writeTransaction.submit();
-        return Futures.transform(submit, new Function<Void, RpcResult<Void>>() {
-            @Override
-            public RpcResult<Void> apply(final Void result) {
-                LOG.info("{} Route(s) written to {}", input.getRoute().size(), input.getMountName());
-                return SUCCESS;
-            }
+        return Futures.transform(submit, result -> {
+            LOG.info("{} Route(s) written to {}", input.getRoute().size(), input.getMountName());
+            return RpcResultBuilder.<WriteRoutesOutput>success().build();
         });
     }
 
@@ -421,7 +409,7 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
      * @return Lists of nodes found in Netconf Topology's operational space.
      */
     @Override
-    public Future<RpcResult<ListNodesOutput>> listNodes() {
+    public ListenableFuture<RpcResult<ListNodesOutput>> listNodes(ListNodesInput input) {
         // Use this method for one-off operations, when you need to find out
         // something about the nodes currently in the Netconf Topology. An
         // application that needs to handle netconf node discovery/disappearance,
@@ -443,10 +431,10 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
             throw new IllegalStateException(e);
         }
 
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
         for (Node node : nodes) {
             LOG.info("Node: {}", node);
-            NetconfNode nnode = node.getAugmentation(NetconfNode.class);
+            NetconfNode nnode = node.augmentation(NetconfNode.class);
             if (nnode != null) {
                 // We have a Netconf device
                 ConnectionStatus csts = nnode.getConnectionStatus();
@@ -475,91 +463,90 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
      * The skeleton for this method was generated with the MD-SAL application
      * archetype.
      *
-     * @param change Data change event
+     * @param changes Data change events
      */
     @Override
-    public void onDataChanged(
-            AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+    public void onDataTreeChanged(Collection<DataTreeModification<Node>> changes) {
+        changes.forEach(this::onDataChanged);
+    }
+
+    private void onDataChanged(DataTreeModification<Node> change) {
         // We need to handle the following types of events:
         // 1. Discovery of new nodes
         // 2. Status change in existing nodes
         // 3. Removal of existing nodes
         LOG.info("OnDataChange, change: {}", change);
 
-        // EXAMPLE: New node discovery
-        // React to new Netconf nodes added to the Netconf topology or existing
-        // Netconf nodes deleted from the Netconf topology
-        for (Entry<InstanceIdentifier<?>,
-                DataObject> entry : change.getCreatedData().entrySet()) {
-            if (entry.getKey().getTargetType() == NetconfNode.class) {
-                NodeId nodeId = getNodeId(entry.getKey());
-                LOG.info("NETCONF Node: {} was created", nodeId.getValue());
-
-                // Not much can be done at this point, we need UPDATE event with
-                // state set to connected
-            }
-        }
-
-        // EXAMPLE: Status change in existing node(s)
-        // React to data changes in Netconf nodes that are present in the
-        // Netconf topology
-        for (Entry<InstanceIdentifier<?>,
-                DataObject> entry : change.getUpdatedData().entrySet()) {
-            if (entry.getKey().getTargetType() == NetconfNode.class) {
-                NodeId nodeId = getNodeId(entry.getKey());
-
-                // We have a Netconf device
-                NetconfNode nnode = (NetconfNode) entry.getValue();
-                ConnectionStatus csts = nnode.getConnectionStatus();
-
-                switch (csts) {
-                    case Connected: {
-                        // Fully connected, all services for remote device are
-                        // available from the MountPointService.
-                        LOG.info("NETCONF Node: {} is fully connected", nodeId.getValue());
-                        List<String> capabilities =
-                                nnode.getAvailableCapabilities().getAvailableCapability().stream().map(cp ->
-                                        cp.getCapability()).collect(Collectors.toList());
-                        LOG.info("Capabilities: {}", capabilities);
-
-                        // Check if device supports our example notification and if it does, register a notification listener
-                        if (capabilities.contains(QName.create(VrfRouteNotification.QNAME, "Example-notifications").toString())) {
-                            registerNotificationListener(nodeId);
-                        }
-
-                        break;
-                    }
-                    case Connecting: {
-                        // A Netconf device's will be in the 'Connecting' state
-                        // initially, and go back to it after disconnect.
-                        // Note that a device could be moving back and forth
-                        // between the 'Connected' and 'Connecting' states for
-                        // various reasons, such as disconnect from remote
-                        // device, network connectivity loss etc.
-                        LOG.info("NETCONF Node: {} was disconnected", nodeId.getValue());
-                        break;
-                    }
-                    case UnableToConnect: {
-                        // The maximum configured number of reconnect attempts
-                        // have been reached. No more reconnects will be
-                        // attempted by the Netconf Connector.
-                        LOG.info("NETCONF Node: {} connection failed", nodeId.getValue());
-                        break;
-                    }
-                }
-            }
-        }
-
-        // EXAMPLE: Removal of an existing node from the Netconf topology
-        for (InstanceIdentifier<?> removedPath : change.getRemovedPaths()) {
-            final NodeId nodeId = getNodeId(removedPath);
-            if (nodeId != null) {
+        final DataObjectModification<Node> node = change.getRootNode();
+        switch (node.getModificationType()) {
+            case DELETE:
+                // EXAMPLE: Removal of an existing node from the Netconf topology
                 // A User removed the Netconf connector for this node
                 // Before a node is removed, it changes its state to connecting
                 // (just as if it was disconnected). We may see this multiple
                 // times, since our listener is scoped to SUBTREE.
-                LOG.info("NETCONF Node: {} was removed", nodeId.getValue());
+                LOG.info("NETCONF Node: {} was removed", node.getIdentifier());
+                break;
+            case SUBTREE_MODIFIED:
+                // EXAMPLE: New node discovery
+                LOG.info("NETCONF Node: {} was updated", node.getIdentifier());
+                onNodeUpdated(node.getDataAfter());
+                break;
+            case WRITE:
+                // EXAMPLE: Status change in existing node(s)
+                LOG.info("NETCONF Node: {} was created", node.getIdentifier());
+                onNodeUpdated(node.getDataAfter());
+                break;
+            default:
+                throw new IllegalStateException("Unhandled node change" + change);
+        }
+    }
+
+    // React to data changes in Netconf nodes that are present in the
+    // Netconf topology
+    private void onNodeUpdated(final Node node) {
+        // Do we have a Netconf device?
+        final NetconfNode nnode = node.augmentation(NetconfNode.class);
+        if (nnode == null) {
+            LOG.info("NETCONF Node: {} is not managed", node.getNodeId());
+            return;
+        }
+
+        final ConnectionStatus csts = nnode.getConnectionStatus();
+        switch (csts) {
+            case Connected: {
+                // Fully connected, all services for remote device are
+                // available from the MountPointService.
+                LOG.info("NETCONF Node: {} is fully connected", node.getNodeId());
+                List<String> capabilities =
+                        nnode.getAvailableCapabilities().getAvailableCapability().stream().map(cp ->
+                        cp.getCapability()).collect(Collectors.toList());
+                LOG.info("Capabilities: {}", capabilities);
+
+                // Check if device supports our example notification and if it does, register a notification listener
+                if (capabilities.contains(QName.create(VrfRouteNotification.QNAME, "Example-notifications").toString())) {
+                    registerNotificationListener(node.getNodeId());
+                }
+
+                break;
             }
+            case Connecting:
+                // A Netconf device's will be in the 'Connecting' state
+                // initially, and go back to it after disconnect.
+                // Note that a device could be moving back and forth
+                // between the 'Connected' and 'Connecting' states for
+                // various reasons, such as disconnect from remote
+                // device, network connectivity loss etc.
+                LOG.info("NETCONF Node: {} was disconnected", node.getNodeId());
+                break;
+            case UnableToConnect:
+                // The maximum configured number of reconnect attempts
+                // have been reached. No more reconnects will be
+                // attempted by the Netconf Connector.
+                LOG.info("NETCONF Node: {} connection failed", node.getNodeId());
+                break;
+            default:
+                LOG.warn("NETCONF Node: {} unhandled status {}", node.getNodeId(), csts);
         }
     }
 
@@ -606,7 +593,8 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
         final CreateSubscriptionInputBuilder createSubscriptionInputBuilder = new CreateSubscriptionInputBuilder();
         createSubscriptionInputBuilder.setStream(new StreamNameType(streamName));
         LOG.info("Triggering notification stream {} for node {}", streamName, nodeId);
-        final Future<RpcResult<Void>> subscription = rpcService.createSubscription(createSubscriptionInputBuilder.build());
+        // FIXME: do something with this
+        final ListenableFuture<?> subscription = rpcService.createSubscription(createSubscriptionInputBuilder.build());
     }
 
     /**
@@ -628,5 +616,4 @@ public class NcmountProvider implements DataChangeListener, NcmountService,
         }
         return null;
     }
-
 }

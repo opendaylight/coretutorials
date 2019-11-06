@@ -5,14 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
-
 package org.opendaylight.coretutorials.clustering.singleton.hs.spi;
 
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.coretutorials.clustering.singleton.hs.spi.SampleDeviceContext.TransactionGuardian;
@@ -53,16 +51,16 @@ public class SingletonhsRpcSampleNodeActionServiceImpl implements SingletonhsRpc
     }
 
     @Override
-    public Future<RpcResult<RemoveSampleNoteOutput>> removeSampleNote(final RemoveSampleNoteInput input) {
+    public ListenableFuture<RpcResult<RemoveSampleNoteOutput>> removeSampleNote(final RemoveSampleNoteInput input) {
         Preconditions.checkArgument(input != null);
         txGuard.delete(LogicalDatastoreType.OPERATIONAL, deviceSetup.getIdent());
         txGuard.submit();
-        final RemoveSampleNoteOutput output = (new RemoveSampleNoteOutputBuilder()).setReport(true).build();
+        final RemoveSampleNoteOutput output = new RemoveSampleNoteOutputBuilder().setReport(true).build();
         return RpcResultBuilder.success(output).buildFuture();
     }
 
     @Override
-    public Future<RpcResult<AddSampleNoteOutput>> addSampleNote(final AddSampleNoteInput input) {
+    public ListenableFuture<RpcResult<AddSampleNoteOutput>> addSampleNote(final AddSampleNoteInput input) {
         Preconditions.checkArgument(input != null);
         final SampleNodeBuilder snBuilder = new SampleNodeBuilder(deviceSetup.getSampleNode());
         final List<SubItems> list = new ArrayList<>();
@@ -73,7 +71,7 @@ public class SingletonhsRpcSampleNodeActionServiceImpl implements SingletonhsRpc
 
         txGuard.put(LogicalDatastoreType.OPERATIONAL, deviceSetup.getIdent(), snBuilder.build());
         txGuard.submit();
-        final AddSampleNoteOutput output = (new AddSampleNoteOutputBuilder()).setReport(true).build();
+        final AddSampleNoteOutput output = new AddSampleNoteOutputBuilder().setReport(true).build();
         return RpcResultBuilder.success(output).buildFuture();
     }
 

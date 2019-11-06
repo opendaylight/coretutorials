@@ -10,24 +10,24 @@ package org.opendaylight.coretutorials.hweventsource.sample;
 
 import static com.google.common.util.concurrent.Futures.immediateFuture;
 
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.dom.DOMSource;
-
 import org.opendaylight.controller.md.sal.dom.api.DOMNotificationPublishService;
 import org.opendaylight.controller.messagebus.spi.EventSource;
 import org.opendaylight.controller.messagebus.spi.EventSourceRegistry;
@@ -35,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.messagebus.even
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.messagebus.eventaggregator.rev141202.TopicId;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.messagebus.eventaggregator.rev141202.TopicNotification;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.messagebus.eventsource.rev141202.DisJoinTopicInput;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.messagebus.eventsource.rev141202.DisJoinTopicOutput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.messagebus.eventsource.rev141202.JoinTopicInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.messagebus.eventsource.rev141202.JoinTopicOutput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.messagebus.eventsource.rev141202.JoinTopicOutputBuilder;
@@ -45,6 +46,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.hwevents
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
 import org.opendaylight.yangtools.yang.common.QName;
+import org.opendaylight.yangtools.yang.common.Revision;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
@@ -58,16 +60,11 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-
 /**
  * HelloWorldEventSource is an example of event source.
  * To create own event source you need to implement {@link EventSource} interface.
  * This example shows how to implement all necessary methods.
- * 
+ *
  * For simulation of occurrence of notification HelloWorldEventSource periodically creates messages
  * and if there is an joined topic then publish notifications with created messages.
  *
@@ -75,7 +72,7 @@ import com.google.common.util.concurrent.ListenableFuture;
  * as a constructor parameter (like as this example) or it can build own node by implementation specific
  * naming policy.
  *
- * Messages are generated in internal class (MessageGenerator). 
+ * Messages are generated in internal class (MessageGenerator).
  * Message generator is started in constructor.
  * Messages are generated periodically in given interval and contain given text
  * (see constructor parameters Short messageGeneratePeriod and String messageText)
@@ -129,7 +126,7 @@ public class HelloWorldEventSource implements EventSource {
     }
 
     /*
-     * Implementation of joinTopic is most important to core function of event source. 
+     * Implementation of joinTopic is most important to core function of event source.
      * Event source obtains information about created topic by this method.
      * JoinTopicInput input contains next parameters:
      *    - TopicId - it is identifier of topic (see input.getTopicId())
@@ -137,7 +134,7 @@ public class HelloWorldEventSource implements EventSource {
      * @see org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.messagebus.eventsource.rev141202.EventSourceService#joinTopic(org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.messagebus.eventsource.rev141202.JoinTopicInput)
      */
     @Override
-    public Future<RpcResult<JoinTopicOutput>> joinTopic(JoinTopicInput input) {
+    public ListenableFuture<RpcResult<JoinTopicOutput>> joinTopic(JoinTopicInput input) {
 
         LOG.info("Start join Topic {} {}",getSourceNodeKey().getNodeId().getValue(), input.getTopicId().getValue());
 
@@ -173,7 +170,7 @@ public class HelloWorldEventSource implements EventSource {
      */
     @Override
     public NodeKey getSourceNodeKey() {
-        return sourceNode.getKey();
+        return sourceNode.key();
     }
 
     /*
@@ -190,11 +187,7 @@ public class HelloWorldEventSource implements EventSource {
      * In actual implementation event source can set this list same way as this example code or it can obtain it from other sources
      * (e.g. configuration parameters, device capabilities etc.)
      */
-    private void setAvailableNotifications(){
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(0);
-        cal.set(2015, 4, 8, 0, 0, 0);
-        Date revisionDate = cal.getTime();
+    private void setAvailableNotifications() {
 
         URI uriSample = null;
         URI uriTest = null;
@@ -205,8 +198,9 @@ public class HelloWorldEventSource implements EventSource {
             throw new RuntimeException("Bad URI for notification", e);
         }
 
-        QName qnSample = QName.create(uriSample,revisionDate,"sample-message");
-        QName qnTest = QName.create(uriTest,revisionDate,"sample-message");
+        Revision rev = Revision.of("2015-04-08");
+        QName qnSample = QName.create(uriSample, rev, "sample-message");
+        QName qnTest = QName.create(uriTest, rev, "sample-message");
 
         SchemaPath spSample = SchemaPath.create(true, qnSample);
         SchemaPath spTest = SchemaPath.create(true, qnTest);
@@ -255,7 +249,7 @@ public class HelloWorldEventSource implements EventSource {
             LOG.debug("Sample message generated: {}",message);
 
             for(TopicId jointTopic : listAcceptedTopics){
-                // notification is published for each accepted topic 
+                // notification is published for each accepted topic
                 // if there is no accepted topic, no notification will publish
 
                 // notification is created by builder and contain identification of eventSource and text of message
@@ -293,7 +287,7 @@ public class HelloWorldEventSource implements EventSource {
             }
         }
 
-        /* 
+        /*
          * Method encapsulates specific SampleEventSourceNotification into TopicDOMNotification
          * TopicDOMNotification carries next informations
          *   - TopicId
@@ -365,8 +359,8 @@ public class HelloWorldEventSource implements EventSource {
     }
 
     @Override
-    public Future<RpcResult<Void>> disJoinTopic(DisJoinTopicInput input) {
+    public ListenableFuture<RpcResult<DisJoinTopicOutput>> disJoinTopic(DisJoinTopicInput input) {
         listAcceptedTopics.remove(input.getTopicId());
-        return immediateFuture(RpcResultBuilder.success((Void) null).build());
+        return RpcResultBuilder.<DisJoinTopicOutput>success().buildFuture();
     }
 }
