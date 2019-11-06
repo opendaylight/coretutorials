@@ -31,7 +31,6 @@
     <module>api</module>
     <module>syslog</module>
     <module>impl</module>
-    <!--module>karaf</module-->
     <!--module>features</module-->
     <module>artifacts</module>
   </modules>

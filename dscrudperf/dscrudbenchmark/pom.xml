@@ -29,7 +29,6 @@
   <modules>
     <module>api</module>
     <module>impl</module>
-    <!--module>karaf</module-->
     <!--module>features</module-->
     <module>artifacts</module>
   </modules>

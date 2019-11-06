@@ -30,7 +30,6 @@
     <module>api</module>
     <module>xrmodels</module>
     <module>impl</module>
-    <!--module>karaf</module-->
     <!--module>features</module-->
     <module>artifacts</module>
   </modules>

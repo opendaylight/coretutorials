@@ -31,7 +31,6 @@
     <module>impl/spi</module>
     <module>impl/data-manager</module>
     <module>impl/topo-discovery</module>
-    <!--module>karaf</module-->
     <!--module>features</module-->
     <module>artifacts</module>
     <module>cli</module>

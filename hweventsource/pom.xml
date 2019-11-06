@@ -31,7 +31,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
     <module>impl</module>
     <module>uagent</module>
     <!--module>features</module-->
-    <!--module>karaf</module-->
     <module>artifacts</module>
   </modules>
 
