@@ -28,7 +28,6 @@
 
   <modules>
     <module>artifacts</module>
-    <module>feature-parent</module>
     <module>features</module>
 
     <module>dsbenchmark</module>

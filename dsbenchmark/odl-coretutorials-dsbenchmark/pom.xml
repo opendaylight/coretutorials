@@ -12,7 +12,7 @@
         <groupId>org.opendaylight.coretutorials</groupId>
         <artifactId>feature-parent</artifactId>
         <version>4.0.0-SNAPSHOT</version>
-        <relativePath>../../feature-parent</relativePath>
+        <relativePath>../../features/parent</relativePath>
     </parent>
 
     <artifactId>odl-coretutorials-dsbenchmark</artifactId>
@@ -20,6 +20,13 @@
     <description>Datastore benchmark tutorial</description>
 
     <dependencies>
+        <dependency>
+            <groupId>org.opendaylight.coretutorials</groupId>
+            <artifactId>odl-coretutorials-common</artifactId>
+            <type>xml</type>
+            <classifier>features</classifier>
+        </dependency>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>dsbenchmark-impl</artifactId>

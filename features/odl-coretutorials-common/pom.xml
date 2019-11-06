@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright (c) 2015 Cisco Systems, and others and others. All rights reserved.
+  Copyright (c) 2019 PANTHEON.tech, s.r.o. and others. All rights reserved.
 
   This program and the accompanying materials are made available under the
   terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -12,28 +12,19 @@
         <groupId>org.opendaylight.coretutorials</groupId>
         <artifactId>feature-parent</artifactId>
         <version>4.0.0-SNAPSHOT</version>
-        <relativePath>../../../features/parent</relativePath>
+        <relativePath>../parent</relativePath>
     </parent>
 
-    <artifactId>odl-coretutorials-dscrud</artifactId>
+    <artifactId>odl-coretutorials-common</artifactId>
     <packaging>feature</packaging>
-    <description>Datastore CRUD tutorial</description>
+    <description>Common tutorial substrate</description>
 
     <dependencies>
         <dependency>
-            <groupId>org.opendaylight.coretutorials</groupId>
-            <artifactId>odl-coretutorials-common</artifactId>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>odl-mdsal-broker</artifactId>
             <type>xml</type>
             <classifier>features</classifier>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>dscrud-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>dscrud-impl</artifactId>
         </dependency>
     </dependencies>
 </project>
