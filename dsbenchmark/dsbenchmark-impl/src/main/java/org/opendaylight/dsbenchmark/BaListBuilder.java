@@ -5,12 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.dsbenchmark;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.test.exec.OuterList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.test.exec.OuterListBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dsbenchmark.rev150105.test.exec.OuterListKey;
@@ -23,12 +21,11 @@ public final class BaListBuilder {
         List<OuterList> outerList = new ArrayList<OuterList>(outerElements);
         for (int j = 0; j < outerElements; j++) {
             outerList.add(new OuterListBuilder()
-                                .setId( j )
+                                .setId(j)
                                 .setInnerList(buildInnerList(j, innerElements))
-                                .setKey(new OuterListKey( j ))
+                                .withKey(new OuterListKey(j))
                                 .build());
         }
-
         return outerList;
     }
 
@@ -36,15 +33,13 @@ public final class BaListBuilder {
         List<InnerList> innerList = new ArrayList<InnerList>( elements );
 
         final String itemStr = "Item-" + String.valueOf(index) + "-";
-        for( int i = 0; i < elements; i++ ) {
+        for (int i = 0; i < elements; i++) {
             innerList.add(new InnerListBuilder()
-                                .setKey( new InnerListKey( i ) )
+                                .withKey(new InnerListKey(i))
                                 .setName(i)
-                                .setValue( itemStr + String.valueOf( i ) )
+                                .setValue(itemStr + String.valueOf(i))
                                 .build());
         }
-
         return innerList;
     }
-
 }
