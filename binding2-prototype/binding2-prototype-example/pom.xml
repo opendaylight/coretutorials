@@ -36,7 +36,7 @@
         <!-- stable/carbon versions -->
         <yang.yangtools.version>2.0.1</yang.yangtools.version>
         <yang.maven.plugin.version>2.0.1</yang.maven.plugin.version>
-        <mdsal.binding.version>0.12.0-SNAPSHOT</mdsal.binding.version>
+        <mdsal.binding.version>0.12.0</mdsal.binding.version>
         <java.source.version>1.8</java.source.version>
         <java.target.version>1.8</java.target.version>
     </properties>

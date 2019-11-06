@@ -20,8 +20,8 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   <modules>
     <module>binding2-prototype-app-api</module>
     <module>binding2-prototype-app-impl</module>
-    <module>binding2-prototype-app-karaf</module>
-    <module>binding2-prototype-app-features</module>
+    <!--module>binding2-prototype-app-karaf</module-->
+    <!--module>binding2-prototype-app-features</module-->
     <module>binding2-prototype-app-artifacts</module>
   </modules>
 </project>

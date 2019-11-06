@@ -18,8 +18,8 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   <modules>
     <module>dsbenchmark-api</module>
     <module>dsbenchmark-impl</module>
-    <module>dsbenchmark-karaf</module>
-    <module>dsbenchmark-features</module>
+    <!--module>dsbenchmark-karaf</module-->
+    <!--module>dsbenchmark-features</module-->
     <module>dsbenchmark-artifacts</module>
   </modules>
 </project>
