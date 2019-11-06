@@ -1,128 +1,108 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- vi: set et smarttab sw=4 tabstop=4: --><!--
-Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+  Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
 
-This program and the accompanying materials are made available under the
-terms of the Eclipse Public License v1.0 which accompanies this distribution,
-and is available at http://www.eclipse.org/legal/epl-v10.html
+  This program and the accompanying materials are made available under the
+  terms of the Eclipse Public License v1.0 which accompanies this distribution,
+  and is available at http://www.eclipse.org/legal/epl-v10.html
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.opendaylight.mdsal</groupId>
+        <artifactId>binding-parent</artifactId>
+        <version>3.0.10</version>
+        <relativePath/>
+    </parent>
 
-  <parent>
-    <groupId>org.opendaylight.controller</groupId>
-    <artifactId>config-parent</artifactId>
-    <version>0.7.1</version>
-    <relativePath/>
-  </parent>
+    <groupId>org.opendaylight.coretutorials</groupId>
+    <artifactId>dhcp-impl</artifactId>
+    <version>4.0.0-SNAPSHOT</version>
+    <packaging>bundle</packaging>
 
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opendaylight.coretutorials</groupId>
-  <artifactId>dhcp-impl</artifactId>
-  <version>4.0.0-SNAPSHOT</version>
-  <packaging>bundle</packaging>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.opendaylight.controller</groupId>
+                <artifactId>mdsal-artifacts</artifactId>
+                <version>1.9.2</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.opendaylight.controller</groupId>
+                <artifactId>config-artifacts</artifactId>
+                <version>0.10.2</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
-  <properties>
-    <anarres.dhcp.version>1.0.9</anarres.dhcp.version>
-  </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>sal-binding-api</artifactId>
+        </dependency>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.anarres.dhcp</groupId>
-      <artifactId>dhcp-server-netty</artifactId>
-      <version>${anarres.dhcp.version}</version>
-      <exclusions>
-        <!-- Exclude netty and use the version from ODL-->
-        <exclusion>
-          <groupId>io.netty</groupId>
-          <artifactId>netty-all</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
+        <dependency>
+            <groupId>org.anarres.dhcp</groupId>
+            <artifactId>dhcp-server-netty</artifactId>
+            <version>1.0.9</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.code.findbugs</groupId>
+                    <artifactId>jsr305</artifactId>
+                </exclusion>
+                <!-- Exclude netty and use the version from ODL-->
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-all</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>dhcp-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>dhcp-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
-    <dependency>
-      <groupId>org.opendaylight.controller</groupId>
-      <artifactId>netty-threadgroup-config</artifactId>
-    </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>netty-threadgroup-config</artifactId>
+        </dependency>
 
-    <!-- Testing Dependencies -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.controller</groupId>
-      <artifactId>config-manager</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.controller</groupId>
-      <artifactId>config-manager</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.controller</groupId>
-      <artifactId>config-util</artifactId>
-      <scope>test</scope>
-    </dependency>
+        <!-- Testing Dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+        </dependency>
   </dependencies>
 
   <build>
-   <plugins>
-     <plugin>
-       <groupId>org.codehaus.mojo</groupId>
-       <artifactId>build-helper-maven-plugin</artifactId>
-       <executions>
-         <execution>
-           <id>attach-artifacts</id>
-           <goals>
-             <goal>attach-artifact</goal>
-           </goals>
-           <phase>package</phase>
-           <configuration>
-             <artifacts>
-               <artifact>
-                 <file>${config.file}</file>
-                 <type>xml</type>
-                 <classifier>config</classifier>
-               </artifact>
-               <artifact>
-                 <file>src/main/config/default-config-v6.xml</file>
-                 <type>xml</type>
-                 <classifier>v6config</classifier>
-               </artifact>
-             </artifacts>
-           </configuration>
-         </execution>
-       </executions>
-     </plugin>
-     <plugin>
-       <groupId>org.apache.felix</groupId>
-       <artifactId>maven-bundle-plugin</artifactId>
-       <configuration>
-         <instructions>
-            <Export-Package>
-                org.apache.directory.server.dhcp.*,
-                org.anarres.dhcp.*,
-                org.anarres.jallocator.*,
-                org.anarres.dhcp.v6.*,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dhcp.impl.rev151018.*,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dhcp.impl.v6.rev151018.*,
-                org.opendaylight.dhcp.server
-            </Export-Package>
-         </instructions>
-       </configuration>
-     </plugin>
-    </plugins>
+      <plugins>
+          <plugin>
+              <groupId>org.apache.felix</groupId>
+              <artifactId>maven-bundle-plugin</artifactId>
+              <configuration>
+                  <instructions>
+                      <Export-Package>
+                          org.apache.directory.server.dhcp.*,
+                          org.anarres.dhcp.*,
+                          org.anarres.jallocator.*,
+                          org.anarres.dhcp.v6.*,
+                          org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dhcp.impl.rev151018.*,
+                          org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.dhcp.impl.v6.rev151018.*,
+                          org.opendaylight.dhcp.server
+                      </Export-Package>
+                  </instructions>
+              </configuration>
+          </plugin>
+      </plugins>
   </build>
 </project>
