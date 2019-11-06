@@ -9,13 +9,11 @@
 package sharding.simple.shardtests;
 
 import com.google.common.collect.Lists;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
+import java.util.concurrent.ExecutionException;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.mdsal.common.api.TransactionCommitFailedException;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeCursorAwareTransaction;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeIdentifier;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeLoopException;
@@ -36,7 +34,6 @@ import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableMapNodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import sharding.simple.impl.DomListBuilder;
 import sharding.simple.impl.ShardHelper;
 import sharding.simple.impl.ShardHelper.ShardData;
@@ -152,10 +149,12 @@ public abstract class AbstractShardTest implements AutoCloseable {
             if (cursor != null) {
                 cursor.write(shardRootYid.node(InnerList.QNAME).getLastPathArgument(), mapNode);
                 cursor.close();
-            } else LOG.warn("Can't create list anchors because cursor is NULL.");
+            } else {
+                LOG.warn("Can't create list anchors because cursor is NULL.");
+            }
             try {
-                tx.submit().checkedGet();
-            } catch (TransactionCommitFailedException e) {
+                tx.commit().get();
+            } catch (InterruptedException | ExecutionException e) {
                 LOG.error("Failed to create container for inner list, {}", e);
                 throw new RuntimeException(e);
             }

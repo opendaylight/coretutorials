@@ -7,10 +7,9 @@
  */
 package org.opendaylight.coretutorials.impl;
 
-import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.Monitor;
 import java.util.Collections;
-import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -61,10 +60,10 @@ public class DscrudProvider implements BindingAwareProvider, DscrudService, Auto
      *
      */
     @Override
-    public Future<RpcResult<Void>> cleanupStore() {
+    public ListenableFuture<RpcResult<CleanupStoreOutput>> cleanupStore(CleanupStoreInput input) {
         cleanupTestStore();
         LOG.info("Data Store cleaned up");
-        return Futures.immediateFuture(RpcResultBuilder.<Void>success().build());
+        return RpcResultBuilder.<CleanupStoreOutput>success().buildFuture();
     }
 
     /**
@@ -72,7 +71,7 @@ public class DscrudProvider implements BindingAwareProvider, DscrudService, Auto
      *
      */
     @Override
-    public Future<RpcResult<DoCrudOutput>> doCrud(DoCrudInput input) {
+    public ListenableFuture<RpcResult<DoCrudOutput>> doCrud(DoCrudInput input) {
         //LOG.info("Starting the data store benchmark test, input: {}", input);
 
         DoCrudInput.Operation oper = input.getOperation();

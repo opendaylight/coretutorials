@@ -67,10 +67,7 @@ public class SampleEventSourceGenerator {
     }
 
     private Node getNewNode(String nodeIdent){
-        NodeId nodeId = new NodeId(nodeIdent);
-        NodeBuilder nb = new NodeBuilder();
-        nb.setKey(new NodeKey(nodeId));
-        return nb.build();
+        return new NodeBuilder().withKey(new NodeKey(new NodeId(nodeIdent))).build();
     }
 
 }

@@ -7,6 +7,8 @@
  */
 package ncmount.impl;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Collections2;
@@ -15,16 +17,15 @@ import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeIdentifier;
 import org.opendaylight.controller.md.sal.dom.api.DOMMountPointService;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcException;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcIdentifier;
@@ -32,8 +33,6 @@ import org.opendaylight.controller.md.sal.dom.api.DOMRpcImplementation;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcProviderService;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcResult;
 import org.opendaylight.controller.md.sal.dom.spi.DefaultDOMRpcResult;
-import org.opendaylight.controller.sal.core.api.Broker;
-import org.opendaylight.controller.sal.core.api.Provider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.network.topology.topology.topology.types.TopologyNetconf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ncmount.rev150105.ListNodesOutput;
@@ -55,6 +54,7 @@ import org.opendaylight.yangtools.yang.data.api.schema.LeafSetNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
+import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidate;
 import org.opendaylight.yangtools.yang.data.impl.schema.Builders;
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.api.ListNodeBuilder;
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableContainerNodeBuilder;
@@ -80,13 +80,16 @@ import org.slf4j.LoggerFactory;
  *  One can follow the following link to understand the difference between BI and BA :
  *  https://ask.opendaylight.org/question/998/binding-independent-and-binding-aware-difference/
  */
-public class NcmountDomProvider implements Provider, AutoCloseable, DOMRpcImplementation, DOMDataChangeListener {
+public class NcmountDomProvider implements AutoCloseable, DOMRpcImplementation, DOMDataTreeChangeListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(NcmountDomProvider.class);
 
-    private static final DOMRpcIdentifier SHOW_NODE_RPC_ID = DOMRpcIdentifier.create(SchemaPath.create(true, QName.create(ShowNodeInput.QNAME, "show-node").intern()));
-    private static final DOMRpcIdentifier LIST_NODES_ID = DOMRpcIdentifier.create(SchemaPath.create(true, QName.create(ListNodesOutput.QNAME, "list-nodes").intern()));
-    private static final DOMRpcIdentifier WRITE_NODES_ID = DOMRpcIdentifier.create(SchemaPath.create(true, QName.create(WriteRoutesInput.QNAME, "write-routes").intern()));
+    private static final DOMRpcIdentifier SHOW_NODE_RPC_ID = DOMRpcIdentifier.create(SchemaPath.create(true,
+        QName.create(ShowNodeInput.QNAME, "show-node").intern()));
+    private static final DOMRpcIdentifier LIST_NODES_ID = DOMRpcIdentifier.create(SchemaPath.create(true,
+        QName.create(ListNodesOutput.QNAME, "list-nodes").intern()));
+    private static final DOMRpcIdentifier WRITE_NODES_ID = DOMRpcIdentifier.create(SchemaPath.create(true,
+        QName.create(WriteRoutesInput.QNAME, "write-routes").intern()));
 
     // Qname used to construct the output for the list-node rpc.
     static final QName RPC_OUTPUT_QNAME = QName.create(ListNodesOutput.QNAME, "list-nodes").intern();
@@ -101,40 +104,28 @@ public class NcmountDomProvider implements Provider, AutoCloseable, DOMRpcImplem
             .build();
     private static final YangInstanceIdentifier NETCONF_TOPO_NODE_IID = NETCONF_TOPO_IID.node(Node.QNAME).toOptimized();
 
-    private DOMMountPointService mountPointService;
-    private DOMDataBroker globalDomDataBroker;
+    private final DOMMountPointService mountPointService;
+    private final DOMDataBroker dataBroker;
 
-    /**
-     * This method initializes DomDataBroker and Mountpoint service.
-     * This services needed throughout the lifetime of the ncmount
-     * application and registers its RPC implementation and Data change
-     * Listener with the MD-SAL.
-     */
-    @Override
-    public void onSessionInitiated(final Broker.ProviderSession providerSession) {
-        // get the DOM versions of MD-SAL services
-        this.globalDomDataBroker = providerSession.getService(DOMDataBroker.class);
-        this.mountPointService = providerSession.getService(DOMMountPointService.class);
+    public NcmountDomProvider(final DOMDataBroker dataBroker, final DOMMountPointService mountPointService,
+            final DOMRpcProviderService rpcProviderService) {
+        this.dataBroker = requireNonNull(dataBroker);
+        this.mountPointService = requireNonNull(mountPointService);
 
-        final DOMRpcProviderService service = providerSession.getService(DOMRpcProviderService.class);
-        service.registerRpcImplementation(this, SHOW_NODE_RPC_ID, LIST_NODES_ID, WRITE_NODES_ID);
+        final DOMDataTreeChangeService dtcs = (DOMDataTreeChangeService) dataBroker.getSupportedExtensions()
+                .get(DOMDataTreeChangeService.class);
+
+        // FIXME: hold on to the registrations!
+        dtcs.registerDataTreeChangeListener(
+            new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, NETCONF_TOPO_NODE_IID), this);
+        rpcProviderService.registerRpcImplementation(this, SHOW_NODE_RPC_ID, LIST_NODES_ID, WRITE_NODES_ID);
 
         LOG.info("NcmountDomProvider is registered");
-
-        this.globalDomDataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                NETCONF_TOPO_NODE_IID, this, AsyncDataBroker.DataChangeScope.SUBTREE);
-    }
-
-    @Override
-    public Collection<ProviderFunctionality> getProviderFunctionality() {
-        // Deprecated, not using
-        return Collections.emptySet();
     }
 
     @Override
     public void close() {
-        this.globalDomDataBroker = null;
-        this.mountPointService = null;
+        // FIXME: reliquish registrations
     }
 
     /**
@@ -144,7 +135,8 @@ public class NcmountDomProvider implements Provider, AutoCloseable, DOMRpcImplem
      */
     @Nonnull
     @Override
-    public CheckedFuture<DOMRpcResult, DOMRpcException> invokeRpc(@Nonnull final DOMRpcIdentifier domRpcIdentifier, final NormalizedNode<?, ?> normalizedNode) {
+    public CheckedFuture<DOMRpcResult, DOMRpcException> invokeRpc(@Nonnull final DOMRpcIdentifier domRpcIdentifier,
+            final NormalizedNode<?, ?> normalizedNode) {
 
         if(domRpcIdentifier.equals(SHOW_NODE_RPC_ID)) {
             return showNode(normalizedNode);
@@ -193,8 +185,7 @@ public class NcmountDomProvider implements Provider, AutoCloseable, DOMRpcImplem
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(NC_OPER_NODES));
         NormalizedNode<?, ?> topology = null;
 
-        DOMDataReadOnlyTransaction rtx = this.globalDomDataBroker.newReadOnlyTransaction();
-        try {
+        try (DOMDataReadOnlyTransaction rtx = dataBroker.newReadOnlyTransaction()) {
             Optional<NormalizedNode<?, ?>> optTopology = rtx.read(LogicalDatastoreType.OPERATIONAL, NETCONF_TOPO_IID)
                     .checkedGet();
 
@@ -209,9 +200,6 @@ public class NcmountDomProvider implements Provider, AutoCloseable, DOMRpcImplem
         } catch (ReadFailedException e) {
             LOG.warn("Failed to read operational datastore: {}", e);
             return ncOperLeafListBuilder.build();
-        } finally {
-            // close the transaction resource.
-            rtx.close();
         }
 
         DataContainerChild<? extends PathArgument, ?> nodeList = ((MapEntryNode) topology).getChild(new NodeIdentifier(Node.QNAME))
@@ -219,10 +207,10 @@ public class NcmountDomProvider implements Provider, AutoCloseable, DOMRpcImplem
         for (MapEntryNode operNode : ((MapNode)nodeList).getValue()) {
 
             // pick the leaf node with local name "node-id"
-            String nodeId = ((String) operNode
-                    .getChild(TOPO_NODE_ID_PATHARG).get().getValue());
+            String nodeId = (String) operNode
+                    .getChild(TOPO_NODE_ID_PATHARG).get().getValue();
 
-            final Optional<DataContainerChild<? extends PathArgument, ?>> netconfNode = operNode.getChild(
+            final java.util.Optional<DataContainerChild<? extends PathArgument, ?>> netconfNode = operNode.getChild(
                     // TODO the augmentation identifier could be extracted into a static constant
                     new YangInstanceIdentifier.AugmentationIdentifier(Sets.newHashSet(
                             toQNames(NetconfNode.QNAME, "tcp-only", "available-capabilities", "port",
@@ -233,19 +221,19 @@ public class NcmountDomProvider implements Provider, AutoCloseable, DOMRpcImplem
                                     "clustered-connection-status","yang-module-capabilities", "pass-through",
                                     "connection-timeout-millis", "sleep-factor"))));
 
-            if(!netconfNode.isPresent()) {
+            if (!netconfNode.isPresent()) {
                 // Skipping non netconf nodes, even though this should not happen,
                 // since we are querying netconf topology
                 continue;
             }
 
             final AugmentationNode netconfNodeParameters = (AugmentationNode) netconfNode.get();
-            final LeafNode<?> connectionStatus = ((LeafNode<?>) netconfNodeParameters
-                    .getChild(new NodeIdentifier(toQName(NetconfNode.QNAME, "connection-status"))).get());
+            final LeafNode<?> connectionStatus = (LeafNode<?>) netconfNodeParameters
+                    .getChild(new NodeIdentifier(toQName(NetconfNode.QNAME, "connection-status"))).get();
 
-            if("connected".equals(connectionStatus.getValue())) {
-                final ContainerNode availableCapabilities = ((ContainerNode) netconfNodeParameters
-                        .getChild(new NodeIdentifier(toQName(NetconfNode.QNAME, "available-capabilities"))).get());
+            if ("connected".equals(connectionStatus.getValue())) {
+                final ContainerNode availableCapabilities = (ContainerNode) netconfNodeParameters
+                        .getChild(new NodeIdentifier(toQName(NetconfNode.QNAME, "available-capabilities"))).get();
                 final LeafSetNode<?> availableCapability = (LeafSetNode<?>) availableCapabilities
                         .getChild(new NodeIdentifier(toQName(NetconfNode.QNAME, "available-capability"))).get();
 
@@ -290,15 +278,11 @@ public class NcmountDomProvider implements Provider, AutoCloseable, DOMRpcImplem
                 .withChild(ncOperLeafList)
                 .build();
 
-        return Futures.immediateCheckedFuture((DOMRpcResult) new DefaultDOMRpcResult(resultNode));
+        return Futures.immediateCheckedFuture(new DefaultDOMRpcResult(resultNode));
     }
 
     private static Collection<QName> toQNames(final QName baseQName, String... localNames) {
-        return Collections2.transform(Arrays.asList(localNames), new Function<String, QName>() {
-            @Override public QName apply(final String input) {
-                return QName.create(baseQName, input).intern();
-            }
-        });
+        return Collections2.transform(Arrays.asList(localNames), input -> QName.create(baseQName, input).intern());
     }
 
     private static QName toQName(final QName baseQName, String localName) {
@@ -327,13 +311,13 @@ public class NcmountDomProvider implements Provider, AutoCloseable, DOMRpcImplem
      * would use the the data contained in the data change event to, for
      * example, maintain paths to connected netconf nodes.
      *
-     * @param change Data change event
+     * @param changes Data change events
      */
     @Override
-    public void onDataChanged(final AsyncDataChangeEvent<YangInstanceIdentifier, NormalizedNode<?, ?>> change) {
+    public void onDataTreeChanged(final Collection<DataTreeCandidate> changes) {
         // TODO: Method need to be implemented. The data change has to
         // be handled in the same way as in NcmountProvider.
-        LOG.info("data changed: {}", change);
+        LOG.info("data changed: {}", changes);
     }
 }
 

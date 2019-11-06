@@ -9,16 +9,14 @@
 
 package singleton.simple.impl;
 
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.singleton.simple.routed.rpc.rev160722.RoutedRpcInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.singleton.simple.routed.rpc.rev160722.RoutedRpcOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.singleton.simple.routed.rpc.rev160722.RoutedRpcOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.singleton.simple.routed.rpc.rev160722.RoutedRpcService;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +49,7 @@ public class RoutedRpcServiceImpl implements RoutedRpcService {
      *      )
      */
     @Override
-    public Future<RpcResult<RoutedRpcOutput>> routedRpc(RoutedRpcInput input) {
+    public ListenableFuture<RpcResult<RoutedRpcOutput>> routedRpc(RoutedRpcInput input) {
         LOG.info("ClusteringServiceImpl.routedRpc input: {}", input);
 
         final String outputString;

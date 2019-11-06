@@ -6,24 +6,20 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.List;
+import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.controller.sal.core.api.model.SchemaService;
+import org.opendaylight.mdsal.dom.api.DOMSchemaService;
+import org.opendaylight.mdsal.dom.api.DOMSchemaServiceExtension;
 import org.opendaylight.mdsal.dom.broker.ShardedDOMDataTree;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.util.ListenerRegistry;
-import org.opendaylight.yangtools.yang.model.api.Module;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
 import org.opendaylight.yangtools.yang.model.api.SchemaContextListener;
 import org.opendaylight.yangtools.yang.model.api.SchemaContextProvider;
-import org.opendaylight.yangtools.yang.parser.spi.meta.ReactorException;
-import org.opendaylight.yangtools.yang.parser.spi.source.SourceException;
-import org.opendaylight.yangtools.yang.parser.stmt.reactor.CrossSourceStatementReactor;
-import org.opendaylight.yangtools.yang.parser.stmt.rfc6020.YangInferencePipeline;
+import org.opendaylight.yangtools.yang.test.util.YangParserTestUtils;
 import sharding.simple.impl.ShardingSimpleProvider;
 
 public class ShardingSimpleTest {
@@ -34,7 +30,7 @@ public class ShardingSimpleTest {
     MockSchemaService schemaService = new MockSchemaService();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         schemaService.changeSchema(createTestContext());
     }
 
@@ -50,32 +46,15 @@ public class ShardingSimpleTest {
         shardingSimpleProvider.init();
     }
 
-    public static SchemaContext createTestContext() throws ReactorException {
-        return parseYangStreams(Collections.singletonList(getInputStream()));
+    public static SchemaContext createTestContext() {
+        return YangParserTestUtils.parseYangResources( ShardingSimpleTest.class, DATASTORE_TEST_YANG);
     }
 
-    private static InputStream getInputStream() {
-        return ShardingSimpleTest.class.getResourceAsStream(DATASTORE_TEST_YANG);
-    }
-
-    private static SchemaContext parseYangStreams(final List<InputStream> streams)
-            throws SourceException, ReactorException {
-
-        final CrossSourceStatementReactor.BuildAction reactor = YangInferencePipeline.RFC6020_REACTOR
-                .newBuild();
-        return reactor.buildEffective(streams);
-    }
-
-    public static final class MockSchemaService implements SchemaService, SchemaContextProvider {
+    public static final class MockSchemaService implements DOMSchemaService, SchemaContextProvider {
 
         private SchemaContext schemaContext;
 
         ListenerRegistry<SchemaContextListener> listeners = ListenerRegistry.create();
-
-        @Override
-        public void addModule(final Module module) {
-            throw new UnsupportedOperationException();
-        }
 
         @Override
         public synchronized SchemaContext getGlobalContext() {
@@ -94,11 +73,6 @@ public class ShardingSimpleTest {
         }
 
         @Override
-        public void removeModule(final Module module) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
         public synchronized SchemaContext getSchemaContext() {
             return schemaContext;
         }
@@ -108,6 +82,11 @@ public class ShardingSimpleTest {
             for (final ListenerRegistration<SchemaContextListener> listener : listeners) {
                 listener.getInstance().onGlobalContextUpdated(schemaContext);
             }
+        }
+
+        @Override
+        public ClassToInstanceMap<DOMSchemaServiceExtension> getExtensions() {
+            return ImmutableClassToInstanceMap.of();
         }
     }
 

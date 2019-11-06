@@ -66,9 +66,9 @@ public class SimpleTxCrudMonitor {
         final String itemStr = "Item-" + String.valueOf(index) + "-";
         for( int i = 0; i < elements; i++ ) {
             innerList.add(new InnerListBuilder()
-                    .setKey( new InnerListKey( String.valueOf( i ) ) )
+                    .withKey(new InnerListKey(String.valueOf(i)))
                     .setId(String.valueOf(i))
-                    .setValue( itemStr + String.valueOf( i ) )
+                    .setValue(itemStr + String.valueOf(i))
                     .build());
         }
 
@@ -171,24 +171,24 @@ public class SimpleTxCrudMonitor {
         }
 
         OuterList outerList = new OuterListBuilder()
-                .setId(String.valueOf( j ))
+                .setId(String.valueOf(j))
                 .setInnerList(innerListList)
-                .setKey(new OuterListKey(String.valueOf( j )))
+                .withKey(new OuterListKey(String.valueOf(j)))
                 .build();
         ol_iid = InstanceIdentifier.create(TestExec.class)
-                .child(OuterList.class, outerList.getKey());
+                .child(OuterList.class, outerList.key());
         tx.put(LogicalDatastoreType.OPERATIONAL, ol_iid, outerList);
 
         if (j != 0) {
             // add an inner list for outerList 0
             InnerList innerList = new InnerListBuilder()
-                    .setKey(new InnerListKey(String.valueOf(j)))
+                    .withKey(new InnerListKey(String.valueOf(j)))
                     .setId(String.valueOf(j))
                     .setValue(String.valueOf(j))
                     .build();
             InstanceIdentifier<InnerList> il_iid = InstanceIdentifier.create(TestExec.class)
                     .child(OuterList.class, new OuterListKey(String.valueOf(0)))
-                    .child(InnerList.class, innerList.getKey());
+                    .child(InnerList.class, innerList.key());
             tx.put(LogicalDatastoreType.OPERATIONAL, il_iid, innerList);
         }
         try {
@@ -210,12 +210,12 @@ public class SimpleTxCrudMonitor {
 
 
         ol_iid = InstanceIdentifier.create(TestExec.class)
-                .child(OuterList.class, new OuterListKey(String.valueOf( j )));
+                .child(OuterList.class, new OuterListKey(String.valueOf(j)));
         tx.delete(LogicalDatastoreType.OPERATIONAL, ol_iid);
 
         InstanceIdentifier<InnerList> il_iid = InstanceIdentifier.create(TestExec.class)
-                .child(OuterList.class, new OuterListKey(String.valueOf( 0 )))
-                .child(InnerList.class, new InnerListKey(String.valueOf( j )));
+                .child(OuterList.class, new OuterListKey(String.valueOf(0)))
+                .child(InnerList.class, new InnerListKey(String.valueOf(j)));
         tx.delete(LogicalDatastoreType.OPERATIONAL, il_iid);
 
         try {

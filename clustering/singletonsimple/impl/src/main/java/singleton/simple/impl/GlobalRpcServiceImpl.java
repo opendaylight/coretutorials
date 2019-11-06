@@ -8,16 +8,14 @@
 
 package singleton.simple.impl;
 
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.singleton.simple.global.rpc.rev160722.GlobalRpcInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.singleton.simple.global.rpc.rev160722.GlobalRpcOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.singleton.simple.global.rpc.rev160722.GlobalRpcOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.singleton.simple.global.rpc.rev160722.GlobalRpcService;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,8 +29,8 @@ public class GlobalRpcServiceImpl implements GlobalRpcService {
     private final HostInformation hostInfo;
 
     /** Constructor.
-     * @param hostInfo: reference to an object that holds the example host
-     *                  data returned in this service's response.
+     * @param hostInfo reference to an object that holds the example host
+     *                 data returned in this service's response.
      */
     public GlobalRpcServiceImpl(HostInformation hostInfo) {
         this.hostInfo = hostInfo;
@@ -46,7 +44,7 @@ public class GlobalRpcServiceImpl implements GlobalRpcService {
      * )
      */
     @Override
-    public Future<RpcResult<GlobalRpcOutput>> globalRpc(GlobalRpcInput input) {
+    public ListenableFuture<RpcResult<GlobalRpcOutput>> globalRpc(GlobalRpcInput input) {
         LOG.info("GlobalRpcServiceImpl.globalRpc input: {}", input);
 
         final String outputString;

@@ -9,13 +9,11 @@
 package sharding.simple.shardtests;
 
 import com.google.common.collect.Lists;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-
+import java.util.concurrent.ExecutionException;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.mdsal.common.api.TransactionCommitFailedException;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeCursorAwareTransaction;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeIdentifier;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeListener;
@@ -34,7 +32,6 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import sharding.simple.impl.DomListBuilder;
 import sharding.simple.impl.ShardHelper;
 import sharding.simple.impl.ShardHelper.ShardData;
@@ -99,8 +96,8 @@ public class BaselineFunctionVerifier {
 
         LOG.info("Submitting transaction tx1");
         try {
-            tx1.submit().checkedGet();
-        } catch (TransactionCommitFailedException e) {
+            tx1.commit().get();
+        } catch (InterruptedException | ExecutionException e) {
             LOG.error("tx1 failed, {}", e);
         }
 
@@ -119,8 +116,8 @@ public class BaselineFunctionVerifier {
 
         LOG.info("Submitting transaction tx2");
         try {
-            tx2.submit().checkedGet();
-        } catch (TransactionCommitFailedException e) {
+            tx2.commit().get();
+        } catch (InterruptedException | ExecutionException e) {
             LOG.error("tx2 failed, {}", e);
         }
 

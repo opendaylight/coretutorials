@@ -9,8 +9,11 @@
 package sharding.simple.shardtests;
 
 import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import org.opendaylight.mdsal.common.api.TransactionCommitFailedException;
+import com.google.common.util.concurrent.MoreExecutors;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeCursorAwareTransaction;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeWriteCursor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.sharding.simple.rev160802.test.data.outer.list.InnerList;
@@ -20,9 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sharding.simple.impl.DomListBuilder;
 import sharding.simple.impl.ShardHelper.ShardData;
-
-import java.util.List;
-import java.util.concurrent.Callable;
 
 /** Provides function for randomly pushing of test data to data store with multi-thread.
  * @author kucnh
@@ -57,19 +57,26 @@ public class RandShardCallable implements Callable<Void>{
         DOMDataTreeWriteCursor cursor = tx.createCursor(sd.getDOMDataTreeIdentifier());
         if (cursor != null) {
             cursor.enter(new YangInstanceIdentifier.NodeIdentifier(InnerList.QNAME));
-        } else LOG.error("The cursor is NULL");
+        } else {
+            LOG.error("The cursor is NULL");
+        }
 
         YangInstanceIdentifier.NodeIdentifierWithPredicates nodeId = new YangInstanceIdentifier.NodeIdentifierWithPredicates(InnerList.QNAME,
                 DomListBuilder.IL_NAME, (long)itemIndex);
         MapEntryNode element;
 
-        if (testData != null) element = testData.get(itemIndex);
-        else element = AbstractShardTest.createListEntry(nodeId, shardNum, itemIndex);
+        if (testData != null) {
+            element = testData.get(itemIndex);
+        } else {
+            element = AbstractShardTest.createListEntry(nodeId, shardNum, itemIndex);
+        }
 
         writeCnt++;
         if (cursor != null) {
             cursor.write(nodeId, element);
-        } else LOG.error("The cursor is NULL");
+        } else {
+            LOG.error("The cursor is NULL");
+        }
 
         if (writeCnt == opsPerTx) {
             // We have reached the limit of writes-per-transaction.
@@ -78,10 +85,12 @@ public class RandShardCallable implements Callable<Void>{
             txSubmitted++;
             if (cursor != null) {
                 cursor.close();
-            } else LOG.error("The cursor is NULL");
-            Futures.addCallback(tx.submit(), new FutureCallback<Void>() {
+            } else {
+                LOG.error("The cursor is NULL");
+            }
+            tx.commit().addCallback(new FutureCallback<CommitInfo>() {
                 @Override
-                public void onSuccess(final Void result) {
+                public void onSuccess(final CommitInfo result) {
                     txOk++;
                 }
 
@@ -90,18 +99,22 @@ public class RandShardCallable implements Callable<Void>{
                     LOG.error("Transaction failed, shard {}, exception {}", shardNum, t1);
                     txError++;
                 }
-            });
+            }, MoreExecutors.directExecutor());
 
             writeCnt = 0;
             tx = sd.getProducer().createTransaction(false);
             cursor = tx.createCursor(sd.getDOMDataTreeIdentifier());
             if (cursor != null) {
                 cursor.enter(new YangInstanceIdentifier.NodeIdentifier(InnerList.QNAME));
-            } else LOG.error("The cursor is NULL");
+            } else {
+                LOG.error("The cursor is NULL");
+            }
         }
         if (cursor != null) {
             cursor.close();
-        } else LOG.error("The cursor is NULL");
+        } else {
+            LOG.error("The cursor is NULL");
+        }
 
         itemIndex ++;
 
@@ -110,8 +123,8 @@ public class RandShardCallable implements Callable<Void>{
         // the data store. Note that all tx submits except for the last one are
         // asynchronous.
         try {
-            tx.submit().checkedGet();
-        } catch (TransactionCommitFailedException e) {
+            tx.commit().get();
+        } catch (InterruptedException | ExecutionException e) {
             LOG.error("Last transaction submit failed, shard {}, exception {}", shardNum, e);
             txError++;
         }

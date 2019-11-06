@@ -21,12 +21,12 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
     <maven>3.1.1</maven>
   </prerequisites>
   <properties>
-    <controller.mdsal.version>1.7.0</controller.mdsal.version>
-    <mdsal.version>2.4.0</mdsal.version>
-    <mdsal.model.version>0.12.0</mdsal.model.version>
-    <netconf.version>1.4.0</netconf.version>
-    <restconf.version>1.7.0</restconf.version>
-    <yangtools.version>2.0.1</yangtools.version>
+    <controller.mdsal.version>1.9.2</controller.mdsal.version>
+    <mdsal.version>3.0.10</mdsal.version>
+    <mdsal.model.version>3.0.10</mdsal.model.version>
+    <netconf.version>1.6.2</netconf.version>
+    <restconf.version>1.9.2</restconf.version>
+    <yangtools.version>2.1.11</yangtools.version>
     <configfile.directory>etc/opendaylight/karaf</configfile.directory>
   </properties>
   <dependencyManagement>
@@ -34,7 +34,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
       <dependency>
         <groupId>org.opendaylight.netconf</groupId>
         <artifactId>netconf-artifacts</artifactId>
-        <version>1.4.0</version>
+        <version>1.6.2</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>

@@ -9,15 +9,13 @@
 package sharding.simple.shardtests;
 
 import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
-
+import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.mdsal.common.api.TransactionCommitFailedException;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeCursorAwareTransaction;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeService;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeWriteCursor;
@@ -27,7 +25,6 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdent
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import sharding.simple.impl.DomListBuilder;
 import sharding.simple.impl.ShardHelper;
 import sharding.simple.impl.ShardHelper.ShardData;
@@ -96,9 +93,9 @@ public class SoakShardTest extends AbstractShardTest {
                 // a new one in its place.
                 txSubmitted++;
                 cursor[shardIdx].close();
-                Futures.addCallback(tx[shardIdx].submit(), new FutureCallback<Void>() {
+                tx[shardIdx].commit().addCallback(new FutureCallback<CommitInfo>() {
                     @Override
-                    public void onSuccess(final Void result) {
+                    public void onSuccess(final CommitInfo result) {
                         txOk.incrementAndGet();
                     }
 
@@ -107,7 +104,7 @@ public class SoakShardTest extends AbstractShardTest {
                         LOG.error("Transaction failed, {}", t1);
                         txError.incrementAndGet();
                     }
-                });
+                }, MoreExecutors.directExecutor());
 
                 writeCnt[shardIdx] = 0;
                 ShardData sd = shardData.get(shardIdx);
@@ -125,9 +122,9 @@ public class SoakShardTest extends AbstractShardTest {
             txSubmitted++;
             cursor[s].close();
             try {
-                tx[s].submit().checkedGet();
+                tx[s].commit().get();
                 txOk.incrementAndGet();
-            } catch (TransactionCommitFailedException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 LOG.error("Transaction failed, {}", e);
                 txError.incrementAndGet();
             }

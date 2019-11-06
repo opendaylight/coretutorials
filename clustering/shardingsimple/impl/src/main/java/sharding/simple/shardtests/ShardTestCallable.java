@@ -9,21 +9,19 @@
 package sharding.simple.shardtests;
 
 import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.List;
 import java.util.concurrent.Callable;
-
-import org.opendaylight.mdsal.common.api.TransactionCommitFailedException;
+import java.util.concurrent.ExecutionException;
+import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeCursorAwareTransaction;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeWriteCursor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.clustering.sharding.simple.rev160802.test.data.outer.list.InnerList;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifierWithPredicates;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import sharding.simple.impl.DomListBuilder;
 import sharding.simple.impl.ShardHelper.ShardData;
 
@@ -80,9 +78,9 @@ public class ShardTestCallable implements Callable<Void> {
                 // a new one in its place.
                 txSubmitted++;
                 cursor.close();
-                Futures.addCallback(tx.submit(), new FutureCallback<Void>() {
+                tx.commit().addCallback(new FutureCallback<CommitInfo>() {
                     @Override
-                    public void onSuccess(final Void result) {
+                    public void onSuccess(final CommitInfo result) {
                         txOk++;
                     }
 
@@ -91,7 +89,7 @@ public class ShardTestCallable implements Callable<Void> {
                         LOG.error("Transaction failed, shard {}, exception {}", shardNum, t1);
                         txError++;
                     }
-                });
+                }, MoreExecutors.directExecutor());
 
                 writeCnt = 0;
                 tx = sd.getProducer().createTransaction(false);
@@ -107,9 +105,9 @@ public class ShardTestCallable implements Callable<Void> {
         txSubmitted++;
         cursor.close();
         try {
-            tx.submit().checkedGet();
+            tx.commit().get();
             txOk++;
-        } catch (TransactionCommitFailedException e) {
+        } catch (InterruptedException | ExecutionException e) {
             LOG.error("Last transaction submit failed, shard {}, exception {}", shardNum, e);
             txError++;
         }

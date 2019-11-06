@@ -7,7 +7,7 @@
  */
 package org.opendaylight.coretutorials.impl;
 
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
@@ -48,7 +48,7 @@ public class DscrudbenchmarkProvider implements DscrudbenchmarkService, BindingA
      * @return
      */
     @Override
-    public Future<RpcResult<RpcCrudTestOutput>> rpcCrudTest(RpcCrudTestInput input) {
+    public ListenableFuture<RpcResult<RpcCrudTestOutput>> rpcCrudTest(RpcCrudTestInput input) {
 
         long numResources;
         long numThreads;

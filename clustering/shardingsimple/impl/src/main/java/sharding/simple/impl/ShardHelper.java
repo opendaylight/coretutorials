@@ -14,8 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-
-import org.opendaylight.controller.sal.core.api.model.SchemaService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeIdentifier;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeProducer;
@@ -23,6 +21,7 @@ import org.opendaylight.mdsal.dom.api.DOMDataTreeProducerException;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeService;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeShardingConflictException;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeShardingService;
+import org.opendaylight.mdsal.dom.api.DOMSchemaService;
 import org.opendaylight.mdsal.dom.store.inmemory.InMemoryDOMDataTreeShard;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.util.concurrent.SpecialExecutors;
@@ -46,7 +45,7 @@ public class ShardHelper implements AutoCloseable, SchemaContextListener {
 
     private final DOMDataTreeShardingService dataTreeShardingService;
     private final DOMDataTreeService dataTreeService;
-    private final SchemaService schemaService;
+    private final DOMSchemaService schemaService;
     private final ListenerRegistration<SchemaContextListener> schemaServiceRegistration;
 
     private final List<ListenerRegistration<InMemoryDOMDataTreeShard>> dataTreeShardRegistrations = new ArrayList<>();
@@ -59,7 +58,7 @@ public class ShardHelper implements AutoCloseable, SchemaContextListener {
      */
     public ShardHelper(DOMDataTreeShardingService dataTreeShardingService,
             DOMDataTreeService dataTreeService,
-            SchemaService schemaService) {
+            DOMSchemaService schemaService) {
         this.dataTreeShardingService = dataTreeShardingService;
         this.dataTreeService = dataTreeService;
         this.schemaService = schemaService;
@@ -84,7 +83,8 @@ public class ShardHelper implements AutoCloseable, SchemaContextListener {
         final ExecutorService configRootShardExecutor =
                 SpecialExecutors.newBlockingBoundedFastThreadPool(ShardHelper.DCL_EXECUTOR_MAX_POOL_SIZE,
                                                                   ShardHelper.DCL_EXECUTOR_MAX_QUEUE_SIZE,
-                                                                  ddtId.getDatastoreType() + "RootShard-DCL");
+                                                                  ddtId.getDatastoreType() + "RootShard-DCL",
+                                                                  ShardHelper.class);
         final InMemoryDOMDataTreeShard shard =
                 InMemoryDOMDataTreeShard.create(ddtId,
                                                 configRootShardExecutor,
