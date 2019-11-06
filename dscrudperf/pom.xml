@@ -18,7 +18,6 @@
   <groupId>org.opendaylight.coretutorials</groupId>
   <artifactId>dscrudperf</artifactId>
   <version>4.0.0-SNAPSHOT</version>
-  <name>dscrud</name>
   <packaging>pom</packaging>
 
   <properties>
