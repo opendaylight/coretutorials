@@ -36,6 +36,12 @@
     <dependencies>
         <dependency>
             <groupId>org.opendaylight.coretutorials</groupId>
+            <artifactId>odl-coretutorials-benchmark</artifactId>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.coretutorials</groupId>
             <artifactId>odl-coretutorials-dsbenchmark</artifactId>
             <classifier>features</classifier>
             <type>xml</type>
