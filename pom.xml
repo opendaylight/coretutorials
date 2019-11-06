@@ -31,15 +31,15 @@
     <module>features</module>
     <module>karaf</module>
 
-    <module>dsbenchmark</module>
-    <module>dscrudperf</module>
-    <module>ncmount</module>
-    <module>ietfsyslog</module>
-    <module>openconfig</module>
-    <module>hweventsource</module>
-    <module>xmpp-agent</module>
-    <module>dhcp</module>
     <module>benchmark</module>
     <module>clustering</module>
+    <module>dhcp</module>
+    <module>dsbenchmark</module>
+    <module>dscrudperf</module>
+    <module>hweventsource</module>
+    <module>ietfsyslog</module>
+    <module>ncmount</module>
+    <module>openconfig</module>
+    <module>xmpp-agent</module>
   </modules>
 </project>
