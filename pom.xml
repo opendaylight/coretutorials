@@ -27,6 +27,9 @@
   </properties>
 
   <modules>
+    <module>artifacts</module>
+    <module>feature-parent</module>
+
     <module>dsbenchmark</module>
     <module>dscrudperf</module>
     <module>ncmount</module>

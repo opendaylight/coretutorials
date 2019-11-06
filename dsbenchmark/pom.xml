@@ -25,6 +25,6 @@
         <module>artifacts</module>
         <module>api</module>
         <module>impl</module>
-        <!--module>odl-coretutorials-dsbenchmark</module-->
+        <module>odl-coretutorials-dsbenchmark</module>
     </modules>
 </project>
