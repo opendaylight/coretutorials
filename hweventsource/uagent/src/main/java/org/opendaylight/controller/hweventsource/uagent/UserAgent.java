@@ -8,8 +8,7 @@
 
 package org.opendaylight.controller.hweventsource.uagent;
 
-import static com.google.common.util.concurrent.Futures.immediateFuture;
-
+import com.google.common.util.concurrent.ListenableFuture;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -18,13 +17,10 @@ import java.io.StringWriter;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.Future;
-
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
-
 import org.opendaylight.controller.md.sal.dom.api.DOMNotification;
 import org.opendaylight.controller.md.sal.dom.api.DOMNotificationListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMNotificationService;
@@ -32,6 +28,7 @@ import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.messagebus.eventaggregator.rev141202.TopicId;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.messagebus.eventaggregator.rev141202.TopicNotification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.hweventsource.uagent.topic.rev150408.ReadTopicInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.hweventsource.uagent.topic.rev150408.ReadTopicOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.hweventsource.uagent.topic.rev150408.UagentTopicReadService;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.common.QName;
@@ -131,7 +128,7 @@ public class UserAgent implements DOMNotificationListener, UagentTopicReadServic
             nodeName = notification.getBody().getChild(EVENT_SOURCE_ARG).get().getValue().toString();
         }
         // get the TopicId from notification
-        if(notification.getBody().getChild(TOPIC_ID_ARG).isPresent()){;
+        if(notification.getBody().getChild(TOPIC_ID_ARG).isPresent()){
             topicId = (TopicId) notification.getBody().getChild(TOPIC_ID_ARG).get().getValue();
         }
         if( nodeName != null && topicId != null ){
@@ -152,14 +149,14 @@ public class UserAgent implements DOMNotificationListener, UagentTopicReadServic
      * @see org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.hweventsource.uagent.topic.rev150408.UagentTopicReadService#readTopic(org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.hweventsource.uagent.topic.rev150408.ReadTopicInput)
      */
     @Override
-    public synchronized Future<RpcResult<Void>> readTopic(ReadTopicInput input) {
+    public synchronized ListenableFuture<RpcResult<ReadTopicOutput>> readTopic(ReadTopicInput input) {
         String topicId = input.getTopicId().getValue();
         // if requested TopicId has not been requested before then it is added into to register
         if(registeredTopic.contains(topicId) == false){
             registeredTopic.add(topicId);
             LOG.info("UserAgent start read notification with TopicId {}", topicId);
         }
-        return immediateFuture(RpcResultBuilder.success((Void) null).build());
+        return RpcResultBuilder.<ReadTopicOutput>success().buildFuture();
     }
 
     // Helper for notification parse

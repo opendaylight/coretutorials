@@ -1,43 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- Copyright (c) 2015 Cisco Systems, Inc. and others. All rights reserved. and others. All rights reserved.
-This program and the accompanying materials are made available under the
-terms of the Eclipse Public License v1.0 which accompanies this distribution,
-and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
+  Copyright (c) 2015 Cisco Systems, Inc. and others. All rights reserved.
+
+  This program and the accompanying materials are made available under the
+  terms of the Eclipse Public License v1.0 which accompanies this distribution,
+  and is available at http://www.eclipse.org/legal/epl-v10.html
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.opendaylight.odlparent</groupId>
+        <artifactId>odlparent-lite</artifactId>
+        <version>4.0.11</version>
+        <relativePath/>
+    </parent>
 
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.opendaylight.odlparent</groupId>
-    <artifactId>odlparent-lite</artifactId>
-    <version>4.0.11</version>
-    <relativePath/>
-  </parent>
+    <groupId>org.opendaylight.coretutorials</groupId>
+    <artifactId>hweventsource-aggregator</artifactId>
+    <version>4.0.0-SNAPSHOT</version>
+    <name>hweventsource</name>
+    <packaging>pom</packaging>
 
-  <groupId>org.opendaylight.coretutorials</groupId>
-  <artifactId>hweventsource-aggregator</artifactId>
-  <version>4.0.0-SNAPSHOT</version>
-  <name>hweventsource</name>
-  <packaging>pom</packaging>
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+        <maven.install.skip>true</maven.install.skip>
+    </properties>
 
-  <properties>
-    <maven.deploy.skip>true</maven.deploy.skip>
-    <maven.install.skip>true</maven.install.skip>
-  </properties>
-
-  <modules>
-    <module>api</module>
-    <module>impl</module>
-    <module>uagent</module>
-    <!--module>features</module-->
-    <module>artifacts</module>
-  </modules>
-
-  <scm>
-    <connection>scm:git:ssh://git.opendaylight.org:29418/hweventsource.git</connection>
-    <developerConnection>scm:git:ssh://git.opendaylight.org:29418/hweventsource.git</developerConnection>
-    <tag>HEAD</tag>
-    <url>https://wiki.opendaylight.org/view/hweventsource:Main</url>
-  </scm>
+    <modules>
+        <module>artifacts</module>
+        <module>api</module>
+        <module>impl</module>
+        <module>uagent</module>
+        <module>odl-coretutorials-hweventsource</module>
+    </modules>
 </project>
