@@ -16,14 +16,14 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <relativePath/>
   </parent>
 
-  <groupId>org.opendaylight.coretutorials.clustering</groupId>
+  <groupId>org.opendaylight.coretutorials</groupId>
   <artifactId>singletonsimple-it</artifactId>
   <version>4.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <properties>
     <skipITs>false</skipITs>
-    <karaf.distro.groupId>org.opendaylight.coretutorials.clustering</karaf.distro.groupId>
+    <karaf.distro.groupId>org.opendaylight.coretutorials</karaf.distro.groupId>
     <karaf.distro.artifactId>singletonsimple-karaf</karaf.distro.artifactId>
     <karaf.distro.version>4.0.0-SNAPSHOT</karaf.distro.version>
     <karaf.distro.type>zip</karaf.distro.type>
