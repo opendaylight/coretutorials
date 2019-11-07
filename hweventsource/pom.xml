@@ -18,7 +18,6 @@
     <groupId>org.opendaylight.coretutorials</groupId>
     <artifactId>hweventsource-aggregator</artifactId>
     <version>4.0.0-SNAPSHOT</version>
-    <name>hweventsource</name>
     <packaging>pom</packaging>
 
     <properties>

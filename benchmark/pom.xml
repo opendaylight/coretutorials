@@ -18,7 +18,6 @@
     <groupId>org.opendaylight.coretutorials</groupId>
     <artifactId>benchmark-aggregator</artifactId>
     <version>4.0.0-SNAPSHOT</version>
-    <name>benchmark</name>
     <packaging>pom</packaging>
 
     <properties>

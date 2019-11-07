@@ -84,6 +84,12 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.coretutorials</groupId>
+            <artifactId>odl-coretutorials-openconfig</artifactId>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.coretutorials</groupId>
             <artifactId>odl-coretutorials-sharding-simple</artifactId>
             <classifier>features</classifier>
             <type>xml</type>

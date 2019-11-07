@@ -18,7 +18,6 @@
     <groupId>org.opendaylight.coretutorials</groupId>
     <artifactId>ncmount-aggregator</artifactId>
     <version>4.0.0-SNAPSHOT</version>
-    <name>ncmount</name>
     <packaging>pom</packaging>
 
     <properties>
