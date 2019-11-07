@@ -15,9 +15,9 @@
         <relativePath>../../features/parent</relativePath>
     </parent>
 
-    <artifactId>odl-coretutorials-benchmark</artifactId>
+    <artifactId>odl-coretutorials-xmpp-agent</artifactId>
     <packaging>feature</packaging>
-    <description>Benchmark tutorial</description>
+    <description>XMPP Agent tutorial</description>
 
     <dependencies>
         <dependency>
@@ -28,21 +28,12 @@
         </dependency>
 
         <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>features-mdsal-benchmark</artifactId>
-            <classifier>features</classifier>
-            <version>1.7.2</version>
-            <type>xml</type>
-            <scope>runtime</scope>
-        </dependency>
-
-        <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>benchmark-api</artifactId>
+            <artifactId>xmpp-agent-impl</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>benchmark-impl</artifactId>
+            <artifactId>xmpp-agent-api</artifactId>
         </dependency>
     </dependencies>
 </project>

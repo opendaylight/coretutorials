@@ -126,9 +126,8 @@ public class XmppUserAgentImpl implements DOMNotificationListener, AutoCloseable
         }
     }
 
-
     private static ReceiverKey getReceiverKey(final DataTreeIdentifier<Receiver> rootPath) {
-        return rootPath.getRootIdentifier().firstKeyOf(Receiver.class, ReceiverKey.class);
+        return rootPath.getRootIdentifier().firstKeyOf(Receiver.class);
     }
 
     @Override

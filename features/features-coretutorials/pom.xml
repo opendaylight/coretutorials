@@ -82,5 +82,29 @@
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
+        <dependency>
+            <groupId>org.opendaylight.coretutorials</groupId>
+            <artifactId>odl-coretutorials-sharding-simple</artifactId>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.coretutorials</groupId>
+            <artifactId>odl-coretutorials-singleton-hs</artifactId>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.coretutorials</groupId>
+            <artifactId>odl-coretutorials-singleton-simple</artifactId>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.coretutorials</groupId>
+            <artifactId>odl-coretutorials-xmpp-agent</artifactId>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
     </dependencies>
 </project>
