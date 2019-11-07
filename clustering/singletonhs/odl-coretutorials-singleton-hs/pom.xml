@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright © 2015 Cisco Systems, Inc. and others. All rights reserved.
+  Copyright © 2016 Cisco Systems, Inc. and others. All rights reserved.
 
   This program and the accompanying materials are made available under the
   terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -15,9 +15,9 @@
         <relativePath>../../features/parent</relativePath>
     </parent>
 
-    <artifactId>odl-coretutorials-benchmark</artifactId>
+    <artifactId>odl-coretutorials-singleton-hs</artifactId>
     <packaging>feature</packaging>
-    <description>Benchmark tutorial</description>
+    <description>Hot Standby singleton tutorial</description>
 
     <dependencies>
         <dependency>
@@ -26,23 +26,32 @@
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
-
         <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>features-mdsal-benchmark</artifactId>
-            <classifier>features</classifier>
-            <version>1.7.2</version>
+            <groupId>org.opendaylight.mdsal.model</groupId>
+            <artifactId>odl-mdsal-model-draft-clemm-netmod-yang-network-topo-01-minimal</artifactId>
             <type>xml</type>
-            <scope>runtime</scope>
+            <classifier>features</classifier>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>benchmark-api</artifactId>
+            <artifactId>singletonhs-api</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>benchmark-impl</artifactId>
+            <artifactId>singletonhs-spi</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>singletonhs-topo</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>singletonhs-data-mng</artifactId>
+        </dependency>
+        <!--dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>singletonhs-cli</artifactId>
+        </dependency-->
     </dependencies>
 </project>

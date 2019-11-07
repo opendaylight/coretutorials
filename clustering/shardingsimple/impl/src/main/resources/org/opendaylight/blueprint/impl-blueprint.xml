@@ -23,7 +23,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     odl:type="default"/>
 
   <odl:static-reference id="schemaService"
-    interface="org.opendaylight.controller.sal.core.api.model.SchemaService" />
+    interface="org.opendaylight.mdsal.dom.api.DOMSchemaService" />
 
   <bean id="provider"
     class="sharding.simple.impl.ShardingSimpleProvider"
