@@ -1,4 +1,5 @@
 # UUID                                                                       	Group Name
 #
+b8dda3280833890a6490caac9821107cf98363b0                                     	saml/odl-gerrit-coretutorials-committers
 c9025ab9ddc1e3171919e085449f22c54f8f7b54                                     	GitHub Replication
 ldap:cn=odl-gerrit-coretutorials-committers,ou=Groups,dc=freestandards,dc=org	ldap/odl-gerrit-coretutorials-committers
