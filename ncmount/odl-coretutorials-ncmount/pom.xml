@@ -25,13 +25,14 @@
             <artifactId>odl-coretutorials-common</artifactId>
             <type>xml</type>
             <classifier>features</classifier>
+            <version>4.0.0-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>odl-mdsal-model-inventory</artifactId>
-            <type>xml</type>
-            <classifier>features</classifier>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.opendaylight.controller</groupId>-->
+<!--            <artifactId>odl-mdsal-model-inventory</artifactId>-->
+<!--            <type>xml</type>-->
+<!--            <classifier>features</classifier>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.opendaylight.netconf</groupId>
             <artifactId>odl-netconf-connector</artifactId>
@@ -42,10 +43,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ncmount-api</artifactId>
+            <version>4.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ncmount-impl</artifactId>
+            <version>4.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

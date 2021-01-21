@@ -11,7 +11,7 @@
   <parent>
     <groupId>org.opendaylight.mdsal</groupId>
     <artifactId>binding-parent</artifactId>
-    <version>3.0.10</version>
+    <version>7.0.5-SNAPSHOT</version>
     <relativePath/>
   </parent>
 
@@ -23,16 +23,16 @@
   <dependencyManagement>
       <dependencies>
           <dependency>
-              <groupId>org.opendaylight.controller</groupId>
+              <groupId>org.opendaylight.mdsal</groupId>
               <artifactId>mdsal-artifacts</artifactId>
-              <version>1.9.2</version>
+              <version>7.0.5-SNAPSHOT</version>
               <type>pom</type>
               <scope>import</scope>
           </dependency>
           <dependency>
               <groupId>org.opendaylight.netconf</groupId>
               <artifactId>netconf-artifacts</artifactId>
-              <version>1.6.2</version>
+              <version>1.10.0-SNAPSHOT</version>
               <type>pom</type>
               <scope>import</scope>
           </dependency>
@@ -51,17 +51,20 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.controller</groupId>
-      <artifactId>sal-binding-api</artifactId>
+      <groupId>org.opendaylight.mdsal</groupId>
+      <artifactId>mdsal-binding-api</artifactId>
+        <version>7.0.5-SNAPSHOT</version>
     </dependency>
-    <dependency>
-      <groupId>org.opendaylight.controller</groupId>
-      <artifactId>sal-core-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.controller</groupId>
-      <artifactId>sal-core-spi</artifactId>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.opendaylight.mdsal</groupId>-->
+<!--      <artifactId>mdsal-core-api</artifactId>-->
+<!--        <version>7.0.5-SNAPSHOT</version>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--      <groupId>org.opendaylight.mdsal</groupId>-->
+<!--      <artifactId>mdsal-core-spi</artifactId>-->
+<!--        <version>7.0.5-SNAPSHOT</version>-->
+<!--    </dependency>-->
     <dependency>
       <groupId>org.opendaylight.netconf</groupId>
       <artifactId>sal-netconf-connector</artifactId>
@@ -69,6 +72,7 @@
     <dependency>
       <groupId>org.opendaylight.controller.model</groupId>
       <artifactId>model-inventory</artifactId>
+        <version>3.0.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.mdsal.model</groupId>
